@@ -32,14 +32,11 @@ class M_depos extends CI_Model
 	}
 	public function get_depos_by_uuid($uuid)
 	{
-		$this->db->select('name, code_depo');  // Menentukan kolom yang diambil
-		$this->db->where('uuid', $uuid);         // Menentukan kondisi berdasarkan UUID
-		$query = $this->db->get('depos');    // Melakukan query pada tabel 'depos'
-
-		if ($query->num_rows() > 0) {
-			return $query->row();  // Mengembalikan satu baris data jika ditemukan
-		} else {
-			return null;  // Mengembalikan null jika data tidak ditemukan
-		}
+		$this->db->select('depos.*, companies.name as nm_company');
+		$this->db->from('depos');
+		$this->db->join('companies', 'depos.code_company = companies.code_company', 'left');
+		$this->db->where('depos.uuid', $uuid);
+		$query = $this->db->get();
+		return $query->row(); // Mengembalikan satu baris data (seperti first() di Laravel)
 	}
 }

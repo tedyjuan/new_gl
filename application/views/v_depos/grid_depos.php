@@ -20,10 +20,12 @@
 		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%">
 			<thead>
 				<tr class="table-primary">
-					<th style="width: 20%">Kode Perusahaan</th>
-					<th style="width: 60%">Nama Perusahaan</th>
-					<th style="width: 10%">Status</th>
-					<th style="width: 10%" class="text-center">Aksi</th>
+					<th>Kode Depo</th>
+					<th>Nama Depo</th>
+					<th>Kota</th>
+					<th>Nomor HP</th>
+					<th>Status</th>
+					<th style="width: 5%">Action</th>
 				</tr>
 			</thead>
 		</table>
