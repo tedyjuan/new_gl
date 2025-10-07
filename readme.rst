@@ -1,60 +1,65 @@
-# 🧾 General Ledger System (GL)
+ 
 
-> **A modern, modular accounting system for managing journal entries, transactions, and financial statements.**
+# General Ledger System (GL)
 
----
-
-## 🚀 Overview
-
-**General Ledger (GL)** is a web-based accounting system built to handle financial operations such as **journal posting**, **transaction tracking**, and **ledger reporting**.  
-It supports **role-based access**, **dynamic menu rendering**, and **modular integration** with other accounting modules.
+General Ledger (GL) adalah sistem akuntansi berbasis web untuk mengelola jurnal, transaksi, dan laporan keuangan.
+Aplikasi ini dibangun secara modular dengan kontrol akses berbasis peran (role-based access control).
 
 ---
 
-## 🏗️ Tech Stack
+## Overview
 
-| Layer | Technology |
-|-------|-------------|
-| Backend | PHP (CodeIgniter 3) |
-| Frontend | HTML5, Bootstrap 5, jQuery, SweetAlert2 |
-| Database | MySQL / MariaDB |
-| Authentication | Session-based (Custom Login) |
-| Role Management | Dynamic Role & Menu Access Control |
+Sistem ini dirancang untuk mengelola data keuangan dengan struktur yang rapi dan aman.
+Dilengkapi fitur login, validasi sesi otomatis, manajemen menu dinamis, dan notifikasi berbasis SweetAlert.
 
 ---
 
-## ⚙️ Features
+## Tech Stack
 
-✅ **Dashboard Overview** – real-time system status and summary  
-✅ **Role-Based Access** – show/hide menus dynamically per user role  
-✅ **Dynamic Sidebar Menu** – automatically generated from DB  
-✅ **Auto Session Expiration** – logout after idle time  
-✅ **SweetAlert Notifications** – beautiful alert messages  
-✅ **Master Data Management** – Company, Department, Cost Center, etc.  
-✅ **Secure Authentication** – password hashing and access validation  
-✅ **Modular Controller Loader** – `tocontroller()` for smooth navigation  
+| Layer           | Technology                              |
+| --------------- | --------------------------------------- |
+| Backend         | PHP (CodeIgniter 3)                     |
+| Frontend        | HTML5, Bootstrap 5, jQuery, SweetAlert2 |
+| Database        | MySQL / MariaDB                         |
+| Authentication  | Session-based                           |
+| Role Management | Dynamic Role & Menu Access Control      |
 
 ---
 
-## 🧩 System Architecture
+## Features
 
-```plaintext
-┌───────────────────────────────────────────────┐
-│                    Client                     │
-│       HTML + Bootstrap + jQuery + AJAX        │
-└────────────────────────────┬──────────────────┘
-                             │
-                             ▼
-┌───────────────────────────────────────────────┐
-│                CodeIgniter 3 MVC              │
-│  Controllers  →  Models  →  Views             │
-│  Auth System  →  Role Access Middleware       │
-│  Session Helper  →  SweetAlert FlashData      │
-└────────────────────────────┬──────────────────┘
-                             │
-                             ▼
-┌───────────────────────────────────────────────┐
-│                   Database                    │
-│  Tables: users, roles, menus, role_menu_access │
-│  Relation: role_id ↔ menu_id                   │
-└───────────────────────────────────────────────┘
+* Dashboard informasi keuangan
+* Role-based access (menu tampil sesuai hak akses)
+* Sidebar dinamis dari database
+* Session expiration otomatis
+* SweetAlert flash notification
+* Master data management (Company, Department, Cost Center, dll)
+* Modular controller system (navigasi dinamis dengan `tocontroller()`)
+* Validasi login dan hak akses
+
+---
+
+## System Architecture
+
+```
+Client (HTML, Bootstrap, jQuery)
+           │
+           ▼
+CodeIgniter MVC (Controller → Model → View)
+Auth System + Middleware (is_logged_in)
+Session + SweetAlert + Helper
+           │
+           ▼
+MySQL Database (users, roles, menus, role_menu_access)
+
+```
+
+## Default Login
+
+```
+Username: admin
+Password: admin
+
+```
+ 
+ 
