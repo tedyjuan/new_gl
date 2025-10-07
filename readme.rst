@@ -1,71 +1,60 @@
-###################
-What is CodeIgniter
-###################
+# 🧾 General Ledger System (GL)
 
-CodeIgniter is an Application Development Framework - a toolkit - for people
-who build web sites using PHP. Its goal is to enable you to develop projects
-much faster than you could if you were writing code from scratch, by providing
-a rich set of libraries for commonly needed tasks, as well as a simple
-interface and logical structure to access these libraries. CodeIgniter lets
-you creatively focus on your project by minimizing the amount of code needed
-for a given task.
+> **A modern, modular accounting system for managing journal entries, transactions, and financial statements.**
 
-*******************
-Release Information
-*******************
+---
 
-This repo contains in-development code for future releases. To download the
-latest stable release please visit the `CodeIgniter Downloads
-<https://codeigniter.com/download>`_ page.
+## 🚀 Overview
 
-**************************
-Changelog and New Features
-**************************
+**General Ledger (GL)** is a web-based accounting system built to handle financial operations such as **journal posting**, **transaction tracking**, and **ledger reporting**.  
+It supports **role-based access**, **dynamic menu rendering**, and **modular integration** with other accounting modules.
 
-You can find a list of all changes for each release in the `user
-guide change log <https://github.com/bcit-ci/CodeIgniter/blob/develop/user_guide_src/source/changelog.rst>`_.
+---
 
-*******************
-Server Requirements
-*******************
+## 🏗️ Tech Stack
 
-PHP version 5.6 or newer is recommended.
+| Layer | Technology |
+|-------|-------------|
+| Backend | PHP (CodeIgniter 3) |
+| Frontend | HTML5, Bootstrap 5, jQuery, SweetAlert2 |
+| Database | MySQL / MariaDB |
+| Authentication | Session-based (Custom Login) |
+| Role Management | Dynamic Role & Menu Access Control |
 
-It should work on 5.3.7 as well, but we strongly advise you NOT to run
-such old versions of PHP, because of potential security and performance
-issues, as well as missing features.
+---
 
-************
-Installation
-************
+## ⚙️ Features
 
-Please see the `installation section <https://codeigniter.com/userguide3/installation/index.html>`_
-of the CodeIgniter User Guide.
+✅ **Dashboard Overview** – real-time system status and summary  
+✅ **Role-Based Access** – show/hide menus dynamically per user role  
+✅ **Dynamic Sidebar Menu** – automatically generated from DB  
+✅ **Auto Session Expiration** – logout after idle time  
+✅ **SweetAlert Notifications** – beautiful alert messages  
+✅ **Master Data Management** – Company, Department, Cost Center, etc.  
+✅ **Secure Authentication** – password hashing and access validation  
+✅ **Modular Controller Loader** – `tocontroller()` for smooth navigation  
 
-*******
-License
-*******
+---
 
-Please see the `license
-agreement <https://github.com/bcit-ci/CodeIgniter/blob/develop/user_guide_src/source/license.rst>`_.
+## 🧩 System Architecture
 
-*********
-Resources
-*********
-
--  `User Guide <https://codeigniter.com/docs>`_
--  `Contributing Guide <https://github.com/bcit-ci/CodeIgniter/blob/develop/contributing.md>`_
--  `Language File Translations <https://github.com/bcit-ci/codeigniter3-translations>`_
--  `Community Forums <http://forum.codeigniter.com/>`_
--  `Community Wiki <https://github.com/bcit-ci/CodeIgniter/wiki>`_
--  `Community Slack Channel <https://codeigniterchat.slack.com>`_
-
-Report security issues to our `Security Panel <mailto:security@codeigniter.com>`_
-or via our `page on HackerOne <https://hackerone.com/codeigniter>`_, thank you.
-
-***************
-Acknowledgement
-***************
-
-The CodeIgniter team would like to thank EllisLab, all the
-contributors to the CodeIgniter project and you, the CodeIgniter user.
+```plaintext
+┌───────────────────────────────────────────────┐
+│                    Client                     │
+│       HTML + Bootstrap + jQuery + AJAX        │
+└────────────────────────────┬──────────────────┘
+                             │
+                             ▼
+┌───────────────────────────────────────────────┐
+│                CodeIgniter 3 MVC              │
+│  Controllers  →  Models  →  Views             │
+│  Auth System  →  Role Access Middleware       │
+│  Session Helper  →  SweetAlert FlashData      │
+└────────────────────────────┬──────────────────┘
+                             │
+                             ▼
+┌───────────────────────────────────────────────┐
+│                   Database                    │
+│  Tables: users, roles, menus, role_menu_access │
+│  Relation: role_id ↔ menu_id                   │
+└───────────────────────────────────────────────┘
