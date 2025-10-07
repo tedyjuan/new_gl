@@ -9,19 +9,39 @@ class M_global extends CI_Model
 	}
 	public function insert($data, $tabel)
 	{
-		return $this->db->insert($tabel, $data);
-
+		$this->db->trans_strict(FALSE);
+		$this->db->trans_start();
+		$this->db->insert($tabel, $data);
+		$this->db->trans_complete();
+		if ($this->db->trans_status() === FALSE) {
+			$this->db->trans_rollback();
+			return FALSE;
+		} else {
+			$this->db->trans_commit();
+			return TRUE;
+		}
 	}
 	public function update($data, $tabel, $where)
 	{
+		$this->db->trans_start();
+		$this->db->trans_strict(FALSE);
 		$this->db->where($where);
-		$this->db->update($tabel, $data);
-		if ($this->db->affected_rows() > 0) {
-			return true;  
+		$this->db->update("$tabel", $data);
+		$this->db->trans_complete();
+		if ($this->db->trans_status() === FALSE) {
+			$this->db->trans_rollback();
+			return FALSE;
 		} else {
-			return false; 
+			$this->db->trans_commit();
+			return TRUE;
 		}
 	}
+	public function getWhere($table, $param)
+	{
+		$this->db->where($param);
+		return $this->db->get($table);
+	}
+
 	public function getWhereOrder($table, $order = null, $param = null)
 	{
 		if ($param != null) {
@@ -32,5 +52,4 @@ class M_global extends CI_Model
 		}
 		return $this->db->get($table);
 	}
-	
 }

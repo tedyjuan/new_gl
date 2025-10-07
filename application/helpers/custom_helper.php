@@ -101,83 +101,48 @@ if (!function_exists('clean_string')) {
 	}
 }
 
-function redirect_based_on_role()
-{
-	$CI = &get_instance(); // Get CodeIgniter instance
-	$jabatan = $CI->session->userdata('jabatan');
-	if ($CI->session->userdata('logged') === TRUE) {
-		if ($jabatan == 'administrator') {
-			redirect('Dashboard');
-		} else if ($jabatan == 'support') {
-			redirect('support/supportAutoGL');
-		}
-	}
-}
+
 
 if (!function_exists('is_logged_in')) {
 	function is_logged_in()
 	{
 		$CI = &get_instance();
 		$is_logged = $CI->session->userdata('logged');
+
 		if ($is_logged != true) {
 			$CI->session->sess_destroy();
-			// Cek apakah ini request AJAX
+
+			$CI->session->set_flashdata('warning', 'Session expired! Please log in again.');
+
 			if ($CI->input->is_ajax_request()) {
-				// Kirim response JSON khusus
 				echo json_encode([
 					'session_expired' => true,
-					'redirect' => base_url('logout'),
-					'message' => 'Session Anda telah habis. Silakan login kembali.',
+					'redirect' => base_url('Auth/logout'),
+					'message' => 'Session expired! Please log in again.',
 				]);
-				http_response_code(401); // unauthorized
+				http_response_code(401);
 				exit;
 			} else {
-				// Request biasa
-				redirect('login');
+				$CI->session->set_flashdata('warning', 'You do not have access.');
+				redirect('Auth');
 				exit;
 			}
 		}
-		
 	}
 }
+
 if (!function_exists('is_session')) {
 	function is_session()
 	{
 		$CI = &get_instance();
 		$is_logged = $CI->session->userdata('logged');
 		if ($is_logged == true) {
-			redirect('/');
+			redirect('Dashboard');
 		}
 	}
 }
-if (!function_exists('is_pengajuan')) {
-	function is_pengajuan()
-	{
-		// yang mengajukan nl  all spv = level jabatan 4,5,6
-		$CI = &get_instance();
-		$level = (int) $CI->session->userdata('sess_level_jabatan');
-	
-		if (!in_array($level, [4, 5, 6,2])) {
-			$CI->session->sess_destroy();
-			if ($CI->input->is_ajax_request()) {
-				// Kirim response JSON khusus
-				echo json_encode([
-					'session_expired' => true,
-					'redirect' => base_url('logout'),
-					'message' => 'Level Jabatan Anda tidak terdaftar',
-				]);
-				http_response_code(401); // unauthorized
-				exit;
-			} else {
-				// Request biasa
-				redirect('login');
-				exit;
-			}
-		}
-		return true;
-	}
-}
-if (! function_exists('bulan_romawi')) {
+
+if (!function_exists('bulan_romawi')) {
 	function bulan_romawi($tanggal)
 	{
 		// Pastikan format tanggal valid
@@ -214,45 +179,5 @@ if (!function_exists('badge')) {
 			default:
 				return 'bg-secondary'; // waiting / null
 		}
-	}
-}
-
-if (!function_exists('get_status_approval')) {
-	function get_status_approval($row)
-	{
-		// Default semua level WAITING
-		$status = [
-			'kadept' => ['tgl' => '', 'status' => 'OPEN'],
-			'staf'   => ['tgl' => '', 'status' => 'WAITING'],
-			'spv'    => ['tgl' => '', 'status' => 'WAITING'],
-		];
-
-		// Kalau ada REJECT di salah satu level → semua REJECT
-		if ($row->status_dept == 'REJECT' || $row->status_qms_staf == 'REJECT' || $row->status_qms_spv == 'REJECT') {
-			return [
-				'kadept' => ['tgl' => $row->tgl_approve_dept, 'status' => 'REJECT'],
-				'staf'   => ['tgl' => $row->tgl_approved_staf, 'status' => 'REJECT'],
-				'spv'    => ['tgl' => $row->tgl_status_spv,   'status' => 'REJECT'],
-			];
-		}
-
-		// Kadept sudah approve
-		if ($row->status_dept != '') {
-			$status['kadept'] = ['tgl' => $row->tgl_approve_dept, 'status' => $row->status_dept];
-			$status['staf']   = ['tgl' => '', 'status' => 'OPEN']; // giliran staf
-		}
-
-		// Staf sudah approve
-		if ($row->status_qms_staf != '') {
-			$status['staf'] = ['tgl' => $row->tgl_approved_staf, 'status' => $row->status_qms_staf];
-			$status['spv']  = ['tgl' => '', 'status' => 'OPEN']; // giliran spv
-		}
-
-		// SPV sudah approve
-		if ($row->status_qms_spv != '') {
-			$status['spv'] = ['tgl' => $row->tgl_status_spv, 'status' => $row->status_qms_spv];
-		}
-
-		return $status;
 	}
 }

@@ -87,15 +87,13 @@
 											<img class="avatar-img" loading="lazy" src="<?php echo base_url('public/assets/img/160x160/img6.jpg'); ?>" alt="Image Description">
 										</div>
 										<div class="flex-grow-1 ms-3">
-											<h5 class="mb-0"><?php echo $this->session->userdata('user_nama'); ?></h5>
-											<p class="card-text text-body"><?php echo $this->session->userdata('user_nik'); ?></p>
+											<h5 class="mb-0"><?php echo $this->session->userdata('sess_name'); ?></h5>
+											<p class="card-text text-body"><?php echo $this->session->userdata('sess_username'); ?></p>
 										</div>
 									</div>
 								</div>
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="javascript:;">Lokasi : <?php echo $this->session->userdata('user_lokasi'); ?></a>
-								<a class="dropdown-item" href="javascript:;">Branch : <?php echo $this->session->userdata('user_branch'); ?></a>
-								<a class="dropdown-item" href="javascript:;">Kode Jabatan : <?php echo $this->session->userdata('user_kode_jabatan'); ?></a>
+
 								<a class="dropdown-item" href="javascript:;" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
 									Sign out
 								</a>
@@ -125,43 +123,79 @@
 					<i class="bi-arrow-bar-left navbar-toggler-short-align" data-bs-toggle="tooltip" data-bs-placement="right" title="Collapse"></i>
 					<i class="bi-arrow-bar-right navbar-toggler-full-align" data-bs-toggle="tooltip" data-bs-placement="right" title="Expand"></i>
 				</button>
+
 				<div class="navbar-vertical-content">
 					<div id="navbarVerticalMenu" class="nav nav-pills nav-vertical card-navbar-nav">
 						<div class="nav-item">
-							<a class="nav-link sub_reset active" id="nav_dashboard" href="<?php echo site_url('beranda'); ?>" data-placement="left">
+							<a class="nav-link sub_reset active" id="nav_dashboard" href="<?php echo site_url('Dashboard'); ?>" data-placement="left">
 								<i class="bi bi-speedometer2 nav-icon"></i>
 								<span class="nav-link-title">Dashboards</span>
 							</a>
 						</div>
-						<span class="dropdown-header mt-4">Pages</span>
-						<small class="bi-three-dots nav-subtitle-replacer"></small>
-						<div class="nav-item ">
-							<a class="nav-link sub_reset " id="nav_role" href="javascript:;" onclick="tocontroller('role', 'nav_role')" data-placement="left">
-								<i class="bi bi-shield-check nav-icon"></i>
-								<span class="nav-link-title">Role</span>
-							</a>
-						</div>
-						<div id="navbarVerticalMenuPagesMenu">
-							<div class="nav-item">
-								<a class="nav-link dropdown-toggle sub_reset" id="nav_master" href="#li_master"
-									role="button" data-bs-toggle="collapse" data-bs-target="#li_master"
-									aria-expanded="false" aria-controls="li_master">
-									<i class="bi bi-stack nav-icon"></i>
-									<span class="nav-link-title">Master</span>
-								</a>
-								<div id="li_master" class="nav-collapse collapse"
-									data-bs-parent="#navbarVerticalMenuPagesMenu">
-									<a class="nav-link sub_reset" id="sub_comany" href="javascript:;" onclick="tocontroller('C_company', 'sub_comany','li_master', 'nav_master')">Company</a>
-									<!-- <a class="nav-link sub_reset" id="sub_comany" href="javascript:;">Company</a> -->
-									<a class="nav-link sub_reset" id="sub_depo" href="javascript:;">Depo</a>
-									<a class="nav-link sub_reset" id="sub_department" href="javascript:;">Department</a>
-									<a class="nav-link sub_reset" id="sub_divisi" href="javascript:;">Divisi</a>
-									<a class="nav-link sub_reset" id="sub_segment" href="javascript:;">Segment</a>
-									<a class="nav-link sub_reset" id="sub_costcenter" href="javascript:;">Cost Center</a>
-									<a class="nav-link sub_reset" id="sub_journalsource" href="javascript:;">Journal Source</a>
-								</div>
-							</div>
-						</div>
+						<?php
+						$menus = $this->session->userdata('sess_menus');
+
+						if ($menus) :
+
+							$parents = array_filter($menus, function ($m) {
+								return empty($m['parent_id']);
+							});
+							$children = array_filter($menus, function ($m) {
+								return !empty($m['parent_id']);
+							});
+						?>
+
+							<?php foreach ($parents as $p) : ?>
+								<?php
+								$subMenus = array_filter($children, function ($c) use ($p) {
+									return $c['parent_id'] == $p['id'];
+								});
+
+
+								$slugParts = array_map('trim', explode(',', str_replace("'", '', $p['slug'])));
+								$controller = $slugParts[0] ?? '';
+								$active     = $slugParts[1] ?? '';
+								$dropdown   = $slugParts[2] ?? '';
+								$head_nav   = $slugParts[3] ?? '';
+
+								?>
+
+								<?php if (count($subMenus) > 0) : ?>
+									<div class="nav-item">
+										<a class="nav-link dropdown-toggle sub_reset" id="<?php echo $head_nav; ?>" href="#menu_<?php echo $p['id']; ?>" data-bs-toggle="collapse" aria-expanded="false">
+											<i class="<?php echo $p['icon']; ?> nav-icon"></i>
+											<span class="nav-link-title"><?php echo $p['name']; ?></span>
+										</a>
+
+										<div id="menu_<?php echo $p['id']; ?>" class="nav-collapse collapse">
+											<?php foreach ($subMenus as $s) : ?>
+												<?php
+
+												$slugPartsChild = array_map('trim', explode(',', str_replace("'", '', $s['slug'])));
+												$controllerC = $slugPartsChild[0] ?? '';
+												$activeC     = $slugPartsChild[1] ?? '';
+												$dropdownC   = $slugPartsChild[2] ?? '';
+												$head_navC   = $slugPartsChild[3] ?? '';
+												?>
+												<a class="nav-link sub_reset" id="<?php echo $activeC; ?>" href="javascript:;" onclick="tocontroller('<?php echo $controllerC; ?>', '<?php echo $activeC; ?>', '<?php echo $dropdownC; ?>', '<?php echo $head_navC; ?>')">
+													<?php echo $s['name']; ?>
+												</a>
+											<?php endforeach; ?>
+										</div>
+									</div>
+
+								<?php else : ?>
+									<div class="nav-item">
+										<a class="nav-link sub_reset" id="<?php echo $active; ?>" href="javascript:;" onclick="tocontroller('<?php echo $controller; ?>', '<?php echo $active; ?>', '<?php echo $dropdown; ?>', '<?php echo $head_nav; ?>')">
+											<i class="<?php echo $p['icon']; ?> nav-icon"></i>
+											<span class="nav-link-title"><?php echo $p['name']; ?></span>
+										</a>
+									</div>
+								<?php endif; ?>
+							<?php endforeach; ?>
+						<?php endif; ?>
+
+
 					</div>
 				</div>
 
@@ -182,22 +216,9 @@
 		<div class="footer">
 			<div class="row justify-content-between align-items-center">
 				<div class="col">
-					<p class="fs-6 mb-0">&copy; <span class="d-none d-sm-inline-block"><?= date('Y') ?> ICT-Hotline.</span></p>
+					<strong>Lingga Project</strong> &copy; <?= date('Y'); ?> | General Ledger System
 				</div>
-				<div class="col-auto">
-					<div class="d-flex justify-content-end">
-						<ul class="list-inline list-separator">
-							<li class="list-inline-item">
-								<a class="list-separator-link" href="#">FAQ</a>
-							</li>
-							<li class="list-inline-item">
-								<button class="btn btn-ghost-secondary btn btn-icon btn-ghost-secondary rounded-circle" type="button">
-									<i class="bi-command"></i>
-								</button>
-							</li>
-						</ul>
-					</div>
-				</div>
+
 			</div>
 		</div>
 		<!-- End Footer -->
@@ -209,14 +230,19 @@
 	<script src="<?php echo base_url('public/assets/vendor/parsleyjs/id.js'); ?>"></script>
 	<script src="<?php echo base_url('public/assets/vendor/jquery-mask/jquery.mask.min.js'); ?>"></script>
 
-	<?php if ($this->session->flashdata('flash_success')): ?>
-		<script>
-			swet_sukses("Login Sukses")
-		</script>
-	<?php endif; ?>
+
 
 	<script>
-		// Di file .blade.php
+		<?php
+		$flashTypes = ['success', 'info', 'error', 'warning'];
+		foreach ($flashTypes as $type) {
+			if ($this->session->flashdata($type)) {
+				$message = $this->session->flashdata($type);
+				echo "Swal.fire({ icon: '$type', title: '" . addslashes($message) . "' });";
+			}
+		}
+		?>
+
 		const BASE_URL = "<?= rtrim(base_url(), '/'); ?>";
 		(function() {
 			window.onload = function() {
