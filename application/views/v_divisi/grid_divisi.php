@@ -44,7 +44,7 @@
 			serverSide: true, // Mengaktifkan server-side processing
 			ajax: {
 				url: "<?= base_url('C_divisi/griddata'); ?>", // URL ke controller
-				type: "GET", // Gunakan GET untuk request
+				type: "POST", // Gunakan GET untuk request
 			},
 			columnDefs: [{
 				orderable: false,

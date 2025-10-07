@@ -92,18 +92,18 @@ function hapus(uuid, url_hapus, load_grid) {
 				url: url_hapus,
 				method: "POST",
 				dataType: "JSON",
-				headers: {
-					"X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"), // CSRF token
-				},
 				data: {
-					uuid: uuid,
-					token: $("#token").val(),
+					uuid: uuid
 				},
 				success: function (data) {
 					if (data.hasil == "true") {
 						hideLoader();
 						swet_sukses(data.pesan);
-						loadform(load_grid);
+						if (window.mytableDT && $.fn.dataTable.isDataTable("#mytable")) {
+							window.mytableDT.ajax.reload(null, false);
+						} else {
+							initTable(); // fallback kalau tabel belum pernah di-init
+						}
 					} else {
 						Swal.fire({
 							icon: "info",

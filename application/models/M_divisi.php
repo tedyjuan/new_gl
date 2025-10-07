@@ -42,16 +42,12 @@ class M_divisi extends CI_Model
 		$query = $this->db->get('divisions');
 		return $query->num_rows();
 	}
-	public function get_divisi_by_uuid($uuid)
+	public function get_where_divisi($param)
 	{
-		$this->db->select('name, code_divisi');  // Menentukan kolom yang diambil
-		$this->db->where('uuid', $uuid);         // Menentukan kondisi berdasarkan UUID
-		$query = $this->db->get('divisions');    // Melakukan query pada tabel 'divisions'
-
-		if ($query->num_rows() > 0) {
-			return $query->row();  // Mengembalikan satu baris data jika ditemukan
-		} else {
-			return null;  // Mengembalikan null jika data tidak ditemukan
-		}
+		$this->db->select('a.*, b.name AS nm_company');
+		$this->db->from('divisions as a');
+		$this->db->join('companies as b', 'b.code_company = a.code_company', 'left');
+		$this->db->where($param);
+		return $this->db->get();
 	}
 }

@@ -16,171 +16,72 @@
 		</div>
 	</div>
 	<div class="card-body">
-		<form id="forms_add" method="post">
+		<form id="forms_add">
 			<div class="row">
 				<div class="col-6">
 					<div class="mb-3">
 						<label class="form-label" for="perusahaan">Perusahaan</label>
-						<select id="perusahaan" name="perusahaan"
-							class="form-control-hover-light form-control select2"
-							data-parsley-required="true" data-parsley-errors-container=".err_name" required>
+						<select id="perusahaan" name="perusahaan" class="form-control-hover-light form-control select2"
+							data-parsley-required="true" data-parsley-errors-container=".err_name" required="">
 							<option value="">Pilih</option>
-							<?php if (!empty($companies)): ?>
-								<?php foreach ($companies as $c): ?>
-									<option value="<?= $c->code_company ?>"
-										<?= (isset($data->code_company) && $data->code_company == $c->code_company) ? 'selected' : '' ?>>
-										<?= $c->name ?>
-									</option>
-								<?php endforeach; ?>
-							<?php endif; ?>
 						</select>
 						<span class="text-danger err_name"></span>
 					</div>
 				</div>
-
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="kode_depo">Kode Depo</label>
-						<input type="text" id="kode_depo" name="kode_depo"
-							value="<?= isset($data->code_depo) ? $data->code_depo : '' ?>"
-							data-parsley-required="true" data-parsley-errors-container=".err_kodedepo" required
-							class="form-control-hover-light form-control" placeholder="input kode depo">
-						<span class="text-danger err_kodedepo"></span>
+						<label class="form-label" for="kode_divisi">Kode Divisi</label>
+						<input type="text" id="kode_divisi" name="kode_divisi" data-parsley-required="true"
+							data-parsley-errors-container=".err_kodedivisi" required=""
+							value="<?= $data->code_divisi ?>" class="form-control-hover-light form-control"
+							placeholder="input kode divisi max:2 karakter">
+						<span class="text-danger err_kodedivisi"></span>
 					</div>
 				</div>
 			</div>
-
 			<div class="row">
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="nama_depo">Nama Depo</label>
-						<input type="text" id="nama_depo" name="nama_depo"
-							value="<?= isset($data->name) ? $data->name : '' ?>"
-							class="form-control-hover-light form-control" required
-							placeholder="input nama depo">
-						<span class="text-danger err_namadepo"></span>
+						<label class="form-label" for="nama_divisi">Nama Divisi</label>
+						<input type="text" id="nama_divisi" name="nama_divisi" value="<?= $data->name ?>"
+							class="form-control-hover-light form-control kapital" data-parsley-required="true"
+							data-parsley-errors-container=".err_namadivisi" required=""
+							placeholder="input nama divisi">
+						<span class="text-danger err_namadivisi"></span>
 					</div>
 				</div>
-
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="kd_depo_cost_center">Kode Depo Cost Center</label>
-						<input type="text" id="kd_depo_cost_center" name="kd_depo_cost_center"
-							value="<?= isset($data->code_area) ? $data->code_area : '' ?>"
-							class="form-control-hover-light form-control" required
-							placeholder="input kode depo cost center">
-						<span class="text-danger err_depo_cc"></span>
-					</div>
-				</div>
-			</div>
-
-			<div class="row">
-				<div class="col-6">
-					<div class="mb-3">
-						<label class="form-label" for="singkatan_cost_center">Singkatan Cost Center</label>
-						<input type="text" id="singkatan_cost_center" name="singkatan_cost_center"
-							value="<?= isset($data->alias) ? $data->alias : '' ?>"
-							class="form-control-hover-light form-control" required
+						<label class="form-label" for="alias">Alias</label>
+						<input type="text" id="alias" name="alias" data-parsley-required="true"
+							data-parsley-errors-container=".err_sing_cc" required="" value="<?= $data->alias ?>"
+							class="form-control-hover-light form-control kapital"
 							placeholder="input singkatan cost center">
 						<span class="text-danger err_sing_cc"></span>
 					</div>
 				</div>
-
-				<div class="col-3">
-					<div class="mb-3">
-						<label class="form-label" for="npwp">NPWP</label>
-						<input type="text" id="npwp" name="npwp"
-							value="<?= isset($data->npwp) ? $data->npwp : '' ?>"
-							class="form-control-hover-light form-control" required
-							placeholder="input npwp">
-						<span class="text-danger err_npwp"></span>
-					</div>
-				</div>
-				<div class="col-3">
-					<div class="mb-3">
-						<label class="form-label" for="status_depo">Status Depo</label>
-						<select name="status_depo" id="status_depo"
-							class="form-control-hover-light form-control" required>
-							<option value="">-- Pilih --</option>
-							<option value="depo" <?= (isset($data->status_depo) && $data->status_depo == 'depo') ? 'selected' : '' ?>>DEPO</option>
-							<option value="pusat" <?= (isset($data->status_depo) && $data->status_depo == 'pusat') ? 'selected' : '' ?>>PUSAT</option>
-						</select>
-						<span class="text-danger err_status_depo"></span>
-					</div>
-				</div>
 			</div>
-
-			<div class="row">
-				<div class="col-6">
-					<div class="mb-3">
-						<label class="form-label" for="kota">Kota</label>
-						<input type="text" id="kota" name="kota"
-							value="<?= isset($data->city) ? $data->city : '' ?>"
-							class="form-control-hover-light form-control" required
-							placeholder="input kota">
-						<span class="text-danger err_kota"></span>
-					</div>
-				</div>
-
-				<div class="col-3">
-					<div class="mb-3">
-						<label class="form-label" for="kode_pos">Kode Pos</label>
-						<input type="text" id="kode_pos" name="kode_pos"
-							value="<?= isset($data->postal_code) ? $data->postal_code : '' ?>"
-							class="form-control-hover-light form-control" required
-							placeholder="input kode pos">
-						<span class="text-danger err_kodepos"></span>
-					</div>
-				</div>
-
-				<div class="col-3">
-					<div class="mb-3">
-						<label class="form-label" for="nomor_hp">Nomor Handphone</label>
-						<input type="text" id="nomor_hp" name="nomor_hp"
-							value="<?= isset($data->phone_no) ? $data->phone_no : '' ?>"
-							class="form-control-hover-light form-control" required
-							placeholder="input nomor handphone">
-						<span class="text-danger err_no_hp"></span>
-					</div>
-				</div>
-			</div>
-
-			<div class="row">
-				<div class="col-12">
-					<div class="mb-3">
-						<label class="form-label" for="alamat">Alamat</label>
-						<textarea name="alamat" id="alamat" cols="2" rows="4"
-							class="form-control-hover-light form-control" required
-							placeholder="input alamat"><?= isset($data->address) ? $data->address : '' ?></textarea>
-						<span class="text-danger err_alamat"></span>
-					</div>
-				</div>
-			</div>
-
 			<div class="col-md-12 d-flex justify-content-end">
 				<div></div>
 				<div>
-					<button type="button" id="btnsubmit" class="btn btn-sm btn-primary">
-						<i class="bi bi-send"></i> Simpan
-					</button>
-					<button type="reset" class="btn btn-sm btn-outline-danger">
-						<i class="bi bi-eraser-fill"></i> Reset
-					</button>
+					<button type="button" id="btnsubmit" class="btn btn-sm btn-primary"><i class="bi bi-send"></i>
+						Simpan</button>
+					<button type="reset" class="btn btn-sm btn-outline-danger"><i class="bi bi-eraser-fill"></i>
+						Reset</button>
 				</div>
 			</div>
 		</form>
-
 	</div>
 </div>
 <script>
 	$('#btnsubmit').click(function(e) {
 		e.preventDefault();
 		let form = $('#forms_add');
-		var uuid = "<?= $uuid ?>";
+		var uuid = "<?= ($uuid) ?>";
 		form.parsley().validate();
 		if (form.parsley().isValid()) {
 			$.ajax({
-				url: "<?= base_url('C_depos/updatedata') ?>",
+				url: "<?= base_url('C_divisi/update') ?>",
 				type: 'POST',
 				method: 'POST',
 				dataType: 'JSON',
@@ -197,23 +98,13 @@
 						hideLoader();
 					}
 				},
-				error: function(xhr) {
-					console.log("ERROR:", xhr);
-					if (xhr.status === 422) {
-						let errors = xhr.responseJSON.errors;
-						$.each(errors, function(key, value) {
-							$(`.err_${key}`).html(value[0]);
-						});
-					} else {
-						swet_gagal("Terjadi kesalahan server (" + xhr.status + ")");
-					}
-				},
 			});
 		}
 	});
 
 	$(document).ready(function() {
-		$('#kd_depo_cost_center').on('keyup', function() {
+		$("#perusahaan").empty().append(`<option class='form-control' value="<?= $data->code_company ?>"><?= $data->code_company ?> - <?= $data->nm_company ?></option>`).val("<?= $data->code_company ?>").trigger('change');
+		$('#kode_divisi').on('keyup', function() {
 			var currentValue = $(this).val();
 			currentValue = currentValue.replace(/[^0-9]/g, '');
 			if (currentValue === '') {
@@ -228,35 +119,15 @@
 				$(this).val(formattedValue).trigger("input");
 			}
 		});
-		$('#nama_depo').on('keyup', function() {
-			var value = $(this).val();
-			var formattedValue = value.replace(/\b\w/g, function(char) {
-				return char.toUpperCase();
-			}).replace(/\B\w/g, function(char) {
-				return char.toLowerCase();
-			});
-			$('#nama_depo').val(formattedValue);
+		$('.kapital').on('input', function(e) {
+			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
 		});
-		$('#kode_depo').mask('000');
-		$('#kode_pos').mask('00000');
-		$('#singkatan_cost_center').on('input', function(e) {
-			this.value = this.value.replace(/[^a-zA-Z0-9 ]/g, '').toUpperCase();
-		});
-		$("#perusahaan").empty().append(`<option class='form-control' value="<?= $data->code_company ?>"><?= $data->code_company ?> - <?= $data->nm_company ?></option>`).val("<?= $data->code_company ?>").trigger('change');
-		$('#nomor_hp').mask("#-###0", {
-			reverse: true
-		});
-		$('#npwp').mask('99.999.999.9-999.999');
-		$('.string').on('input', function(e) {
-			this.value = this.value.replace(/[^a-zA-Z0-9 ]/g, '');
-		});
-
 		$("#perusahaan").select2({
 			placeholder: 'Cari kode atau nama',
 			minimumInputLength: 1,
 			allowClear: true,
 			ajax: {
-				url: "<?= base_url('C_company/search') ?>",
+				url: "<?= base_url('C_divisi/search') ?>",
 				dataType: "json",
 				delay: 250,
 				data: function(params) {
