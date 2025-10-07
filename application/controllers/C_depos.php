@@ -36,7 +36,7 @@ class C_depos extends CI_Controller
 
 		// URL edit/delete bisa didefinisikan di controller atau dikirim dari view
 		$url_edit   = 'C_depos/editform/';
-		$url_delete = 'C_depos/delete/';
+		$url_delete = 'C_depos/hapusdata/';
 		$load_grid  = 'C_depos/griddata'; // misal: nama function reload datatable
 
 		// Format data untuk DataTables
@@ -335,11 +335,9 @@ class C_depos extends CI_Controller
 			$uuid = $this->input->post('uuid');
 
 			// Ambil data company berdasarkan UUID
-			$company = $this->db->where('uuid', $uuid)->get('companies')->row();
-
+			$company = $this->db->where('uuid', $uuid)->get('depos')->row();
 			if ($company) {
 				if ($company->status_data === 'active') {
-					// Jika status active, tidak bisa dihapus
 					$jsonmsg = [
 						'hasil' => 'false',
 						'pesan' => 'Data tidak bisa dihapus, status : active'
@@ -347,7 +345,7 @@ class C_depos extends CI_Controller
 					echo json_encode($jsonmsg);
 				} else {
 					// Jika status bukan active, hapus data
-					$this->db->where('uuid', $uuid)->delete('companies');
+					$this->db->where('uuid', $uuid)->delete('depos');
 
 					if ($this->db->affected_rows() > 0) {
 						$this->db->trans_commit();
