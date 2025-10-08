@@ -194,8 +194,6 @@
 								<?php endif; ?>
 							<?php endforeach; ?>
 						<?php endif; ?>
-
-
 					</div>
 				</div>
 

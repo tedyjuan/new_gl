@@ -3,7 +3,7 @@
    	<div class="row justify-content-center align-items-sm-center py-sm-10">
    		<div class="col-9 col-sm-5 col-lg-4">
    			<div class="text-center text-sm-end me-sm-4 mb-sm-0">
-   				<img class="img-fluid" src="assets/svg/illustrations/oc-thinking.svg" alt="Image Description"
+   				<img class="img-fluid" src="<?= base_url('public/assets/svg/illustrations/oc-thinking.svg');?>" alt="Image Description"
    					data-hs-theme-appearance="default">
    			</div>
    		</div>

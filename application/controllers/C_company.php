@@ -5,7 +5,7 @@ class C_company extends CI_Controller
 	function __construct()
 	{
 		parent::__construct();
-		// is_logged_in();
+		is_logged_in();
 		$this->load->model('M_company');
 		$this->load->model('M_global');
 	}
@@ -183,5 +183,14 @@ class C_company extends CI_Controller
 
 		// Mengembalikan hasil dalam format JSON
 		echo json_encode($jsonmsg);
+	}
+	public function search()
+	{
+		$get_value = $this->input->get('getCompany');
+		$cari = preg_replace("/[^a-zA-Z0-9]/", '', $get_value);
+		$this->db->like('code_company', $cari);
+		$this->db->or_like('name', $cari);
+		$hasil = $this->db->get('companies')->result();
+		echo json_encode($hasil);
 	}
 }

@@ -85,6 +85,6 @@ class Auth extends CI_Controller
 
 
 		$this->session->set_flashdata('success', "Hi, " . $user['name'] . "<br>Welcome back!");
-		redirect(base_url('Dashboard'));
+		redirect(base_url());
 	}
 }
