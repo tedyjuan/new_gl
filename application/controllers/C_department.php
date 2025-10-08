@@ -185,6 +185,15 @@ class C_department extends CI_Controller
 		// Cek apakah UUID Department ada di database
 		$data =  $this->M_department->get_where_department(['a.uuid' => $uuid])->row();
 		if ($data != null) {
+			$cek_cost_center =  $this->M_global->getWhere('cost_centers', ['code_department' => $data->code_department])->num_rows();
+			if ($cek_cost_center != 0) {
+				$jsonmsg = [
+					'hasil' => 'false',
+					'pesan' => 'Tidak bisa mengubah Data department ini karena sedang digunakan di cost centers.',
+				];
+				echo json_encode($jsonmsg);
+				exit;
+			}
 			if($data->code_department == $code_department){
 				$p_kode = 'LOLOS';
 			}else{
@@ -221,12 +230,11 @@ class C_department extends CI_Controller
 			if($p_kode == 'LOLOS' && $p_nama == 'LOLOS' && $p_alias == 'LOLOS'){
 				// Siapkan data yang akan diupdate
 				$dataupdate = [
-					'uuid'         => $this->uuid->v4(),
-					'code_department'  => $code_department,
-					'name'         => $nama_department,
-					'alias'        => $alias_post,
-					'code_company' => $perusahaan,
-					'updated_at'   => date('Y-m-d H:i:s')
+					'code_department' => $code_department,
+					'name'            => $nama_department,
+					'alias'           => $alias_post,
+					'code_company'    => $perusahaan,
+					'updated_at'      => date('Y-m-d H:i:s')
 				];
 				// Melakukan update data
 				$update = $this->M_global->update($dataupdate, 'departments', ['uuid' => $uuid]);

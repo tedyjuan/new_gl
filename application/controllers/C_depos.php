@@ -169,18 +169,20 @@ class C_depos extends CI_Controller
 	}
 	public function editform($uuid)
 	{
-		$data = $this->M_depos->get_depos_by_uuid($uuid);
-		if ($data) {
-			$judul = "Form Edit Perusahaan";
-			$load_grid = "C_depos";
-			$load_refresh = "C_depos/editform/" . $uuid;
-			$this->load->view('v_depos/edit_depos', [
-				'judul' => $judul,
-				'load_grid' => $load_grid,
-				'load_refresh' => $load_refresh,
-				'data' => $data,
-				'uuid' => $uuid
-			]);
+		$cekdata = $this->M_depos->get_depos_by_uuid($uuid);
+		if ($cekdata) {
+			$cek_cost_center =  $this->M_global->getWhere('cost_centers', ['code_depo' => $cekdata->code_depo])->num_rows();
+			if ($cek_cost_center == 0) {
+				$data['disabled'] = 'OFF';
+			}else{
+				$data['disabled'] = 'ON';
+			}
+			$data['judul'] = "Form Edit Perusahaan";
+			$data['load_grid'] = "C_depos";
+			$data['uuid'] = $uuid;
+			$data['data'] = $cekdata;
+			$data['load_refresh'] = "C_depos/editform/" . $uuid;
+			$this->load->view('v_depos/edit_depos', $data);
 		} else {
 			$this->load->view('error');
 		}
@@ -239,21 +241,21 @@ class C_depos extends CI_Controller
 
 				// ====== PROSES UPDATE JIKA LOLOS ======
 				if ($param_kode == "LOLOS" && $param_area == "LOLOS" && $param_alias == "LOLOS") {
-					$dataupdate = [
-						'code_depo'    => $kode_depo,
-						'name'         => $this->input->post('nama_depo'),
-						'alias'        => $singkatan_cost_center,
-						'code_company' => $perusahaan,
-						'npwp'         => $npwp,
-						'address'      => $alamat,
-						'city'         => $kota,
-						'postal_code'  => $kode_pos,
-						'phone_no'     => $nomor_hp,
-						'code_area'    => $kd_depo_cost_center,
-						'fiscal_year'  => date('Y'),
-						'status_depo'  => 'depo',
-						'updated_at'   => date('Y-m-d H:i:s')
-					];
+					$cek_cost_center =  $this->M_global->getWhere('cost_centers', ['code_depo' => $cekkode])->num_rows();
+					if ($cek_cost_center == 0) {
+					} else {
+						$dataupdate = [
+							'npwp'         => $npwp,
+							'address'      => $alamat,
+							'city'         => $kota,
+							'postal_code'  => $kode_pos,
+							'phone_no'     => $nomor_hp,
+							'code_area'    => $kd_depo_cost_center,
+							'fiscal_year'  => date('Y'),
+							'status_depo'  => 'depo',
+							'updated_at'   => date('Y-m-d H:i:s')
+						];
+					}
 
 					$this->db->where('uuid', $uuid)->update('depos', $dataupdate);
 					if ($this->db->affected_rows() > 0) {

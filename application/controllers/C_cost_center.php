@@ -11,11 +11,37 @@ class C_cost_center extends CI_Controller
 	}
 	function index()
 	{
-		$data['judul']      = 'Data Cost Center';
-		$data['load_grid']  = 'C_cost_center';
-		$data['load_add']   = 'C_cost_center/add';
-		$data['url_delete'] = 'C_cost_center/delete';
-		$this->load->view("v_cost_center/grid_cost_center", $data);
+		$companies   = $this->M_global->count_all_tabel('companies');
+		$depos       = $this->M_global->count_all_tabel('depos');
+		$departments = $this->M_global->count_all_tabel('departments');
+		$divisions   = $this->M_global->count_all_tabel('divisions');
+		$segments    = $this->M_global->count_all_tabel('segments');
+		$pesan = '';
+		if ($companies == 0) {
+			$pesan .= "Master Department belum memiliki data.<br>";
+		}
+		if ($depos == 0) {
+			$pesan .= "Master Department belum memiliki data.<br>";
+		}
+		if ($departments == 0) {
+			$pesan .= "Master Department belum memiliki data.<br>";
+		}
+		if ($divisions == 0) {
+			$pesan .= "Master Division belum memiliki data.<br>";
+		}
+		if ($segments == 0) {
+			$pesan .= "Master Segment belum memiliki data.<br>";
+		}
+		if ($pesan != '') {
+			$data['pesan'] = nl2br($pesan);
+			$this->load->view("error", $data);
+		}else{
+			$data['judul']      = 'Data Cost Center';
+			$data['load_grid']  = 'C_cost_center';
+			$data['load_add']   = 'C_cost_center/add';
+			$data['url_delete'] = 'C_cost_center/delete';
+			$this->load->view("v_cost_center/grid_cost_center", $data);
+		}
 	}
 	public function griddata()
 	{
@@ -67,92 +93,101 @@ class C_cost_center extends CI_Controller
 	}
 	function add()
 	{
-		$data['judul']     = "Form Tambah cost_center";
-		$data['load_back'] = 'C_cost_center/add';
-		$data['load_grid'] = 'C_cost_center';
+		$data['judul']          = "Form Tambah cost_center";
+		$data['load_back']      = 'C_cost_center/add';
+		$data['load_grid']      = 'C_cost_center';
+		$data['perusahaanList'] = $this->M_global->getWhereOrder('companies')->result();
 		$this->load->view("v_cost_center/add_cost_center", $data);
 	}
 	public function simpandata()
 	{
-		// Validasi input
+		// Validasi form input
 		$this->form_validation->set_rules('perusahaan', 'Perusahaan', 'required');
-		$this->form_validation->set_rules('kode_cost_center', 'Code cost_center', 'required');
-		$this->form_validation->set_rules('nama_cost_center', 'Nama cost_center', 'required');
-		$this->form_validation->set_rules('alias', 'Nama Alias', 'required');
-		if ($this->form_validation->run() == FALSE) {
-			// Jika validasi gagal
-			$jsonmsg = [
+		$this->form_validation->set_rules('depo', 'Depo', 'required');
+		$this->form_validation->set_rules('Department', 'Department', 'required');
+		$this->form_validation->set_rules('divisi', 'Divisi', 'required');
+		$this->form_validation->set_rules('segment', 'Segment', 'required');
+		$this->form_validation->set_rules('manager', 'Manager', 'required');
+
+		if ($this->form_validation->run() === FALSE) {
+			echo json_encode([
 				'hasil' => 'false',
 				'pesan' => validation_errors(),
-			];
-			echo json_encode($jsonmsg);
+			]);
 			return;
 		}
+
 		// Ambil data dari request
 		$perusahaan  = $this->input->post('perusahaan');
-		$code_cost_center = $this->input->post('kode_cost_center');
-		$nama_cost_center = $this->input->post('nama_cost_center');
-		$alias       = $this->input->post('alias');
-		// Cek apakah kode cost_center sudah ada
-		$param_kode =[
-			'code_cost_center'  => $code_cost_center
-		];
-		$exisCode = $this->M_global->getWhere('cost_centers', $param_kode)->num_rows();
-		if ($exisCode != null) {
-			$jsonmsg = [
+		$depo        = $this->input->post('depo');
+		$department  = $this->input->post('Department');
+		$divisi      = $this->input->post('divisi');
+		$segment     = $this->input->post('segment');
+		$manager     = $this->input->post('manager');
+		$description = $this->input->post('description');
+		$cc_groupteam    = $this->M_cost_center->get_cc_And_groupteam($perusahaan, $depo, $department, $divisi, $segment);
+		if ($cc_groupteam == null) {
+			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'Kode cost_center sudah digunakan',
-			];
-			echo json_encode($jsonmsg);
-			exit;
+				'pesan' => 'Terjadi kesalaahn saat simpan data',
+				'error' => 'Kode company depo dept divisi segment tidak ditemukan',
+			]);
+			return;
 		}
-		$param_alias = ['alias'  => $alias];
-		$exisalias = $this->M_global->getWhere('cost_centers', $param_alias)->num_rows();
-		if ($exisalias != null) {
-			$jsonmsg = [
+		// set data untuk di insert
+		$costcenter = $cc_groupteam->code_cost_center;
+		$group_team = $cc_groupteam->group_team;
+		$code_area = $cc_groupteam->code_area;
+		// Cek apakah costcenter sudah ada
+		$param = ['code_cost_center' => $costcenter, 'code_company' => $perusahaan];
+		if ($this->M_global->getWhere("cost_centers", $param)->num_rows() != 0) {
+			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'Alias sudah digunakan',
-			];
-			echo json_encode($jsonmsg);
-			exit;
+				'pesan' => 'Kode cost center sudah digunakan',
+			]);
+			return;
 		}
-		$param_nama = [
-			'name'         => $nama_cost_center,
-			'code_company' => $perusahaan,
-		];
-		$exisName = $this->M_global->getWhere('cost_centers', $param_nama)->num_rows();
-		if ($exisName != null) {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Kode cost_center sudah digunakan',
+		// Ambil data untuk cek alias dan status_data
+		$this->db->trans_start();
+		try {
+			$uuid = uniqid('', true);
+			$datainsert = [
+				'uuid'             => $uuid,
+				'code_cost_center' => $costcenter,
+				'group_team'       => $group_team,
+				'code_depo'        => $depo,
+				'code_divisi'      => $divisi,
+				'code_department'  => $department,
+				'code_segment'     => $segment,
+				'code_company'     => $perusahaan,
+				'code_area'        => $code_area,
+				'manager'          => $manager,
+				'description'      => $description,
+				'created_at'       => date('Y-m-d H:i:s'),
 			];
-			echo json_encode($jsonmsg);
-			exit;
-		} 
-		// Data untuk insert ke database
-		$datainsert = [
-			'uuid'         => $this->uuid->v4(),
-			'code_cost_center'  => $code_cost_center,
-			'code_company' => $perusahaan,
-			'name'         => $nama_cost_center,
-			'alias'        => $alias,
-			'created_at'   => date('Y-m-d H:i:s'),
-			'updated_at'   => date('Y-m-d H:i:s')
-		];
-		// Melakukan insert data
-		$this->db->insert('cost_centers', $datainsert);
-		if ($this->db->affected_rows() > 0) {
-			$jsonmsg = [
+
+			// Insert costcenter
+			if (!$this->M_global->insert($datainsert, 'cost_centers')) {
+				$this->db->trans_rollback();
+				echo json_encode([
+					'hasil' => 'false',
+					'pesan' => 'Gagal Menyimpan Data',
+				]);
+				return;
+			}
+			// Commit transaksi jika semua berhasil
+			$this->db->trans_complete();
+			echo json_encode([
 				'hasil' => 'true',
 				'pesan' => 'Data Berhasil Disimpan',
-			];
-		} else {
-			$jsonmsg = [
+			]);
+		} catch (Exception $e) {
+			$this->db->trans_rollback();
+			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'Gagal Menyimpan Data',
-			];
+				'pesan' => 'Gagal Menyimpan Data: ' . $e->getMessage(),
+			]);
 		}
-		echo json_encode($jsonmsg);
 	}
 	public function editform($uuid)
 	{

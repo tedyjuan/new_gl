@@ -30,7 +30,7 @@
 				</div>
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="kode_department">Kode Divisi</label>
+						<label class="form-label" for="kode_department">Kode Departement</label>
 						<input type="text" id="kode_department" name="kode_department" data-parsley-required="true"
 							data-parsley-errors-container=".err_kodedepartment" required=""
 							value="<?= $data->code_department ?>" class="form-control-hover-light form-control"

@@ -184,7 +184,15 @@ class C_divisi extends CI_Controller
 		// Cek apakah UUID Divisi ada di database
 		$data =  $this->M_divisi->get_where_divisi(['a.uuid' => $uuid])->row();
 		if ($data != null) {
-			$code_company_old = $data->code_company;
+			$cek_cost_center =  $this->M_global->getWhere('cost_centers', ['code_divisi' => $data->code_divisi])->num_rows();
+			if ($cek_cost_center != 0) {
+				$jsonmsg = [
+					'hasil' => 'false',
+					'pesan' => 'Tidak bisa mengubah Data Divisi karena sedang digunakan di cost centers.',
+				];
+				echo json_encode($jsonmsg);
+				exit;
+			}
 			if($data->code_divisi == $code_divisi){
 				$p_kode = 'LOLOS';
 			}else{

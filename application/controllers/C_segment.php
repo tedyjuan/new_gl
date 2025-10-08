@@ -184,7 +184,15 @@ class C_segment extends CI_Controller
 		// Cek apakah UUID segment ada di database
 		$data =  $this->M_segment->get_where_segment(['a.uuid' => $uuid])->row();
 		if ($data != null) {
-			$code_company_old = $data->code_company;
+			$cek_cost_center =  $this->M_global->getWhere('cost_centers', ['code_segment' => $data->code_segment])->num_rows();
+			if ($cek_cost_center != 0) {
+				$jsonmsg = [
+					'hasil' => 'false',
+					'pesan' => 'Tidak bisa mengubah Data Segment karena sedang digunakan di cost centers.',
+				];
+				echo json_encode($jsonmsg);
+				exit;
+			}
 			if($data->code_segment == $code_segment){
 				$p_kode = 'LOLOS';
 			}else{
