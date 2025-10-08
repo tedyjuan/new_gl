@@ -20,6 +20,22 @@
 		.select2-container--default .select2-selection--single .select2-selection__rendered {
 			line-height: 2.7em !important;
 		}
+
+		/* Untuk input Select2 (bagian tampilan luar) */
+		.select2-container--default .select2-selection--single {
+			border: 1px solid #ced4da !important;
+			/* abu-abu muted Bootstrap */
+			border-radius: 0.375rem;
+			/* biar seragam dengan form-control */
+			height: calc(2.25rem + 2px);
+			/* samain tinggi form */
+		}
+
+		/* Placeholder & text agar nyatu */
+		.select2-selection__rendered {
+			color: #6c757d !important;
+			/* muted text */
+		}
 	</style>
 	<style type="text/css">
 		.overlay {
