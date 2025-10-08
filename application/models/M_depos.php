@@ -37,6 +37,7 @@ class M_depos extends CI_Model
 		$this->db->join('companies', 'depos.code_company = companies.code_company', 'left');
 		$this->db->where('depos.uuid', $uuid);
 		$query = $this->db->get();
-		return $query->row(); // Mengembalikan satu baris data (seperti first() di Laravel)
+		return $query->row(); 
 	}
+	
 }

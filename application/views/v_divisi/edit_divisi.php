@@ -127,7 +127,7 @@
 			minimumInputLength: 1,
 			allowClear: true,
 			ajax: {
-				url: "<?= base_url('C_divisi/search') ?>",
+				url: "<?= base_url('C_company/search') ?>",
 				dataType: "json",
 				delay: 250,
 				data: function(params) {

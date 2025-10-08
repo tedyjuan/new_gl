@@ -151,6 +151,15 @@ class C_divisi extends CI_Controller
 
 		// Melakukan insert data
 		$this->db->insert('divisions', $datainsert);
+		$cek_status_company = $this->db->where('code_company', $perusahaan)->where('status_data', 'inactive')->get('companies')->num_rows();
+		if ($cek_status_company > 0) {
+			$this->db->where('code_company', $perusahaan)->update('companies', ['status_data' => 'active']);
+			if ($this->db->affected_rows() <= 0) {
+				$this->db->trans_rollback();
+				echo json_encode(['hasil' => 'false', 'pesan' => 'Data berhasil disimpan, namun gagal update tabel companies']);
+				return;
+			}
+		}
 		if ($this->db->affected_rows() > 0) {
 			$jsonmsg = [
 				'hasil' => 'true',
@@ -323,22 +332,16 @@ class C_divisi extends CI_Controller
 				]);
 				return;
 			}
-
 			// Cek apakah perusahaan masih memiliki entitas lain
-			$param_company = ['code_company' => $divisi->code_company];
-
-			$cek_divisi  = $this->M_global->getWhere('divisions', $param_company)->num_rows();
-			$cek_dept    = $this->M_global->getWhere('departments', $param_company)->num_rows();
-			$cek_segment = $this->M_global->getWhere('segments', $param_company)->num_rows();
-			$cek_depo    = $this->M_global->getWhere('depos', $param_company)->num_rows();
-
-			$total_referensi = $cek_divisi + $cek_dept + $cek_segment + $cek_depo;
-
-			// Jika tidak ada entitas lain → set perusahaan menjadi inactive
-			if ($total_referensi == 0) {
-				$this->M_global->update(['status_data' => 'inactive'], 'companies', $param_company);
+			$count_company = $this->M_global->count_company_integrate($divisi->code_company);
+			if ($count_company != null) {
+				$total_referensi = $count_company->total_count;
+				// Jika tidak ada entitas lain → set perusahaan menjadi inactive
+				if ($total_referensi == 0) {
+					$param_company = ['code_company' => $divisi->code_company];
+					$this->M_global->update(['status_data' => 'inactive'], 'companies', $param_company);
+				}
 			}
-
 			// Pastikan semua operasi berhasil
 			if ($this->db->trans_status() === FALSE) {
 				$this->db->trans_rollback();

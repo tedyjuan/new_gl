@@ -326,60 +326,89 @@ class C_depos extends CI_Controller
 			echo json_encode($jsonmsg);
 		}
 	}
+	
 	public function hapusdata()
 	{
+		$uuid = $this->input->post('uuid');
+
+		// Validasi input
+		if (empty($uuid)) {
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'UUID tidak boleh kosong'
+			]);
+			return;
+		}
+
 		// Mulai transaksi
 		$this->db->trans_begin();
 
 		try {
-			$uuid = $this->input->post('uuid');
-
-			// Ambil data company berdasarkan UUID
-			$company = $this->db->where('uuid', $uuid)->get('depos')->row();
-			if ($company) {
-				if ($company->status_data === 'active') {
-					$jsonmsg = [
-						'hasil' => 'false',
-						'pesan' => 'Data tidak bisa dihapus, status : active'
-					];
-					echo json_encode($jsonmsg);
-				} else {
-					// Jika status bukan active, hapus data
-					$this->db->where('uuid', $uuid)->delete('depos');
-
-					if ($this->db->affected_rows() > 0) {
-						$this->db->trans_commit();
-						$jsonmsg = [
-							'hasil' => 'true',
-							'pesan' => 'Data berhasil dihapus'
-						];
-						echo json_encode($jsonmsg);
-					} else {
-						$this->db->trans_rollback();
-						$jsonmsg = [
-							'hasil' => 'false',
-							'pesan' => 'Data tidak ditemukan atau gagal dihapus'
-						];
-						echo json_encode($jsonmsg);
-					}
-				}
-			} else {
-				// Jika data tidak ditemukan
+			// Ambil data divisi berdasarkan UUID
+			$depos = $this->M_depos->get_depos_by_uuid($uuid);
+			if ($depos == null) {
 				$this->db->trans_rollback();
-				$jsonmsg = [
+				echo json_encode([
 					'hasil' => 'false',
 					'pesan' => 'Data tidak ditemukan'
-				];
-				echo json_encode($jsonmsg);
+				]);
+				return;
+			}
+
+			// Jika status aktif → tidak bisa dihapus
+			if ($depos->status_data === 'active') {
+				$this->db->trans_rollback();
+				echo json_encode([
+					'hasil' => 'false',
+					'pesan' => 'Data tidak bisa dihapus karena status masih aktif'
+				]);
+				return;
+			}
+
+			// Lakukan penghapusan data di tabel depos
+			$this->db->where('uuid', $uuid)->delete('depos');
+
+			if ($this->db->affected_rows() <= 0) {
+				$this->db->trans_rollback();
+				echo json_encode([
+					'hasil' => 'false',
+					'pesan' => 'Data gagal dihapus atau tidak ditemukan'
+				]);
+				return;
+			}
+
+			// Cek apakah perusahaan masih memiliki entitas lain
+			$count_company = $this->M_global->count_company_integrate($depos->code_company);
+			if($count_company != null){
+				$total_referensi = $count_company->total_count;
+				// Jika tidak ada entitas lain → set perusahaan menjadi inactive
+				if ($total_referensi == 0) {
+					$param_company = ['code_company' => $depos->code_company];
+					$this->M_global->update(['status_data' => 'inactive'], 'companies', $param_company);
+				}
+			}
+
+			// Pastikan semua operasi berhasil
+			if ($this->db->trans_status() === FALSE) {
+				$this->db->trans_rollback();
+				echo json_encode([
+					'hasil' => 'false',
+					'pesan' => 'Terjadi kesalahan dalam transaksi, rollback dijalankan'
+				]);
+			} else {
+				$this->db->trans_commit();
+				echo json_encode([
+					'hasil' => 'true',
+					'pesan' => 'Data berhasil dihapus'
+				]);
 			}
 		} catch (Exception $e) {
-			// Rollback transaksi jika terjadi error
+			// Jika ada error di proses apapun → rollback
 			$this->db->trans_rollback();
-			$jsonmsg = [
+			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => $e->getMessage()
-			];
-			echo json_encode($jsonmsg);
+				'pesan' => 'Terjadi error: ' . $e->getMessage()
+			]);
 		}
 	}
 }
