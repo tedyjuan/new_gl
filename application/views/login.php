@@ -57,7 +57,13 @@
 					</div>
 					<div class="card-footer">
 						<span class="text-muted">
-							<strong>Lingga Project</strong> &copy; <?= date('Y'); ?> | General Ledger System
+							<div class="row justify-content-center align-items-center">
+								<div class="col">
+									<strong>ASIATRI</strong> &copy; <?= date('Y'); ?> | General Ledger System
+								</div>
+
+								<!-- End Col -->
+							</div>
 						</span>
 					</div>
 				</div>

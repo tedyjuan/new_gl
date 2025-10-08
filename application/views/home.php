@@ -216,9 +216,30 @@
 		<div class="footer">
 			<div class="row justify-content-between align-items-center">
 				<div class="col">
-					<strong>Lingga Project</strong> &copy; <?= date('Y'); ?> | General Ledger System
+					<strong>ASIATRI</strong> &copy; <?= date('Y'); ?>
 				</div>
+				<div class="col-auto">
+					<div class="d-flex justify-content-end">
+						<!-- List Separator -->
+						<ul class="list-inline list-separator">
+							<li class="list-inline-item">
+								<a class="list-separator-link" href="#">General Ledger System</a>
+							</li>
 
+							<li class="list-inline-item">
+								<a class="list-separator-link" href="#">Version 1.0</a>
+							</li>
+
+							<li class="list-inline-item">
+								<a class="list-separator-link" href="#">Lingga Project</a>
+							</li>
+
+
+						</ul>
+						<!-- End List Separator -->
+					</div>
+				</div>
+				<!-- End Col -->
 			</div>
 		</div>
 		<!-- End Footer -->
