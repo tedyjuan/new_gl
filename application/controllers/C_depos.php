@@ -243,6 +243,20 @@ class C_depos extends CI_Controller
 				if ($param_kode == "LOLOS" && $param_area == "LOLOS" && $param_alias == "LOLOS") {
 					$cek_cost_center =  $this->M_global->getWhere('cost_centers', ['code_depo' => $cekkode])->num_rows();
 					if ($cek_cost_center == 0) {
+						$dataupdate = [
+							'code_depo'    => $kode_depo,
+							'name'         => $this->input->post('nama_depo'),
+							'alias'        => $singkatan_cost_center,
+							'code_company' => $perusahaan,
+							'npwp'         => $npwp,
+							'address'      => $alamat,
+							'city'         => $kota,
+							'postal_code'  => $kode_pos,
+							'phone_no'     => $nomor_hp,
+							'code_area'    => $kd_depo_cost_center,
+							'status_depo'  => 'depo',
+							'updated_at'   => date('Y-m-d H:i:s')
+						];
 					} else {
 						$dataupdate = [
 							'npwp'         => $npwp,

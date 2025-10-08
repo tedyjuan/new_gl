@@ -253,6 +253,17 @@ class C_divisi extends CI_Controller
 					];
 					echo json_encode($jsonmsg);
 				}
+			}else{
+				if ($p_kode == 'TIDAK_LOLOS') {
+					$jsonmsg = ['hasil' => 'false', 'pesan' => 'Kode Depo sudah terdaftar'];
+				}
+				if ($p_nama == 'TIDAK_LOLOS') {
+					$jsonmsg = ['hasil' => 'false', 'pesan' => 'Nama sudah terdaftar'];
+				}
+				if ($p_alias == 'TIDAK_LOLOS') {
+					$jsonmsg = ['hasil' => 'false', 'pesan' => 'Singkatan sudah terdaftar'];
+				}
+				echo json_encode($jsonmsg);
 			}
 		} else {
 			// Jika UUID Divisi tidak ditemukan
