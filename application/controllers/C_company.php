@@ -36,16 +36,29 @@ class C_company extends CI_Controller
 		// Menghitung jumlah total data
 		$total_records = $this->M_company->count_all_companies();
 		$total_filtered = $this->M_company->count_filtered_companies($search);
-
+		$url_edit   = 'C_company/editform/';
+		$url_delete = 'C_company/hapusdata/';
+		$load_grid  = 'C_company/griddata';
 		// Format data untuk dikirimkan ke DataTables
 		$result = [];
 		foreach ($data as $row) {
-			$status_data = $row->status_data == 'active' ? '<span class="badge bg-success">active</span>' : '<span class="badge bg-danger">inactive</span>';
-			$aksi = '<button class="btn btn-primary" onclick="loadform(\'' . 'C_company/editform/' . $row->uuid . '\')"> <i class="bi bi-eye"></i> Edit </button>';
+			$aksi = '<div class="dropdown">
+				<button type="button" class="btn btn-white btn-sm" id="aksi-dropdown-' . $row->code_company . '" data-bs-toggle="dropdown" aria-expanded="false">
+					More <i class="bi-chevron-down ms-1"></i>
+				</button>
+				<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->code_company . '">
+					<button class="dropdown-item editbtn" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
+						<i class="bi bi-pen"></i> Edit
+					</button>
+					<div class="dropdown-divider"></div>
+					<button class="dropdown-item text-danger" onclick="hapus(\'' . $row->uuid . '\', \'' . $url_delete . '\', \'' . $load_grid . '\')">
+						<i class="bi bi-trash3"></i> Delete
+					</button>
+				</div>
+			</div>';
 			$result[] = [
 				$row->code_company,  // code Company
 				$row->name,          // nama Company
-				$status_data,        // status data
 				$aksi                // Aksi
 			];
 		}
@@ -192,5 +205,111 @@ class C_company extends CI_Controller
 		$this->db->or_like('name', $cari);
 		$hasil = $this->db->get('companies')->result();
 		echo json_encode($hasil);
+	}
+	public function hapusdata()
+	{
+		$uuid = $this->input->post('uuid');
+
+		// Validasi input
+		if (empty($uuid)) {
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'UUID tidak boleh kosong'
+			]);
+			return;
+		}
+
+		// Mulai transaksi
+		$this->db->trans_begin();
+
+		try {
+			// Ambil data divisi berdasarkan UUID
+			$depos = $this->M_company->get_company_by_uuid($uuid);
+			if ($depos == null) {
+				$this->db->trans_rollback();
+				echo json_encode([
+					'hasil' => 'false',
+					'pesan' => 'Data tidak ditemukan'
+				]);
+				exit;
+			}
+			// Cek apakah perusahaan masih memiliki entitas lain
+			$count_company = $this->M_global->count_company_integrate($depos->code_company);
+			if ($count_company != null) {
+				$depos_count     = $count_company->depos_count;
+				$dept_count      = $count_company->dept_count;
+				$divisi_count    = $count_company->divisi_count;
+				$segment_count   = $count_company->segment_count;
+				$total_referensi = $count_company->total_count;
+				if ($total_referensi != 0) {
+					if ($depos_count != 0) {
+						$this->db->trans_rollback();
+						echo json_encode([
+							'hasil' => 'false',
+							'pesan' => 'Data Company masih digunakan di master Depos'
+						]);
+						exit;
+					}
+					if ($dept_count != 0) {
+						$this->db->trans_rollback();
+						echo json_encode([
+							'hasil' => 'false',
+							'pesan' => 'Data Company masih digunakan di master Depeartement'
+						]);
+						exit;
+					}
+					if ($divisi_count != 0) {
+						$this->db->trans_rollback();
+						echo json_encode([
+							'hasil' => 'false',
+							'pesan' => 'Data Company masih digunakan di master Divisi'
+						]);
+						exit;
+					}
+					if ($segment_count != 0) {
+						$this->db->trans_rollback();
+						echo json_encode([
+							'hasil' => 'false',
+							'pesan' => 'Data Company masih digunakan di master Segment'
+						]);
+						exit;
+					}
+				}
+			}
+			$this->db->where('uuid', $uuid)->delete('companies');
+
+			if ($this->db->affected_rows() <= 0) {
+				$this->db->trans_rollback();
+				echo json_encode([
+					'hasil' => 'false',
+					'pesan' => 'Data gagal dihapus atau tidak ditemukan'
+				]);
+				exit;
+			}
+
+			
+
+			// Pastikan semua operasi berhasil
+			if ($this->db->trans_status() === FALSE) {
+				$this->db->trans_rollback();
+				echo json_encode([
+					'hasil' => 'false',
+					'pesan' => 'Terjadi kesalahan dalam transaksi, rollback dijalankan'
+				]);
+			} else {
+				$this->db->trans_commit();
+				echo json_encode([
+					'hasil' => 'true',
+					'pesan' => 'Data berhasil dihapus'
+				]);
+			}
+		} catch (Exception $e) {
+			// Jika ada error di proses apapun → rollback
+			$this->db->trans_rollback();
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Terjadi error: ' . $e->getMessage()
+			]);
+		}
 	}
 }

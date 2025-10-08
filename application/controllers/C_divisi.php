@@ -29,7 +29,7 @@ class C_divisi extends CI_Controller
 		$order_col = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
 		$dir = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
 
-		$columns = ['code_company', 'company_name', 'code_divisi', 'name', 'status_data', 'action'];
+		$columns = ['code_company', 'company_name', 'code_divisi', 'name','action'];
 		$order_by = $columns[$order_col] ?? 'name';
 
 		$data = $this->M_divisi->get_paginated_divisi($length, $start, $search, $order_by, $dir);
@@ -42,9 +42,7 @@ class C_divisi extends CI_Controller
 
 		$result = [];
 		foreach ($data as $row) {
-			$status_data = ($row->status_data == 'active')
-				? '<span class="badge bg-success">Active</span>'
-				: '<span class="badge bg-danger">Inactive</span>';
+			
 
 			$aksi = '<div class="dropdown">
             <button type="button" class="btn btn-white btn-sm" id="aksi-dropdown-' . $row->code_divisi . '" data-bs-toggle="dropdown" aria-expanded="false">
@@ -66,7 +64,6 @@ class C_divisi extends CI_Controller
 				$row->code_divisi,
 				$row->name,
 				$row->alias,
-				$status_data,
 				$aksi,
 			];
 		}
@@ -151,15 +148,6 @@ class C_divisi extends CI_Controller
 
 		// Melakukan insert data
 		$this->db->insert('divisions', $datainsert);
-		$cek_status_company = $this->db->where('code_company', $perusahaan)->where('status_data', 'inactive')->get('companies')->num_rows();
-		if ($cek_status_company > 0) {
-			$this->db->where('code_company', $perusahaan)->update('companies', ['status_data' => 'active']);
-			if ($this->db->affected_rows() <= 0) {
-				$this->db->trans_rollback();
-				echo json_encode(['hasil' => 'false', 'pesan' => 'Data berhasil disimpan, namun gagal update tabel companies']);
-				return;
-			}
-		}
 		if ($this->db->affected_rows() > 0) {
 			$jsonmsg = [
 				'hasil' => 'true',
@@ -204,6 +192,7 @@ class C_divisi extends CI_Controller
 		// Cek apakah UUID Divisi ada di database
 		$data =  $this->M_divisi->get_where_divisi(['a.uuid' => $uuid])->row();
 		if ($data != null) {
+			$code_company_old = $data->code_company;
 			if($data->code_divisi == $code_divisi){
 				$p_kode = 'LOLOS';
 			}else{
@@ -237,6 +226,8 @@ class C_divisi extends CI_Controller
 					$p_alias = 'TTIDAK_LOLOS';
 				}
 			}
+			
+			
 			if($p_kode == 'LOLOS' && $p_nama == 'LOLOS' && $p_alias == 'LOLOS'){
 				// Siapkan data yang akan diupdate
 				$dataupdate = [
@@ -252,11 +243,6 @@ class C_divisi extends CI_Controller
 				$update = $this->M_global->update($dataupdate, 'divisions', ['uuid' => $uuid]);
 				if ($update) {
 					// Jika update berhasil
-					$cek_company = $this->M_global->getWhere('companies', ['code_company' => $perusahaan, 'status_data' => 'inactive'])->num_rows();
-					if($cek_company != 0){
-						// Melakukan update data
-						$update = $this->M_global->update(['status_data' => 'active'], 'companies', ['code_company' => $perusahaan]);
-					}
 					$jsonmsg = [
 						'hasil' => 'true',
 						'pesan' => 'Data Berhasil Diupdate',
@@ -310,17 +296,6 @@ class C_divisi extends CI_Controller
 				]);
 				return;
 			}
-
-			// Jika status aktif → tidak bisa dihapus
-			if ($divisi->status_data === 'active') {
-				$this->db->trans_rollback();
-				echo json_encode([
-					'hasil' => 'false',
-					'pesan' => 'Data tidak bisa dihapus karena status masih aktif'
-				]);
-				return;
-			}
-
 			// Lakukan penghapusan data di tabel divisions
 			$this->db->where('uuid', $uuid)->delete('divisions');
 
@@ -331,16 +306,6 @@ class C_divisi extends CI_Controller
 					'pesan' => 'Data gagal dihapus atau tidak ditemukan'
 				]);
 				return;
-			}
-			// Cek apakah perusahaan masih memiliki entitas lain
-			$count_company = $this->M_global->count_company_integrate($divisi->code_company);
-			if ($count_company != null) {
-				$total_referensi = $count_company->total_count;
-				// Jika tidak ada entitas lain → set perusahaan menjadi inactive
-				if ($total_referensi == 0) {
-					$param_company = ['code_company' => $divisi->code_company];
-					$this->M_global->update(['status_data' => 'inactive'], 'companies', $param_company);
-				}
 			}
 			// Pastikan semua operasi berhasil
 			if ($this->db->trans_status() === FALSE) {
