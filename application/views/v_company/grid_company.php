@@ -22,7 +22,6 @@
 				<tr class="table-primary">
 					<th style="width: 20%">Kode Perusahaan</th>
 					<th style="width: 60%">Nama Perusahaan</th>
-					<th style="width: 10%">Status</th>
 					<th style="width: 10%" class="text-center">Aksi</th>
 				</tr>
 			</thead>

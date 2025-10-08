@@ -24,7 +24,6 @@
 					<th>Kode Divisi</th>
 					<th>Nama Divisi</th>
 					<th>Nama Alias</th>
-					<th>Status</th>
 					<th style="width: 5%">Action</th>
 				</tr>
 			</thead>

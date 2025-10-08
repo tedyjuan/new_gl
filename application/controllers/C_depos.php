@@ -27,7 +27,7 @@ class C_depos extends CI_Controller
 		$dir    = $this->input->get('order')[0]['dir'];
 
 		// Mapping kolom untuk pengurutan
-		$order_by = ['code_depo', 'name', 'city', 'phone_no', 'status_data', 'action'][$order];
+		$order_by = ['code_depo', 'name', 'city', 'phone_no', 'action'][$order];
 
 		// Ambil data dari model
 		$data = $this->M_depos->get_paginated_depos($length, $start, $search, $order_by, $dir);
@@ -42,11 +42,6 @@ class C_depos extends CI_Controller
 		// Format data untuk DataTables
 		$result = [];
 		foreach ($data as $row) {
-
-			$status_data = ($row->status_data == 'active')
-				? '<span class="badge bg-success">Active</span>'
-				: '<span class="badge bg-danger">Inactive</span>';
-
 			// 🔹 Dropdown tombol aksi (HTML)
 			$aksi = '
 			<div class="dropdown">
@@ -69,7 +64,6 @@ class C_depos extends CI_Controller
 				$row->name,
 				$row->city,
 				$row->phone_no,
-				$status_data,
 				$aksi // tombol aksi dropdown
 			];
 		}
@@ -114,10 +108,10 @@ class C_depos extends CI_Controller
 		}
 
 		// Ambil input dari form
-		$kode_depo           = $this->input->post('kode_depo');
-		$kd_depo_cost_center = $this->input->post('kd_depo_cost_center');
+		$kode_depo             = $this->input->post('kode_depo');
+		$kd_depo_cost_center   = $this->input->post('kd_depo_cost_center');
 		$singkatan_cost_center = $this->input->post('singkatan_cost_center');
-		$perusahaan          = $this->input->post('perusahaan');
+		$perusahaan            = $this->input->post('perusahaan');
 
 		// Cek data duplikat
 		if ($this->db->where('code_depo', $kode_depo)->count_all_results('depos') > 0) {
@@ -159,29 +153,11 @@ class C_depos extends CI_Controller
 			];
 
 			$this->db->insert('depos', $datainsert);
-
 			if ($this->db->affected_rows() <= 0) {
 				$this->db->trans_rollback();
 				echo json_encode(['hasil' => 'false', 'pesan' => 'Gagal Menyimpan Data']);
 				return;
 			}
-
-			// Cek status company
-			$cek_status_company = $this->db->where('code_company', $perusahaan)
-				->where('status_data', 'inactive')
-				->get('companies')->num_rows();
-
-			if ($cek_status_company > 0) {
-				$this->db->where('code_company', $perusahaan)
-					->update('companies', ['status_data' => 'active']);
-
-				if ($this->db->affected_rows() <= 0) {
-					$this->db->trans_rollback();
-					echo json_encode(['hasil' => 'false', 'pesan' => 'Data berhasil disimpan, namun gagal update tabel companies']);
-					return;
-				}
-			}
-
 			// Commit transaksi
 			$this->db->trans_commit();
 
@@ -280,7 +256,6 @@ class C_depos extends CI_Controller
 					];
 
 					$this->db->where('uuid', $uuid)->update('depos', $dataupdate);
-
 					if ($this->db->affected_rows() > 0) {
 						$this->db->trans_commit();
 						$jsonmsg = [
@@ -301,7 +276,7 @@ class C_depos extends CI_Controller
 					if ($param_kode == 'TIDAK_LOLOS') {
 						$jsonmsg = ['hasil' => 'false', 'pesan' => 'Kode Depo sudah terdaftar'];
 					} elseif ($param_area == 'TIDAK_LOLOS') {
-						$jsonmsg = ['hasil' => 'false', 'pesan' => 'Area Code sudah terdaftar'];
+						$jsonmsg = ['hasil' => 'false', 'pesan' => 'Kode Cost Center sudah terdaftar'];
 					} elseif ($param_alias == 'TIDAK_LOLOS') {
 						$jsonmsg = ['hasil' => 'false', 'pesan' => 'Singkatan cost center sudah terdaftar'];
 					}
@@ -330,7 +305,6 @@ class C_depos extends CI_Controller
 	public function hapusdata()
 	{
 		$uuid = $this->input->post('uuid');
-
 		// Validasi input
 		if (empty($uuid)) {
 			echo json_encode([
@@ -355,16 +329,6 @@ class C_depos extends CI_Controller
 				return;
 			}
 
-			// Jika status aktif → tidak bisa dihapus
-			if ($depos->status_data === 'active') {
-				$this->db->trans_rollback();
-				echo json_encode([
-					'hasil' => 'false',
-					'pesan' => 'Data tidak bisa dihapus karena status masih aktif'
-				]);
-				return;
-			}
-
 			// Lakukan penghapusan data di tabel depos
 			$this->db->where('uuid', $uuid)->delete('depos');
 
@@ -375,17 +339,6 @@ class C_depos extends CI_Controller
 					'pesan' => 'Data gagal dihapus atau tidak ditemukan'
 				]);
 				return;
-			}
-
-			// Cek apakah perusahaan masih memiliki entitas lain
-			$count_company = $this->M_global->count_company_integrate($depos->code_company);
-			if($count_company != null){
-				$total_referensi = $count_company->total_count;
-				// Jika tidak ada entitas lain → set perusahaan menjadi inactive
-				if ($total_referensi == 0) {
-					$param_company = ['code_company' => $depos->code_company];
-					$this->M_global->update(['status_data' => 'inactive'], 'companies', $param_company);
-				}
 			}
 
 			// Pastikan semua operasi berhasil

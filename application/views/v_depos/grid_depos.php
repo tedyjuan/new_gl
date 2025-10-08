@@ -24,7 +24,6 @@
 					<th>Nama Depo</th>
 					<th>Kota</th>
 					<th>Nomor HP</th>
-					<th>Status</th>
 					<th style="width: 5%">Action</th>
 				</tr>
 			</thead>
