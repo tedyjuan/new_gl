@@ -126,7 +126,7 @@ class C_department extends CI_Controller
 		if ($exisName != null) {
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Kode Department sudah digunakan',
+				'pesan' => 'Nama Department sudah digunakan',
 			];
 			echo json_encode($jsonmsg);
 			exit;
@@ -178,7 +178,6 @@ class C_department extends CI_Controller
 	public function update()
 	{
 		$uuid            = $this->input->post('uuid');
-		$perusahaan      = $this->input->post('perusahaan');
 		$code_department = $this->input->post('kode_department');
 		$nama_department = $this->input->post('nama_department');
 		$alias_post      = $this->input->post('alias');
@@ -194,75 +193,67 @@ class C_department extends CI_Controller
 				echo json_encode($jsonmsg);
 				exit;
 			}
-			if($data->code_department == $code_department){
-				$p_kode = 'LOLOS';
-			}else{
-				$param_kode = ['a.code_department' => $code_department];
-				$cekkode =  $this->M_department->get_where_department($param_kode)->num_rows();
-				if($cekkode == 0 ){
-					$p_kode = 'LOLOS';
-				}else{
-					$p_kode = 'TTIDAK_LOLOS';
-				}
-			}
-			if($data->name == $nama_department){
-				$p_nama = 'LOLOS';
-			}else{
-				$param_nama = ['a.name' => $nama_department, "a.code_company" => $perusahaan];
+			$param_code  = ['a.code_department' => $code_department, "a.code_company" => $data->code_company];
+			$param_alias = ['a.alias' => $alias_post, "a.code_company" => $data->code_company];
+			$param_nama  = ['a.name' => $nama_department, "a.code_company" => $data->code_company];
+			
+			if ($data->name !== $nama_department) {
 				$ceknama =  $this->M_department->get_where_department($param_nama)->num_rows();
-				if($ceknama == 0 ){
-					$p_nama = 'LOLOS';
-				}else{
-					$p_nama = 'TTIDAK_LOLOS';
-				}
-			}
-			if($data->alias == $alias_post){
-				$p_alias = 'LOLOS';
-			}else{
-				$param_alias = ['a.alias' => $alias_post];
-				$cekalias =  $this->M_department->get_where_department($param_alias)->num_rows();
-				if($cekalias == 0 ){
-					$p_alias = 'LOLOS';
-				}else{
-					$p_alias = 'TTIDAK_LOLOS';
-				}
-			}
-			if($p_kode == 'LOLOS' && $p_nama == 'LOLOS' && $p_alias == 'LOLOS'){
-				// Siapkan data yang akan diupdate
-				$dataupdate = [
-					'code_department' => $code_department,
-					'name'            => $nama_department,
-					'alias'           => $alias_post,
-					'code_company'    => $perusahaan,
-					'updated_at'      => date('Y-m-d H:i:s')
-				];
-				// Melakukan update data
-				$update = $this->M_global->update($dataupdate, 'departments', ['uuid' => $uuid]);
-				if ($update) {
-					// Jika update berhasil
-					$jsonmsg = [
-						'hasil' => 'true',
-						'pesan' => 'Data Berhasil Diupdate',
-					];
-					echo json_encode($jsonmsg);
-				} else {
-					// Jika gagal update
+				if ($ceknama !== 0) {
 					$jsonmsg = [
 						'hasil' => 'false',
-						'pesan' => 'Gagal Menyimpan Data',
+						'pesan' => 'Nama sudah terdaftar',
 					];
 					echo json_encode($jsonmsg);
+					exit;
 				}
-			}else{
-				if ($p_kode == 'TIDAK_LOLOS') {
-					$jsonmsg = ['hasil' => 'false', 'pesan' => 'Kode Depo sudah terdaftar'];
+			}
+			
+			if($data->code_department !== $code_department){
+				$cekkode =  $this->M_department->get_where_department($param_code)->num_rows();
+				if ($cekkode != 0) {
+					$jsonmsg = [
+						'hasil' => 'false',
+						'pesan' => 'Kode sudah terdaftar',
+					];
+					echo json_encode($jsonmsg);
+					exit;
 				}
-				if ($p_nama == 'TIDAK_LOLOS') {
-					$jsonmsg = ['hasil' => 'false', 'pesan' => 'Nama sudah terdaftar'];
+			}
+			
+			if($data->alias !== $alias_post){
+				$cekalias =  $this->M_department->get_where_department($param_alias)->num_rows();
+				if ($cekalias !== 0) {
+					$jsonmsg = [
+						'hasil' => 'false',
+						'pesan' => 'alias sudah terdaftar',
+					];
+					echo json_encode($jsonmsg);
+					exit;
 				}
-				if ($p_alias == 'TIDAK_LOLOS') {
-					$jsonmsg = ['hasil' => 'false', 'pesan' => 'Singkatan sudah terdaftar'];
-				}
+				
+			}
+			$dataupdate = [
+				'code_department' => $code_department,
+				'name'            => $nama_department,
+				'alias'           => $alias_post,
+				'updated_at'      => date('Y-m-d H:i:s')
+			];
+			// Melakukan update data
+			$update = $this->M_global->update($dataupdate, 'departments', ['uuid' => $uuid]);
+			if ($update) {
+				// Jika update berhasil
+				$jsonmsg = [
+					'hasil' => 'true',
+					'pesan' => 'Data Berhasil Diupdate',
+				];
+				echo json_encode($jsonmsg);
+			} else {
+				// Jika gagal update
+				$jsonmsg = [
+					'hasil' => 'false',
+					'pesan' => 'Gagal Menyimpan Data',
+				];
 				echo json_encode($jsonmsg);
 			}
 		} else {
@@ -285,21 +276,28 @@ class C_department extends CI_Controller
 			]);
 			return;
 		}
+		// Ambil data department berdasarkan UUID
+		$param_kode = ['a.uuid' => $uuid];
+		$department = $this->M_department->get_where_department($param_kode)->row();
+		// Jika data tidak ditemukan
+		if (!$department) {
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Data tidak ditemukan'
+			]);
+			return;
+		}
+		$cek_cc = $this->M_global->getWhere('cost_centers', ['code_department' => $department->code_department])->num_rows();
+		if($cek_cc != 0){
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Tidak bisa Menghapus Data, karena sedang digunakan di cost centers.',
+			]);
+			return;
+		}
 		// Mulai transaksi
 		$this->db->trans_begin();
 		try {
-			// Ambil data department berdasarkan UUID
-			$param_kode = ['a.uuid' => $uuid];
-			$department = $this->M_department->get_where_department($param_kode)->row();
-			// Jika data tidak ditemukan
-			if (!$department) {
-				$this->db->trans_rollback();
-				echo json_encode([
-					'hasil' => 'false',
-					'pesan' => 'Data tidak ditemukan'
-				]);
-				return;
-			}
 			// Lakukan penghapusan data di tabel departments
 			$this->db->where('uuid', $uuid)->delete('departments');
 			if ($this->db->affected_rows() <= 0) {
