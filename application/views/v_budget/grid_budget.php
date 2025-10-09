@@ -21,8 +21,8 @@
 			<thead>
 				<tr class="table-primary">
 					<th>Company</th>
-					<th>Kode Divisi</th>
-					<th>Nama Divisi</th>
+					<th>Kode Budget</th>
+					<th>Nama Budget</th>
 					<th>Nama Alias</th>
 					<th style="width: 5%">Action</th>
 				</tr>
@@ -42,7 +42,7 @@
 			processing: true,
 			serverSide: true, // Mengaktifkan server-side processing
 			ajax: {
-				url: "<?= base_url('C_divisi/griddata'); ?>", // URL ke controller
+				url: "<?= base_url('C_Budget/griddata'); ?>", // URL ke controller
 				type: "POST", // Gunakan GET untuk request
 			},
 			columnDefs: [{

@@ -113,6 +113,9 @@
 								<a class="dropdown-item" href="javascript:;" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
 									Sign out
 								</a>
+								<a class="dropdown-item" href="javascript:;" onclick="clearPageCache()">
+									Clear Cahce
+								</a>
 								<!-- Hidden logout form -->
 								<form id="logout-form" action="<?php echo site_url('auth/logout'); ?>" method="POST" style="display: none;">
 								</form>

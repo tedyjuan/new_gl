@@ -11,7 +11,7 @@ class C_budget extends CI_Controller
 	}
 	function index()
 	{
-		$data['judul']      = 'List Data Divisi';
+		$data['judul']      = 'List Data Budget';
 		$data['load_grid']  = 'C_budget';
 		$data['load_add']   = 'C_budget/add';
 		$data['url_delete'] = 'C_budget/delete';
@@ -67,17 +67,18 @@ class C_budget extends CI_Controller
 	}
 	function add()
 	{
-		$data['judul']     = "Form Tambah Divisi";
+		$data['judul']     = "Form Budget";
 		$data['load_back'] = 'C_budget/add';
 		$data['load_grid'] = 'C_budget';
+		$data['perusahaanList'] = $this->M_global->getWhereOrder('companies')->result();
 		$this->load->view("v_budget/add_budget", $data);
 	}
 	public function simpandata()
 	{
 		// Validasi input
 		$this->form_validation->set_rules('perusahaan', 'Perusahaan', 'required');
-		$this->form_validation->set_rules('kode_budget', 'Code Divisi', 'required');
-		$this->form_validation->set_rules('nama_budget', 'Nama Divisi', 'required');
+		$this->form_validation->set_rules('kode_budget', 'Code Budget', 'required');
+		$this->form_validation->set_rules('nama_budget', 'Nama Budget', 'required');
 		$this->form_validation->set_rules('alias', 'Nama Alias', 'required');
 		if ($this->form_validation->run() == FALSE) {
 			// Jika validasi gagal
@@ -93,7 +94,7 @@ class C_budget extends CI_Controller
 		$code_budget = $this->input->post('kode_budget');
 		$nama_budget = $this->input->post('nama_budget');
 		$alias       = $this->input->post('alias');
-		// Cek apakah kode Divisi sudah ada
+		// Cek apakah kode Budget sudah ada
 		$param_kode =[
 			'code_budget'  => $code_budget
 		];
@@ -101,7 +102,7 @@ class C_budget extends CI_Controller
 		if ($exisCode != null) {
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Kode Divisi sudah digunakan',
+				'pesan' => 'Kode Budget sudah digunakan',
 			];
 			echo json_encode($jsonmsg);
 			exit;
@@ -124,7 +125,7 @@ class C_budget extends CI_Controller
 		if ($exisName != null) {
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Kode Divisi sudah digunakan',
+				'pesan' => 'Kode Budget sudah digunakan',
 			];
 			echo json_encode($jsonmsg);
 			exit;
@@ -158,7 +159,7 @@ class C_budget extends CI_Controller
 	{
 		$data =  $this->M_budget->get_where_budget(['a.uuid' => $uuid])->row();
 		if ($data != null) {
-			$judul = "Form Edit Divisi";
+			$judul = "Form Edit Budget";
 			$load_grid = "C_budget";
 			$load_refresh = "C_budget/editform/" . $uuid;
 			$this->load->view('v_budget/edit_budget', [
@@ -172,7 +173,7 @@ class C_budget extends CI_Controller
 			$this->load->view('error');
 		}
 	}
-	// Fungsi untuk update data Divisi
+	// Fungsi untuk update data Budget
 	public function update()
 	{
 		// Ambil data dari POST request
@@ -180,7 +181,7 @@ class C_budget extends CI_Controller
 		$code_budget = $this->input->post('kode_budget');
 		$nama_budget = $this->input->post('nama_budget');
 		$alias_post       = $this->input->post('alias');
-		// Cek apakah UUID Divisi ada di database
+		// Cek apakah UUID Budget ada di database
 		$data =  $this->M_budget->get_where_budget(['a.uuid' => $uuid])->row();
 		if ($data != null) {
 			$code_company = $data->code_company;
@@ -188,7 +189,7 @@ class C_budget extends CI_Controller
 			if ($cek_cost_center != 0) {
 				$jsonmsg = [
 					'hasil' => 'false',
-					'pesan' => 'Tidak bisa mengubah Data Divisi karena sedang digunakan di cost centers.',
+					'pesan' => 'Tidak bisa mengubah Data Budget karena sedang digunakan di cost centers.',
 				];
 				echo json_encode($jsonmsg);
 				exit;
@@ -253,10 +254,10 @@ class C_budget extends CI_Controller
 			}
 			
 		} else {
-			// Jika UUID Divisi tidak ditemukan
+			// Jika UUID Budget tidak ditemukan
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'UUID Divisi tidak ditemukan',
+				'pesan' => 'UUID Budget tidak ditemukan',
 			];
 			echo json_encode($jsonmsg);
 		}
