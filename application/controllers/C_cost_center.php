@@ -150,9 +150,8 @@ class C_cost_center extends CI_Controller
 		// Ambil data untuk cek alias dan status_data
 		$this->db->trans_start();
 		try {
-			$uuid = uniqid('', true);
 			$datainsert = [
-				'uuid'             => $uuid,
+				'uuid'             => $this->uuid->v4(),
 				'code_cost_center' => $costcenter,
 				'group_team'       => $group_team,
 				'code_depo'        => $depo,
@@ -191,107 +190,128 @@ class C_cost_center extends CI_Controller
 	}
 	public function editform($uuid)
 	{
-		$data =  $this->M_cost_center->get_where_cost_center(['a.uuid' => $uuid])->row();
-		if ($data != null) {
-			$judul = "Form Edit cost_center";
-			$load_grid = "C_cost_center";
-			$load_refresh = "C_cost_center/editform/" . $uuid;
-			$this->load->view('v_cost_center/edit_cost_center', [
-				'judul' => $judul,
-				'load_grid' => $load_grid,
-				'load_refresh' => $load_refresh,
-				'data' => $data,
-				'uuid' => $uuid
-			]);
+		$datacc =  $this->M_cost_center->get_where_cost_center(['a.uuid' => $uuid])->row();
+		if ($datacc != null) {
+			$code_company = $datacc->code_company;
+			$data['data'] = $datacc;
+			$data['uuid'] = $uuid;
+			$data['perusahaanList'] = $this->M_global->getWhere("companies")->result();
+			$data['depoList'] = $this->M_global->getWhere("depos", ['code_company' => $code_company])->result();
+			$data['deptList'] = $this->M_global->getWhere("departments", ['code_company' => $code_company])->result();
+			$data['deptList'] = $this->M_global->getWhere("departments", ['code_company' => $code_company])->result();
+			$data['divisiList'] = $this->M_global->getWhere("divisions", ['code_company' => $code_company])->result();
+			$data['segmentList'] = $this->M_global->getWhere("segments", ['code_company' => $code_company])->result();
+			$data['judul'] = "Form Edit cost_center";
+			$data['load_grid'] = "C_cost_center";
+			$data['load_refresh'] = "C_cost_center/editform/" . $uuid;
+			$this->load->view('v_cost_center/edit_cost_center', $data);
 		} else {
 			$this->load->view('error');
 		}
 	}
-	// Fungsi untuk update data cost_center
+
+
 	public function update()
 	{
-		// Ambil data dari POST request
-		$uuid = $this->input->post('uuid'); 
-		$perusahaan  = $this->input->post('perusahaan');
-		$code_cost_center = $this->input->post('kode_cost_center');
-		$nama_cost_center = $this->input->post('nama_cost_center');
-		$alias_post       = $this->input->post('alias');
-		// Cek apakah UUID cost_center ada di database
-		$data =  $this->M_cost_center->get_where_cost_center(['a.uuid' => $uuid])->row();
-		if ($data != null) {
-			$code_company_old = $data->code_company;
-			if($data->code_cost_center == $code_cost_center){
-				$p_kode = 'LOLOS';
-			}else{
-				$param_kode = ['a.code_cost_center' => $code_cost_center];
-				$cekkode =  $this->M_cost_center->get_where_cost_center($param_kode)->num_rows();
-				if($cekkode == 0 ){
-					$p_kode = 'LOLOS';
-				}else{
-					$p_kode = 'TTIDAK_LOLOS';
-				}
-			}
-			if($data->name == $nama_cost_center){
-				$p_nama = 'LOLOS';
-			}else{
-				$param_nama = ['a.name' => $nama_cost_center, "a.code_company" => $perusahaan];
-				$ceknama =  $this->M_cost_center->get_where_cost_center($param_nama)->num_rows();
-				if($ceknama == 0 ){
-					$p_nama = 'LOLOS';
-				}else{
-					$p_nama = 'TTIDAK_LOLOS';
-				}
-			}
-			if($data->alias == $alias_post){
-				$p_alias = 'LOLOS';
-			}else{
-				$param_alias = ['a.alias' => $alias_post];
-				$cekalias =  $this->M_cost_center->get_where_cost_center($param_alias)->num_rows();
-				if($cekalias == 0 ){
-					$p_alias = 'LOLOS';
-				}else{
-					$p_alias = 'TTIDAK_LOLOS';
-				}
-			}
-			if($p_kode == 'LOLOS' && $p_nama == 'LOLOS' && $p_alias == 'LOLOS'){
-				// Siapkan data yang akan diupdate
-				$dataupdate = [
-					'uuid'         => $this->uuid->v4(),
-					'code_cost_center'  => $code_cost_center,
-					'name'         => $nama_cost_center,
-					'alias'        => $alias_post,
-					'code_company' => $perusahaan,
-					'updated_at'   => date('Y-m-d H:i:s')
-				];
-				// Melakukan update data
-				$update = $this->M_global->update($dataupdate, 'cost_centers', ['uuid' => $uuid]);
-				if ($update) {
-					// Jika update berhasil
-					$jsonmsg = [
-						'hasil' => 'true',
-						'pesan' => 'Data Berhasil Diupdate',
-					];
-					echo json_encode($jsonmsg);
-				} else {
-					// Jika gagal update
-					$jsonmsg = [
-						'hasil' => 'false',
-						'pesan' => 'Gagal Menyimpan Data',
-					];
-					echo json_encode($jsonmsg);
-				}
-			}
-		} else {
-			// Jika UUID cost_center tidak ditemukan
-			$jsonmsg = [
+		// Validasi form input
+		$this->form_validation->set_rules('perusahaan', 'Perusahaan', 'required');
+		$this->form_validation->set_rules('depo', 'Depo', 'required');
+		$this->form_validation->set_rules('Department', 'Department', 'required');
+		$this->form_validation->set_rules('divisi', 'Divisi', 'required');
+		$this->form_validation->set_rules('segment', 'Segment', 'required');
+		$this->form_validation->set_rules('manager', 'Manager', 'required');
+		
+		if ($this->form_validation->run() === FALSE) {
+			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'UUID cost_center tidak ditemukan',
+				'pesan' => validation_errors(),
+			]);
+			return;
+		}
+		
+		// Ambil data dari request
+		$uuid        = $this->input->post('uuid');
+		$perusahaan  = $this->input->post('perusahaan');
+		$depo        = $this->input->post('depo');
+		$department  = $this->input->post('Department');
+		$divisi      = $this->input->post('divisi');
+		$segment     = $this->input->post('segment');
+		$manager     = $this->input->post('manager');
+		$description = $this->input->post('description');
+		$datacc = $this->M_global->getWhere("cost_centers", ['uuid' => $uuid])->row();
+		if ($datacc == null) {
+			echo json_encode([	
+				'hasil' => 'false',
+				'pesan' => 'Uuid tidak ditemukan',
+			]);
+			return;
+		}
+		$cc_new    = $this->M_cost_center->get_cc_And_groupteam($perusahaan, $depo, $department, $divisi, $segment);
+		if ($cc_new == null) {
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Terjadi kesalaahn saat update data',
+				'error' => 'Kode company depo dept divisi segment tidak ditemukan',
+			]);
+			return;
+		}
+		$costcenter_old = $datacc->code_cost_center;
+		$costcenter_new = $cc_new->code_cost_center;
+		if($costcenter_old !== $costcenter_new){
+			// jika tidak sama data lama dan data baru di cek databarunya apakah sudah tersedia?
+			$param = ['code_cost_center' => $costcenter_new, 'code_company' => $perusahaan];
+			if ($this->M_global->getWhere("cost_centers", $param)->num_rows() != 0) {
+				echo json_encode([
+					'hasil' => 'false',
+					'pesan' => 'Kode cost center sudah digunakan',
+				]);
+				return;
+			}
+		}
+		// Ambil data untuk cek alias dan status_data
+		$this->db->trans_start();
+		try {
+			$dataupdate = [
+				'code_cost_center' => $costcenter_new,
+				'group_team'       => $cc_new->group_team,
+				'code_depo'        => $depo,
+				'code_divisi'      => $divisi,
+				'code_department'  => $department,
+				'code_segment'     => $segment,
+				'code_company'     => $perusahaan,
+				'code_area'        => $cc_new->code_area,
+				'manager'          => $manager,
+				'description'      => $description,
+				'updated_at'       => date('Y-m-d H:i:s'),
 			];
-			echo json_encode($jsonmsg);
+
+			// Insert costcenter
+			if (!$this->M_global->update($dataupdate, "cost_centers", ['uuid' => $uuid])) {
+				$this->db->trans_rollback();
+				echo json_encode([
+					'hasil' => 'false',
+					'pesan' => 'Gagal Menyimpan Data',
+				]);
+				return;
+			}
+			// Commit transaksi jika semua berhasil
+			$this->db->trans_complete();
+			echo json_encode([
+				'hasil' => 'true',
+				'pesan' => 'Data Berhasil Disimpan',
+			]);
+		} catch (Exception $e) {
+			$this->db->trans_rollback();
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Gagal Menyimpan Data: ' . $e->getMessage(),
+			]);
 		}
 	}
 	public function hapusdata()
 	{
+		// jika mau hapus cek dulu apakah di gunakan di tabel 
+		// jurnal item dan tabel posting balance
 		$uuid = $this->input->post('uuid');
 		// Validasi input
 		if (empty($uuid)) {
