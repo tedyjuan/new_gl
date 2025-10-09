@@ -26,7 +26,7 @@ class C_segment extends CI_Controller
 		$order_input    = $this->input->post('order');
 		$order_col      = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
 		$dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
-		$columns        = ['code_company', 'company_name', 'code_segment', 'name','action'];
+		$columns        = ['code_company', 'company_name', 'code_segment', 'name', 'action'];
 		$order_by       = $columns[$order_col] ?? 'name';
 		$data           = $this->M_segment->get_paginated_segment($length, $start, $search, $order_by, $dir);
 		$total_records  = $this->M_segment->count_all_segment();
@@ -94,7 +94,7 @@ class C_segment extends CI_Controller
 		$nama_segment = $this->input->post('nama_segment');
 		$alias       = $this->input->post('alias');
 		// Cek apakah kode segment sudah ada
-		$param_kode =[
+		$param_kode = [
 			'code_segment'  => $code_segment
 		];
 		$exisCode = $this->M_global->getWhere('segments', $param_kode)->num_rows();
@@ -128,7 +128,7 @@ class C_segment extends CI_Controller
 			];
 			echo json_encode($jsonmsg);
 			exit;
-		} 
+		}
 		// Data untuk insert ke database
 		$datainsert = [
 			'uuid'         => $this->uuid->v4(),
@@ -176,7 +176,7 @@ class C_segment extends CI_Controller
 	public function update()
 	{
 		// Ambil data dari POST request
-		$uuid = $this->input->post('uuid'); 
+		$uuid = $this->input->post('uuid');
 		$perusahaan  = $this->input->post('perusahaan');
 		$code_segment = $this->input->post('kode_segment');
 		$nama_segment = $this->input->post('nama_segment');
@@ -184,41 +184,49 @@ class C_segment extends CI_Controller
 		// Cek apakah UUID segment ada di database
 		$data =  $this->M_segment->get_where_segment(['a.uuid' => $uuid])->row();
 		if ($data != null) {
-			$code_company_old = $data->code_company;
-			if($data->code_segment == $code_segment){
+			$cek_cost_center =  $this->M_global->getWhere('cost_centers', ['code_segment' => $data->code_segment])->num_rows();
+			if ($cek_cost_center != 0) {
+				$jsonmsg = [
+					'hasil' => 'false',
+					'pesan' => 'Tidak bisa mengubah Data Segment karena sedang digunakan di cost centers.',
+				];
+				echo json_encode($jsonmsg);
+				exit;
+			}
+			if ($data->code_segment == $code_segment) {
 				$p_kode = 'LOLOS';
-			}else{
+			} else {
 				$param_kode = ['a.code_segment' => $code_segment];
 				$cekkode =  $this->M_segment->get_where_segment($param_kode)->num_rows();
-				if($cekkode == 0 ){
+				if ($cekkode == 0) {
 					$p_kode = 'LOLOS';
-				}else{
+				} else {
 					$p_kode = 'TTIDAK_LOLOS';
 				}
 			}
-			if($data->name == $nama_segment){
+			if ($data->name == $nama_segment) {
 				$p_nama = 'LOLOS';
-			}else{
+			} else {
 				$param_nama = ['a.name' => $nama_segment, "a.code_company" => $perusahaan];
 				$ceknama =  $this->M_segment->get_where_segment($param_nama)->num_rows();
-				if($ceknama == 0 ){
+				if ($ceknama == 0) {
 					$p_nama = 'LOLOS';
-				}else{
+				} else {
 					$p_nama = 'TTIDAK_LOLOS';
 				}
 			}
-			if($data->alias == $alias_post){
+			if ($data->alias == $alias_post) {
 				$p_alias = 'LOLOS';
-			}else{
+			} else {
 				$param_alias = ['a.alias' => $alias_post];
 				$cekalias =  $this->M_segment->get_where_segment($param_alias)->num_rows();
-				if($cekalias == 0 ){
+				if ($cekalias == 0) {
 					$p_alias = 'LOLOS';
-				}else{
+				} else {
 					$p_alias = 'TTIDAK_LOLOS';
 				}
 			}
-			if($p_kode == 'LOLOS' && $p_nama == 'LOLOS' && $p_alias == 'LOLOS'){
+			if ($p_kode == 'LOLOS' && $p_nama == 'LOLOS' && $p_alias == 'LOLOS') {
 				// Siapkan data yang akan diupdate
 				$dataupdate = [
 					'uuid'         => $this->uuid->v4(),
@@ -245,6 +253,23 @@ class C_segment extends CI_Controller
 					];
 					echo json_encode($jsonmsg);
 				}
+			} else {
+				$pesan = '';
+				if ($p_kode == 'TIDAK_LOLOS') {
+					$pesan = 'Kode Depo sudah terdaftar';
+				}
+				if ($p_nama == 'TIDAK_LOLOS') {
+					$pesan = 'Nama sudah terdaftar';
+				}
+				if ($p_alias == 'TIDAK_LOLOS') {
+					$pesan = 'Singkatan sudah terdaftar';
+				}
+
+				$jsonmsg = [
+					'hasil' => 'false',
+					'pesan' => $pesan,
+				];
+				echo json_encode($jsonmsg);
 			}
 		} else {
 			// Jika UUID segment tidak ditemukan
@@ -266,21 +291,28 @@ class C_segment extends CI_Controller
 			]);
 			return;
 		}
-		// Mulai transaksi
+		// Ambil data segment berdasarkan UUID
+		$param_kode = ['a.uuid' => $uuid];
+		$segment = $this->M_segment->get_where_segment($param_kode)->row();
+		// Jika data tidak ditemukan
+		if (!$segment) {
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Data tidak ditemukan'
+			]);
+			return;
+		}
+		$cek_cc = $this->M_global->getWhere('cost_centers', ['code_segment' => $segment->code_segment])->num_rows();
+		if ($cek_cc != 0) {
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Tidak bisa Menghapus Data, karena sedang digunakan di cost centers.',
+			]);
+			return;
+		}
 		$this->db->trans_begin();
 		try {
-			// Ambil data segment berdasarkan UUID
-			$param_kode = ['a.uuid' => $uuid];
-			$segment = $this->M_segment->get_where_segment($param_kode)->row();
-			// Jika data tidak ditemukan
-			if (!$segment) {
-				$this->db->trans_rollback();
-				echo json_encode([
-					'hasil' => 'false',
-					'pesan' => 'Data tidak ditemukan'
-				]);
-				return;
-			}
+			
 			// Lakukan penghapusan data di tabel segments
 			$this->db->where('uuid', $uuid)->delete('segments');
 			if ($this->db->affected_rows() <= 0) {

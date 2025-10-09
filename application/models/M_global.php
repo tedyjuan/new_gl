@@ -36,9 +36,11 @@ class M_global extends CI_Model
 			return TRUE;
 		}
 	}
-	public function getWhere($table, $param)
+	public function getWhere($table, $param = null)
 	{
-		$this->db->where($param);
+		if ($param != null) {
+			$this->db->where($param);
+		}
 		return $this->db->get($table);
 	}
 
@@ -68,5 +70,9 @@ class M_global extends CI_Model
 		$this->db->where('a.code_company', $kode_company); 
 		return $this->db->get()->row();
 
+	}
+	public function count_all_tabel($tabel)
+	{
+		return $this->db->count_all($tabel);
 	}
 }

@@ -177,75 +177,81 @@ class C_divisi extends CI_Controller
 	{
 		// Ambil data dari POST request
 		$uuid = $this->input->post('uuid'); 
-		$perusahaan  = $this->input->post('perusahaan');
 		$code_divisi = $this->input->post('kode_divisi');
 		$nama_divisi = $this->input->post('nama_divisi');
 		$alias_post       = $this->input->post('alias');
 		// Cek apakah UUID Divisi ada di database
 		$data =  $this->M_divisi->get_where_divisi(['a.uuid' => $uuid])->row();
 		if ($data != null) {
-			$code_company_old = $data->code_company;
-			if($data->code_divisi == $code_divisi){
-				$p_kode = 'LOLOS';
-			}else{
-				$param_kode = ['a.code_divisi' => $code_divisi];
-				$cekkode =  $this->M_divisi->get_where_divisi($param_kode)->num_rows();
-				if($cekkode == 0 ){
-					$p_kode = 'LOLOS';
-				}else{
-					$p_kode = 'TTIDAK_LOLOS';
-				}
-			}
-			if($data->name == $nama_divisi){
-				$p_nama = 'LOLOS';
-			}else{
-				$param_nama = ['a.name' => $nama_divisi, "a.code_company" => $perusahaan];
-				$ceknama =  $this->M_divisi->get_where_divisi($param_nama)->num_rows();
-				if($ceknama == 0 ){
-					$p_nama = 'LOLOS';
-				}else{
-					$p_nama = 'TTIDAK_LOLOS';
-				}
-			}
-			if($data->alias == $alias_post){
-				$p_alias = 'LOLOS';
-			}else{
-				$param_alias = ['a.alias' => $alias_post];
-				$cekalias =  $this->M_divisi->get_where_divisi($param_alias)->num_rows();
-				if($cekalias == 0 ){
-					$p_alias = 'LOLOS';
-				}else{
-					$p_alias = 'TTIDAK_LOLOS';
-				}
-			}
-			if($p_kode == 'LOLOS' && $p_nama == 'LOLOS' && $p_alias == 'LOLOS'){
-				// Siapkan data yang akan diupdate
-				$dataupdate = [
-					'uuid'         => $this->uuid->v4(),
-					'code_divisi'  => $code_divisi,
-					'name'         => $nama_divisi,
-					'alias'        => $alias_post,
-					'code_company' => $perusahaan,
-					'updated_at'   => date('Y-m-d H:i:s')
+			$code_company = $data->code_company;
+			$cek_cost_center =  $this->M_global->getWhere('cost_centers', ['code_divisi' => $data->code_divisi])->num_rows();
+			if ($cek_cost_center != 0) {
+				$jsonmsg = [
+					'hasil' => 'false',
+					'pesan' => 'Tidak bisa mengubah Data Divisi karena sedang digunakan di cost centers.',
 				];
-				// Melakukan update data
-				$update = $this->M_global->update($dataupdate, 'divisions', ['uuid' => $uuid]);
-				if ($update) {
-					// Jika update berhasil
-					$jsonmsg = [
-						'hasil' => 'true',
-						'pesan' => 'Data Berhasil Diupdate',
-					];
-					echo json_encode($jsonmsg);
-				} else {
-					// Jika gagal update
+				echo json_encode($jsonmsg);
+				exit;
+			}
+			if($data->code_divisi != $code_divisi){
+				$cekkode =  $this->M_divisi->get_where_divisi(['a.code_divisi' => $code_divisi, "a.code_company" => $code_company ])->num_rows();
+				if ($cekkode != 0) {
 					$jsonmsg = [
 						'hasil' => 'false',
-						'pesan' => 'Gagal Menyimpan Data',
+						'pesan' => 'Kode Depo sudah terdaftar',
 					];
 					echo json_encode($jsonmsg);
+					exit;
 				}
 			}
+			if($data->name != $nama_divisi){
+				$param_nama = ['a.name' => $nama_divisi, "a.code_company" => $code_company];
+				$ceknama =  $this->M_divisi->get_where_divisi($param_nama)->num_rows();
+				if ($ceknama !== 0) {
+					$jsonmsg = [
+						'hasil' => 'false',
+						'pesan' => 'Nama sudah terdaftar',
+					];
+					echo json_encode($jsonmsg);
+					exit;
+				}
+			}
+			if($data->alias !== $alias_post){
+				$cekalias =  $this->M_divisi->get_where_divisi(['a.alias' => $alias_post])->num_rows();
+				if ($cekalias !== 0) {
+					$jsonmsg = [
+						'hasil' => 'false',
+						'pesan' => 'Alias sudah terdaftar',
+					];
+					echo json_encode($jsonmsg);
+					exit;
+				}
+			}
+			$dataupdate = [
+				'uuid'         => $this->uuid->v4(),
+				'code_divisi'  => $code_divisi,
+				'name'         => $nama_divisi,
+				'alias'        => $alias_post,
+				'updated_at'   => date('Y-m-d H:i:s')
+			];
+			// Melakukan update data
+			$update = $this->M_global->update($dataupdate, 'divisions', ['uuid' => $uuid]);
+			if ($update) {
+				// Jika update berhasil
+				$jsonmsg = [
+					'hasil' => 'true',
+					'pesan' => 'Data Berhasil Diupdate',
+				];
+				echo json_encode($jsonmsg);
+			} else {
+				// Jika gagal update
+				$jsonmsg = [
+					'hasil' => 'false',
+					'pesan' => 'Gagal Menyimpan Data',
+				];
+				echo json_encode($jsonmsg);
+			}
+			
 		} else {
 			// Jika UUID Divisi tidak ditemukan
 			$jsonmsg = [
@@ -266,21 +272,29 @@ class C_divisi extends CI_Controller
 			]);
 			return;
 		}
-		// Mulai transaksi
+		$param_kode = ['a.uuid' => $uuid];
+		$divisi = $this->M_divisi->get_where_divisi($param_kode)->row();
+		// Jika data tidak ditemukan
+		if (!$divisi) {
+			$this->db->trans_rollback();
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Data tidak ditemukan'
+			]);
+			return;
+		}
+		$cek_cc = $this->M_global->getWhere('cost_centers', ['code_divisi' => $divisi->code_divisi])->num_rows();
+		if ($cek_cc != 0) {
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Tidak bisa Menghapus Data, karena sedang digunakan di cost centers.',
+			]);
+			return;
+		}
 		$this->db->trans_begin();
 		try {
 			// Ambil data divisi berdasarkan UUID
-			$param_kode = ['a.uuid' => $uuid];
-			$divisi = $this->M_divisi->get_where_divisi($param_kode)->row();
-			// Jika data tidak ditemukan
-			if (!$divisi) {
-				$this->db->trans_rollback();
-				echo json_encode([
-					'hasil' => 'false',
-					'pesan' => 'Data tidak ditemukan'
-				]);
-				return;
-			}
+			
 			// Lakukan penghapusan data di tabel divisions
 			$this->db->where('uuid', $uuid)->delete('divisions');
 			if ($this->db->affected_rows() <= 0) {

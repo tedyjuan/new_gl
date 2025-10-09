@@ -21,8 +21,8 @@
 				<div class="col-6">
 					<div class="mb-3">
 						<label class="form-label" for="perusahaan">Perusahaan</label>
-						<select id="perusahaan" name="perusahaan" class="form-control-hover-light form-control select2"
-							data-parsley-required="true" data-parsley-errors-container=".err_name" required="">
+						<select id="perusahaan" name="perusahaan" class="bg-soft-dark form-control select2"
+							disabled data-parsley-required="true" data-parsley-errors-container=".err_name" required="">
 							<option value="">Pilih</option>
 						</select>
 						<span class="text-danger err_name"></span>
@@ -30,7 +30,7 @@
 				</div>
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="kode_department">Kode Divisi</label>
+						<label class="form-label" for="kode_department">Kode Departement</label>
 						<input type="text" id="kode_department" name="kode_department" data-parsley-required="true"
 							data-parsley-errors-container=".err_kodedepartment" required=""
 							value="<?= $data->code_department ?>" class="form-control-hover-light form-control"
@@ -122,32 +122,6 @@
 		$('.kapital').on('input', function(e) {
 			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
 		});
-		$("#perusahaan").select2({
-			placeholder: 'Cari kode atau nama',
-			minimumInputLength: 1,
-			allowClear: true,
-			ajax: {
-				url: "<?= base_url('C_company/search') ?>",
-				dataType: "json",
-				delay: 250,
-				data: function(params) {
-					return {
-						getCompany: params.term
-					};
-				},
-				processResults: function(data) {
-					var results = [];
-					$.each(data, function(index, item) {
-						results.push({
-							id: item.code_company,
-							text: item.code_company + ' - ' + item.name,
-						});
-					});
-					return {
-						results: results
-					};
-				}
-			}
-		});
+
 	})
 </script>

@@ -50,4 +50,23 @@ class M_cost_center extends CI_Model
 		$this->db->where($param);
 		return $this->db->get();
 	}
+	public function get_cc_And_groupteam($perusahaan, $depo, $department, $divisi, $segment)
+	{
+		$this->db->select('
+		 b.code_area,
+		 CONCAT(b.code_area, c.`code_department`, d.`code_divisi`, e.`code_segment`) AS code_cost_center,
+		 CONCAT(b.alias, "/", c.alias, "/", d.alias, "/", e.alias) AS group_team
+		');
+		$this->db->from('companies a');
+		$this->db->join('depos b', 'b.code_company = a.code_company', 'left');
+		$this->db->join('departments c', 'c.code_company = a.code_company', 'left');
+		$this->db->join('divisions d', 'd.code_company = a.code_company', 'left');
+		$this->db->join('segments e', 'e.code_company = a.code_company', 'left');
+		$this->db->where('a.code_company', $perusahaan);
+		$this->db->where('b.code_depo', $depo);
+		$this->db->where('c.code_department', $department);
+		$this->db->where('d.code_divisi', $divisi);
+		$this->db->where('e.code_segment', $segment);
+		return $this->db->get()->row();
+	}
 }

@@ -21,7 +21,7 @@
 				<div class="col-6">
 					<div class="mb-3">
 						<label class="form-label" for="perusahaan">Perusahaan</label>
-						<select id="perusahaan" name="perusahaan"
+						<select id="perusahaan" name="perusahaan" <?= $disabled == 'ON' ? 'disabled' : ''; ?>
 							class="form-control-hover-light form-control select2"
 							data-parsley-required="true" data-parsley-errors-container=".err_name" required>
 							<option value="">Pilih</option>
@@ -41,10 +41,10 @@
 				<div class="col-6">
 					<div class="mb-3">
 						<label class="form-label" for="kode_depo">Kode Depo</label>
-						<input type="text" id="kode_depo" name="kode_depo"
+						<input type="text" id="kode_depo" name="kode_depo" <?= $disabled == 'ON' ? 'readonly' : ''; ?>
 							value="<?= isset($data->code_depo) ? $data->code_depo : '' ?>"
 							data-parsley-required="true" data-parsley-errors-container=".err_kodedepo" required
-							class="form-control-hover-light form-control" placeholder="input kode depo">
+							class="<?= $disabled == 'ON' ? 'bg-soft-dark' : 'form-control-hover-light'; ?> form-control" placeholder="input kode depo">
 						<span class="text-danger err_kodedepo"></span>
 					</div>
 				</div>
@@ -54,9 +54,9 @@
 				<div class="col-6">
 					<div class="mb-3">
 						<label class="form-label" for="nama_depo">Nama Depo</label>
-						<input type="text" id="nama_depo" name="nama_depo"
+						<input type="text" id="nama_depo" name="nama_depo" <?= $disabled == 'ON' ? 'readonly' : ''; ?>
 							value="<?= isset($data->name) ? $data->name : '' ?>"
-							class="form-control-hover-light form-control" required
+							class="<?= $disabled == 'ON' ? 'bg-soft-dark' : 'form-control-hover-light'; ?> form-control" required
 							placeholder="input nama depo">
 						<span class="text-danger err_namadepo"></span>
 					</div>
@@ -65,9 +65,9 @@
 				<div class="col-6">
 					<div class="mb-3">
 						<label class="form-label" for="kd_depo_cost_center">Kode Depo Cost Center</label>
-						<input type="text" id="kd_depo_cost_center" name="kd_depo_cost_center"
+						<input type="text" id="kd_depo_cost_center" name="kd_depo_cost_center" <?= $disabled == 'ON' ? 'readonly' : ''; ?>
 							value="<?= isset($data->code_area) ? $data->code_area : '' ?>"
-							class="form-control-hover-light form-control" required
+							class="<?= $disabled == 'ON' ? 'bg-soft-dark' : 'form-control-hover-light'; ?> form-control" required
 							placeholder="input kode depo cost center">
 						<span class="text-danger err_depo_cc"></span>
 					</div>
@@ -79,8 +79,8 @@
 					<div class="mb-3">
 						<label class="form-label" for="singkatan_cost_center">Singkatan Cost Center</label>
 						<input type="text" id="singkatan_cost_center" name="singkatan_cost_center"
-							value="<?= isset($data->alias) ? $data->alias : '' ?>"
-							class="form-control-hover-light form-control" required
+							value="<?= isset($data->alias) ? $data->alias : '' ?>" <?= $disabled == 'ON' ? 'readonly' : ''; ?>
+							class="<?= $disabled == 'ON' ? 'bg-soft-dark' : 'form-control-hover-light'; ?> form-control" required
 							placeholder="input singkatan cost center">
 						<span class="text-danger err_sing_cc"></span>
 					</div>
