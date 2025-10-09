@@ -19,35 +19,97 @@ function tocontroller(controller, active, dropdown, head_nav) {
 	}
 }
 
+// function loadform(controller) {
+// 	var base = BASE_URL;
+// 	var url = base + "/" + controller;
+
+// 	// Jika tidak ada di cache, lakukan AJAX request
+// 	$("#contentdata").load(url, function (response, status, xhr) {
+// 		hideLoader(); // Sembunyikan preloader setelah AJAX selesai
+
+// 		if (status === "error") {
+// 			$("#contentdata").html(
+// 				`<div class="alert alert-danger">Gagal memuat konten.</div>`
+// 			);
+// 			return;
+// 		}
+// 		// Cek apakah response JSON dengan session expired
+// 		try {
+// 			let json = JSON.parse(response);
+// 			if (json.session_expired) {
+// 				swet_gagal(json.message);
+// 				setTimeout(function () {
+// 					window.location.href = json.redirect;
+// 				}, 1000); // 2000 ms = 2 detik delay
+// 				return;
+// 			}
+// 		} catch (e) {
+// 			// Bukan JSON? lanjut seperti biasa
+// 		}
+// 	});
+// }
 function loadform(controller) {
 	var base = BASE_URL;
 	var url = base + "/" + controller;
-
-	// Jika tidak ada di cache, lakukan AJAX request
-	$("#contentdata").load(url, function (response, status, xhr) {
-		hideLoader(); // Sembunyikan preloader setelah AJAX selesai
-
-		if (status === "error") {
-			$("#contentdata").html(
-				`<div class="alert alert-danger">Gagal memuat konten.</div>`
-			);
-			return;
-		}
-		// Cek apakah response JSON dengan session expired
+	var cacheKey = "page_cache_" + controller;
+	var cacheVersion = "v1.0.0"; // ganti versi kalau ada update besar
+	// 1️⃣ Cek cache di localStorage
+	let cached = localStorage.getItem(cacheKey);
+	if (cached) {
 		try {
-			let json = JSON.parse(response);
-			if (json.session_expired) {
-				swet_gagal(json.message);
-				setTimeout(function () {
-					window.location.href = json.redirect;
-				}, 1000); // 2000 ms = 2 detik delay
+			let data = JSON.parse(cached);
+			if (data.version === cacheVersion) {
+				console.log("✅ Loaded from cache:", controller);
+				$("#contentdata").html(data.html);
+				hideLoader();
 				return;
 			}
 		} catch (e) {
-			// Bukan JSON? lanjut seperti biasa
+			console.warn("Cache rusak, ambil baru...");
 		}
-	});
+	}
+
+	// 2️⃣ Kalau cache tidak ada / versi beda, ambil dari server
+	$("#contentdata").load(
+		url + "?v=" + cacheVersion,
+		function (response, status, xhr) {
+			hideLoader();
+
+			if (status === "error") {
+				$("#contentdata").html(
+					`<div class="alert alert-danger">Gagal memuat konten.</div>`
+				);
+				return;
+			}
+
+			// 3️⃣ Cek session expired (JSON)
+			try {
+				let json = JSON.parse(response);
+				if (json.session_expired) {
+					swet_gagal(json.message);
+					setTimeout(function () {
+						window.location.href = json.redirect;
+					}, 1000);
+					return;
+				}
+			} catch (e) {
+				// Bukan JSON, lanjut
+			}
+
+			// 4️⃣ Simpan hasil ke localStorage
+			localStorage.setItem(
+				cacheKey,
+				JSON.stringify({
+					html: response,
+					version: cacheVersion,
+					timestamp: Date.now(),
+				})
+			);
+			console.log("💾 Save Cached:", controller);
+		}
+	);
 }
+
 
 function showLoader() {
 	$("#preloader").show();

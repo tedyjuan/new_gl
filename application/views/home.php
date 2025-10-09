@@ -5,13 +5,13 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<title>Dashboard | General Ladger</title>
-	<link rel="shortcut icon" href="<?php echo base_url('public/assets/favicon.ico'); ?>">
+	<link rel="shortcut icon" href="<?php echo base_url('public/assets/favicon.ico?v=1.0'); ?>">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="<?php echo base_url('public/assets/css/vendor.min.css'); ?>">
+	<link rel="stylesheet" href="<?php echo base_url('public/assets/css/vendor.min.css?v=1.0'); ?>">
 	<link rel="stylesheet" href="<?php echo base_url('public/assets/css/theme.minc619.css?v=1.0'); ?>">
-	<link rel="stylesheet" href="<?php echo base_url('public/assets/vendor/datatable-bootstrap5/datatables-bootstrap5.min.css'); ?>">
-	<link rel="stylesheet" href="<?php echo base_url('public/assets/vendor/select2/css/select2.min.css'); ?>">
-	<link rel="stylesheet" href="<?php echo base_url('public/assets/vendor/sweetalert/sweetalert.css'); ?>">
+	<link rel="stylesheet" href="<?php echo base_url('public/assets/vendor/datatable-bootstrap5/datatables-bootstrap5.min.css?v=1.0'); ?>">
+	<link rel="stylesheet" href="<?php echo base_url('public/assets/vendor/select2/css/select2.min.css?v=1.0'); ?>">
+	<link rel="stylesheet" href="<?php echo base_url('public/assets/vendor/sweetalert/sweetalert.css?v=1.0'); ?>">
 	<style>
 		.select2-container .select2-selection--single {
 			height: 3em !important;
@@ -63,11 +63,11 @@
 	<div id="preloader" class="spinner overlay" style="display: none;">
 		<img class="img-spinner" src="<?php echo base_url('public/assets/svg/loading.svg'); ?>">
 	</div>
-	<script src="<?php echo base_url('public/assets/js/vendor.min.js'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/datatable-bootstrap5/datatables-jquery.min.js'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/datatable-bootstrap5/datatables-bootstrap5.min.js'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/flatpiker/flatpickr.js'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/select2/js/select2.js'); ?>"></script>
+	<script src="<?php echo base_url('public/assets/js/vendor.min.js?v=1.0'); ?>"></script>
+	<script src="<?php echo base_url('public/assets/vendor/datatable-bootstrap5/datatables-jquery.min.js?v=1.0'); ?>"></script>
+	<script src="<?php echo base_url('public/assets/vendor/datatable-bootstrap5/datatables-bootstrap5.min.js?v=1.0'); ?>"></script>
+	<script src="<?php echo base_url('public/assets/vendor/flatpiker/flatpickr.js?v=1.0'); ?>"></script>
+	<script src="<?php echo base_url('public/assets/vendor/select2/js/select2.js?v=1.0'); ?>"></script>
 
 	<!-- ========== HEADER ========== -->
 	<header id="header" class="navbar navbar-expand-lg navbar-fixed navbar-height navbar-container navbar-bordered bg-white">
@@ -259,11 +259,11 @@
 		<!-- End Footer -->
 	</main>
 
-	<script src="<?php echo base_url('public/assets/js/sweetalert.js'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/js/loadpages.js'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/parsleyjs/parsley.min.js'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/parsleyjs/id.js'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/jquery-mask/jquery.mask.min.js'); ?>"></script>
+	<script src="<?php echo base_url('public/assets/js/sweetalert.js?v=1.0'); ?>"></script>
+	<script src="<?php echo base_url('public/assets/js/loadpages.js?v=1.0'); ?>"></script>
+	<script src="<?php echo base_url('public/assets/vendor/parsleyjs/parsley.min.js?v=1.0'); ?>"></script>
+	<script src="<?php echo base_url('public/assets/vendor/parsleyjs/id.js?v=1.0'); ?>"></script>
+	<script src="<?php echo base_url('public/assets/vendor/jquery-mask/jquery.mask.min.js?v=1.0'); ?>"></script>
 
 
 
