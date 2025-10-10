@@ -63,6 +63,7 @@
 	<div id="preloader" class="spinner overlay" style="display: none;">
 		<img class="img-spinner" src="<?php echo base_url('public/assets/svg/loading.svg'); ?>">
 	</div>
+	<script src="<?php echo base_url('public/assets/js/theme.min.js?v=1.0'); ?>"></script>
 	<script src="<?php echo base_url('public/assets/js/vendor.min.js?v=1.0'); ?>"></script>
 	<script src="<?php echo base_url('public/assets/vendor/datatable-bootstrap5/datatables-jquery.min.js?v=1.0'); ?>"></script>
 	<script src="<?php echo base_url('public/assets/vendor/datatable-bootstrap5/datatables-bootstrap5.min.js?v=1.0'); ?>"></script>

@@ -48,14 +48,14 @@ class C_customers extends CI_Controller
 				$status_badge = '<span class="badge bg-secondary">' . htmlspecialchars($row->status) . '</span>';
 			}
 
-			// ===== BADGE TYPE =====
-			$type_badge = '';
-			if (strtolower($row->type) === 'customer') {
-				$type_badge = '<span class="badge bg-success">Resmi</span>';
-			} elseif (strtolower($row->type) === 'prospect') {
-				$type_badge = '<span class="badge bg-info">Potensial</span>';
+			// ===== BADGE STAGE =====
+			$stage_badge = '';
+			if (strtolower($row->stage) === 'deal') {
+				$stage_badge = '<span class="badge bg-success">Deal</span>';
+			} elseif (strtolower($row->stage) === 'negotiation') {
+				$stage_badge = '<span class="badge bg-info">Negosiasi</span>';
 			} else {
-				$type_badge = '<span class="badge bg-secondary">' . htmlspecialchars($row->status) . '</span>';
+				$stage_badge = '<span class="badge bg-secondary">' . htmlspecialchars($row->status) . '</span>';
 			}
 
 			// ===== AKSI =====
@@ -80,7 +80,7 @@ class C_customers extends CI_Controller
 				$row->phone,
 				$row->email,
 				$row->address,
-				$type_badge,
+				$stage_badge,
 				$status_badge,
 				$aksi
 			];
