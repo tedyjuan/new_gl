@@ -77,6 +77,19 @@
 		</div>
 	</div>
 	<div id="projectFormsContainer"></div>
+	<div class="card">
+		<div class="card-header">
+			<div class="col-md-12 d-flex justify-content-end">
+				<div></div>
+				<div>
+					<button type="button" id="btnsubmit" class="btn btn-sm btn-primary"><i class="bi bi-send"></i>
+						Simpan</button>
+					<button type="reset" class="btn btn-sm btn-outline-danger"><i class="bi bi-eraser-fill"></i>
+						Reset</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </form>
 
 <script>
@@ -121,7 +134,7 @@
 			// Tambahkan form baru sebanyak jumlah yang dimasukkan
 			for (var i = 1; i <= jumlahProject; i++) {
 				var formProject = `
-                <div class="card mt-4 border border-secondary border-2" id="project_${i}">
+                <div class="card mt-4 border border-secondary border-1" id="project_${i}">
                     <div class="card-body">
                         <div class="row">
                             <h2>Project ${i}</h2>
@@ -339,4 +352,41 @@
 			}
 		});
 	}
+	$('#btnsubmit').click(function(e) {
+		e.preventDefault();
+		let form = $('#forms_add');
+		form.parsley().validate();
+		if (form.parsley().isValid()) {
+			$.ajax({
+				url: "<?= base_url('C_company/simpandata') ?>",
+				type: 'POST',
+				method: 'POST',
+				dataType: 'JSON',
+				data: form.serialize(),
+				beforeSend: function() {
+					showLoader();
+				},
+				success: function(data) {
+					if (data.hasil == 'true') {
+						swet_sukses(data.pesan);
+						loadform('<?= $load_grid ?>');
+					} else {
+						swet_gagal(data.pesan);
+						hideLoader();
+					}
+				},
+				error: function(xhr) {
+					console.log("ERROR:", xhr);
+					if (xhr.status === 422) {
+						let errors = xhr.responseJSON.errors;
+						$.each(errors, function(key, value) {
+							$(`.err_${key}`).html(value[0]);
+						});
+					} else {
+						swet_gagal("Terjadi kesalahan server (" + xhr.status + ")");
+					}
+				},
+			});
+		}
+	});
 </script>
