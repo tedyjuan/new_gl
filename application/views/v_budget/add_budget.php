@@ -270,13 +270,14 @@
 						<!-- Tabel Mengurangi Biaya -->
 						<div class="container mt-5" id="tblMengurangiBiayaContainer_${i}" style="display: none;">
 							<h2>Mengurangi Biaya</h2>
+							<input class="counta_${i}" type="hidden" value="0">
 							<table class="table table-bordered table-thead-bordered table-sm" id="tblMengurangiBiaya_${i}" style="width: 100%;">
 								<thead class="thead-light">
 									<tr>
 										<th style="width: 30%;">Nama Account</th>
 										<th>Keterangan</th>
 										<th style="width: 20%;">Jumlah</th>
-										<th style="width: 5%;"><i id="addRow_${i}" class="bi bi-plus-circle text-primary fs-1" onclick="addrow_a(this)"></i></th>
+										<th style="width: 5%;"><i id="counta_${i}" class="bi bi-plus-circle text-primary fs-1" onclick="addrow_a(this)"></i></th>
 									</tr>
 								</thead>
 								<tbody></tbody>
@@ -285,12 +286,13 @@
 						<!-- Tabel Meningkatkan Produktivitas -->
 						<div class="container mt-5" id="tblMeningkatkanProduktivitasContainer_${i}" style="display: none;">
 							<h2>Meningkatkan Produktivitas</h2>
+							<input class="countb_${i}" type="hidden" value="0">
 							<table class="table table-bordered table-thead-bordered table-sm" id="tblMeningkatkanProduktivitas_${i}" style="width: 100%;">
 								<thead class="thead-light">
 									<tr>
 										<th>Keterangan</th>
 										<th style="width: 20%;">Jumlah</th>
-										<th style="width: 5%;"><i id="addRow2" class="bi bi-plus-circle text-primary fs-1"></i></th>
+										<th style="width: 5%;"><i id="countb_${i}" class="bi bi-plus-circle text-primary fs-1" onclick="addrow_b(this)"></i></th>
 									</tr>
 								</thead>
 								<tbody></tbody>
@@ -305,51 +307,6 @@
 
 		});
 	});
-	// Add row when "Add" button is clicked
-	// $("#addRow").click(function() {
-	// 	var newRow = `
-	// 							<tr>
-	// 								<td>
-	// 									<select class="form-control">
-	// 										<option value="Account 1">Account 1</option>
-	// 										<option value="Account 2">Account 2</option>
-	// 										<option value="Account 3">Account 3</option>
-	// 									</select>
-	// 								</td>
-	// 								<td><input type="text" class="form-control" placeholder="Keterangan"></td>
-	// 								<td><input type="text" class="form-control curency" placeholder="Jumlah"></td>
-	// 								<td><i class="bi bi-dash-circle deleteRow text-danger fs-1"></i> </td>
-	// 							</tr>
-	// 						`;
-	// 	// Append new row to the table
-	// 	$("#tblMengurangiBiaya tbody").append(newRow);
-	// 	$('.curency').mask("#.##0", {
-	// 		reverse: true
-	// 	});
-	// });
-	$("#addRow2").click(function() {
-		var newRow = `
-								<tr>
-									<td><input type="text" class="form-control" placeholder="Keterangan"></td>
-									<td><input type="text" class="form-control curency" placeholder="Jumlah"></td>
-									<td><i class="bi bi-dash-circle deleteRow2 text-danger fs-1"></i> </td>
-								</tr>
-							`;
-		$("#tblMeningkatkanProduktivitas tbody").append(newRow);
-		$('.curency').mask("#.##0", {
-			reverse: true
-		});
-	});
-	// Delete row when "Del" button is clicked
-	$(document).on("click", ".deleteRow", function() {
-		$(this).closest("tr").remove();
-	});
-	$('.curency').mask("#.##0", {
-		reverse: true
-	});
-	$(document).on("click", ".deleteRow2", function() {
-		$(this).closest("tr").remove();
-	});
 
 	function form_angaran(e) {
 		var id = e.id; // Mengambil ID dari elemen
@@ -359,8 +316,9 @@
 			$("#tblMengurangiBiayaContainer_" + number).show();
 		} else {
 			$("#tblMengurangiBiayaContainer_" + number).hide();
+			$("#tblMengurangiBiaya_" + number).find(".remove_row" + number).remove();
+			$(".counta_" + number).val(0);
 		}
-
 	}
 
 	function form_prod_aktif(e) {
@@ -371,25 +329,30 @@
 			$("#tblMeningkatkanProduktivitasContainer_" + number).show();
 		} else {
 			$("#tblMeningkatkanProduktivitasContainer_" + number).hide();
+			$("#tblMeningkatkanProduktivitas_" + number).find(".remove_row" + number).remove();
+
 		}
 
 	}
 
 	function addrow_a(e) {
 		var id = e.id;
-		var number = id.match(/\d+$/);
+		var number = parseInt(id.match(/\d+$/));
+		var getcounter = $("." + id).val();
+		var counter = parseInt(getcounter) + 1;
+		$("." + id).val(counter);
 		var newRow = `
-								<tr>
+								<tr class="${id}" id="hapus${id}${counter}">
 									<td>
-										<select id="account_${id}" name="account_${id}" class="form-control">
+										<select id="account_${id}${counter}" name="account_${id}[]" class="form-control">
 											<option value="Account 1">Account 1</option>
 											<option value="Account 2">Account 2</option>
 											<option value="Account 3">Account 3</option>
 										</select>
 									</td>
-									<td><input id="keterangan_${id}" name="keterangan_${id}" type="text" class="form-control" placeholder="Keterangan"></td>
-									<td><input id="jumlah_${id}" name="jumlah_${id}"  type="text" class="form-control curency" placeholder="Jumlah"></td>
-									<td><i id="hapus_add_a${id}" class="bi bi-dash-circle text-danger fs-1" onclick="hapus_baris(this)"></i> </td>
+									<td><input id="keterangan_${id}${counter}" name="keterangan_${id}[]" type="text" class="form-control" placeholder="account_${id}[]"></td>
+									<td><input id="jumlah_${id}${counter}" name="jumlah_${id}[]"  type="text" class="form-control curency" placeholder="jumlah"></td>
+									<td><i id="row_${id}${counter}" class="bi bi-dash-circle text-danger fs-1" onclick="hapus_a(this)"></i> </td>
 								</tr>
 							`;
 		// Append new row to the table
@@ -397,5 +360,31 @@
 		$('.curency').mask("#.##0", {
 			reverse: true
 		});
+	}
+
+	function addrow_b(e) {
+		var id = e.id;
+		var number = parseInt(id.match(/\d+$/));
+		var getcounter = $("." + id).val();
+		var counter = parseInt(getcounter) + 1;
+		$("." + id).val(counter);
+		var newRow = `
+					<tr class="${id}" id="hapus${id}${counter}">
+						<td><input id="keterangan_b_${id}${counter}" type="text" class="form-control" placeholder="Keterangan"></td>
+						<td><input id="jumlah_b_${id}${counter}" type="text" class="form-control curency" placeholder="Jumlah"></td>
+						<td><i id="row_${number}" class="bi bi-dash-circle deleteRow2 text-danger fs-1"  onclick="hapus_b(this)" ></i> </td>
+					</tr>
+							`;
+		// Append new row to the table
+		$("#tblMeningkatkanProduktivitas_" + number).find("tbody").append(newRow);
+		$('.curency').mask("#.##0", {
+			reverse: true
+		});
+	}
+
+	function hapus_a(e) {
+		var id = e.id;
+		var number = parseInt(id.match(/\d+$/));
+		$("#hapuscounta_" + number).remove();
 	}
 </script>
