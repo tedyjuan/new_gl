@@ -144,8 +144,6 @@
 
 <script>
     $(document).ready(function() {
-
-
         // Format otomatis huruf besar di awal nama
         $('#name').on('keyup', function() {
             let val = $(this).val();
