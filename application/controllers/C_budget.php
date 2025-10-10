@@ -19,21 +19,24 @@ class C_budget extends CI_Controller
 	}
 	public function griddata()
 	{
-		$start  = $this->input->post('start') ?? 0;
-		$length = $this->input->post('length') ?? 10;
-		$search_input = $this->input->post('search');
-		$search = isset($search_input['value']) ? $search_input['value'] : '';
-		$order_input = $this->input->post('order');
-		$order_col = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
-		$dir = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
-		$columns = ['code_company', 'company_name', 'code_budget', 'name','action'];
-		$order_by = $columns[$order_col] ?? 'name';
-		$data = $this->M_budget->get_paginated_budget($length, $start, $search, $order_by, $dir);
-		$total_records = $this->M_budget->count_all_budget();
-		$total_filtered = $this->M_budget->count_filtered_budget($search);
-		$url_edit   = 'C_budget/editform/';
-		$url_delete = 'C_budget/hapusdata/';
-		$load_grid  = 'C_budget/griddata';
+		$start          = $this->input->post('start') ?? 0;
+		$length         = $this->input->post('length') ?? 10;
+		$search_input   = $this->input->post('search');
+		$search         = isset($search_input['value']) ? $search_input['value'] : '';
+		$order_input    = $this->input->post('order');
+		$order_col      = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
+		$dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
+		$columns        = ['code_company', 'company_name', 'code_budget', 'name','action'];
+		$order_by       = $columns[$order_col] ?? 'name';
+		$data           = [];
+		// $data           = $this->M_budget->get_paginated_budget($length, $start, $search, $order_by, $dir);
+		// $total_records  = $this->M_budget->count_all_budget();
+		// $total_filtered = $this->M_budget->count_filtered_budget($search);
+		$total_records  = 0;
+		$total_filtered = 0;
+		$url_edit       = 'C_budget/editform/';
+		$url_delete     = 'C_budget/hapusdata/';
+		$load_grid      = 'C_budget/griddata';
 		$result = [];
 		foreach ($data as $row) {
 			$aksi = '<div class="dropdown">
