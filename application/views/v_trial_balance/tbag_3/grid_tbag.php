@@ -1,0 +1,56 @@
+<!-- Card -->
+<div class="card mt-4">
+	<div class="card-body">
+		<div class="d-flex justify-content-end mb-2">
+			<button class="btn btn-sm btn-primary"><i class="bi bi-plus-circle"></i>  Tambah</button>
+		</div>
+		<table class="table table-sm table-striped table-hover table-bordered" id="mytable3" style="width: 100%">
+			<thead>
+				<tr class="table-primary">
+					<th>Company</th>
+					<th>Code</th>
+					<th>Deskripsi</th>
+					<th>Code TBG-2</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</div>
+
+<script>
+	function initTable() {
+		// kalau sebelumnya sudah ada instance, hancurkan dulu
+		if (window.mytableDT && $.fn.dataTable.isDataTable('#mytable3')) {
+			window.mytableDT.clear().destroy();
+			window.mytableDT = null;
+		}
+
+		window.mytableDT = $('#mytable3').DataTable({
+			processing: true,
+			serverSide: true,
+			ajax: {
+				url: "<?= base_url('C_trial_balance/griddata_tbag_3'); ?>",
+				type: "POST",
+			},
+			columnDefs: [{
+				orderable: false,
+				targets: -1
+			}],
+			destroy: true,
+			retrieve: true
+		});
+	}
+
+	$(document).ready(function() {
+		initTable();
+	});
+
+	function filters() {
+		$('#btn_cancel').click();
+		if (window.mytableDT) {
+			window.mytableDT.ajax.reload(null, false); // Reload data tanpa reset paging
+		} else {
+			initTable(); // fallback kalau belum ke-init
+		}
+	}
+</script>
