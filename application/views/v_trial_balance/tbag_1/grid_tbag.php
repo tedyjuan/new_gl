@@ -18,7 +18,15 @@
 			<li class="nav-item" role="presentation">
 				<button class="nav-link" id="tbag-tab3" data-bs-toggle="tab" data-bs-target="#group-nav3" type="button" role="tab" aria-controls="group-nav3" aria-selected="false"><i class="bi bi-diagram-3-fill"></i> Group 3</button>
 			</li>
+			<li class="nav-item ms-auto" id="btnmodaltb3" style="display: none;">
+				<div class="d-flex justify-content-end mb-2">
+					<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modaltbg3">
+						<i class="bi bi-plus-circle"></i> Tambah
+					</button>
+				</div>
+			</li>
 		</ul>
+
 
 		<!-- Konten Tab -->
 		<div class="tab-content" id="myTabContent">
@@ -52,13 +60,16 @@
 	$(document).ready(function() {
 		$('#tbag-tab1').on('click', function() {
 			loadform('<?= $load_grid ?>')
+			$('#btnmodaltb3').hide();
 		});
 		$('#tbag-tab2').on('click', function() {
 			$('#group-nav2').load('C_trial_balance/tbag_2');
+			$('#btnmodaltb3').hide();
 		});
 
 		$('#tbag-tab3').on('click', function() {
 			$('#group-nav3').load('C_trial_balance/tbag_3');
+			$('#btnmodaltb3').show();
 		});
 	});
 </script>

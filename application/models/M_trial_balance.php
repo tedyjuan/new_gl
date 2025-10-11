@@ -124,6 +124,7 @@ class M_trial_balance extends CI_Model
 	public function get_paginated_trial_balance3($limit, $start, $search, $order_by, $order_dir)
 	{
 		$this->db->select('
+						a.uuid,
 						a.code_company,
 						a.code_trialbalance3,
 						a.code_trialbalance2,
@@ -161,6 +162,7 @@ class M_trial_balance extends CI_Model
 	public function get_where_trial_balance3($param)
 	{
 		$this->db->select('
+						a.uuid,
 						a.code_company,
 						a.code_trialbalance3,
 						a.code_trialbalance2,
