@@ -110,7 +110,6 @@ function loadform(controller) {
 // 	);
 // }
 
-
 function showLoader() {
 	$("#preloader").show();
 }
@@ -155,7 +154,7 @@ function hapus(uuid, url_hapus, load_grid) {
 				method: "POST",
 				dataType: "JSON",
 				data: {
-					uuid: uuid
+					uuid: uuid,
 				},
 				success: function (data) {
 					if (data.hasil == "true") {
@@ -195,6 +194,9 @@ function clearPageCache() {
 			localStorage.removeItem(key);
 		}
 	}
-	alert("✅ Cache berhasil dibersihkan!");
+	Swal.fire({
+		icon: "info",
+		title: "Information",
+		html: "Cache berhasil dibersihkan!",
+	});
 }
-

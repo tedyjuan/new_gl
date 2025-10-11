@@ -72,7 +72,7 @@
             <div class="col-md-12 d-flex justify-content-end">
                 <div>
                     <button type="button" id="btnsubmit" class="btn btn-sm btn-primary">
-                        <i class="bi bi-send"></i> Simpan
+                        <i class="bi bi-send"></i> Update
                     </button>
                     <button type="reset" class="btn btn-sm btn-outline-danger">
                         <i class="bi bi-eraser-fill"></i> Reset
@@ -182,6 +182,5 @@
 
 
 
-        checkFormValidity();
     });
 </script>

@@ -136,14 +136,7 @@
                                     <span class="text-danger err_qty_0"></span>
                                 </td>
                                 <td>
-                                    <select name="unit[]" class="form-select select2" data-parsley-required="true" data-parsley-errors-container=".err_unit_0">
-                                        <option value="">Pilih</option>
-                                        <option value="pcs">pcs</option>
-                                        <option value="box">box</option>
-                                        <option value="meter">meter</option>
-                                        <option value="set">set</option>
-                                        <option value="unit">unit</option>
-                                    </select>
+                                    <input name="unit[]" class="form-control" data-parsley-required="true" data-parsley-errors-container=".err_unit_0" />
                                     <span class="text-danger err_unit_0"></span>
                                 </td>
                                 <td>
@@ -154,7 +147,7 @@
                                     <input type="text" name="subtotal[]" class="form-control text-end subtotal bg-light" readonly placeholder="0">
                                 </td>
                                 <td>
-                                    <input type="text" name="notes[]" class="form-control" placeholder="Catatan optional">
+                                    <input type="text" name="notes_item[]" class="form-control" placeholder="Catatan optional">
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-danger btn-sm btn-delete-row">
@@ -188,36 +181,42 @@
     </div>
 
 </div>
-<!-- JS for Add/Delete Rows -->
+
+
 <script>
     (function() {
         // INITIALIZATION OF FLATPICKR
-        // =======================================================
-        HSCore.components.HSFlatpickr.init('.js-flatpickr')
+        HSCore.components.HSFlatpickr.init('.js-flatpickr');
     })();
 
+    // Init Select2 Global
+    function initSelect2(target) {
+        target.find('.select2').select2({
+            placeholder: 'Pilih',
+            allowClear: true,
+            width: '100%'
+        });
+    }
 
-    $('.select2').select2({
-        placeholder: 'Pilih',
-        allowClear: true,
-        width: '100%'
-    });
-</script>
-
-
-<script>
     $(document).ready(function() {
+        // panggil init awal
+        initSelect2($(document));
 
         // Format angka ribuan (versi Indonesia)
         function formatNumber(num) {
             if (!num) return '0';
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            num = num.toString().replace(/^0+/, ''); // hapus nol di depan
+            if (num === '') num = '0';
+            return num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         }
 
         // Hapus titik buat hitung angka
         function unformatNumber(num) {
-            return parseFloat(num.replace(/\./g, '')) || 0;
+            num = num.replace(/\./g, ''); // hilangkan titik ribuan
+            num = num.replace(/^0+/, ''); // hapus nol di depan
+            return parseFloat(num) || 0;
         }
+
 
         // Recalculate subtotal tiap baris & total keseluruhan
         function recalcTotals() {
@@ -244,15 +243,11 @@
             let row = $(this).closest('tr');
             let priceInput = row.find('.unit_price');
 
-            // Qty kosong atau 0 → disable harga
             if (qty <= 0) {
-                priceInput.val('').prop('disabled', true);
-                priceInput.addClass('bg-soft-secondary');
+                priceInput.val('').prop('disabled', true).addClass('bg-soft-secondary');
                 row.find('.subtotal').val('0');
             } else {
-                priceInput.prop('disabled', false);
-                priceInput.removeClass('bg-soft-secondary');
-
+                priceInput.prop('disabled', false).removeClass('bg-soft-secondary');
             }
 
             recalcTotals();
@@ -265,11 +260,9 @@
             let val = $(this).val().replace(/[^0-9]/g, '');
             $(this).val(formatNumber(val));
 
-            // Cegah input harga kalau qty belum ada
             if (qty <= 0) {
                 $(this).val('');
                 swet_gagal('Isi Qty dulu sebelum memasukkan harga!');
-
                 return;
             }
 
@@ -278,14 +271,32 @@
 
         // Tambah baris baru
         $('#btnAddRow').on('click', function() {
-            let row = $('#tableItems tbody tr:first').clone();
+            let lastRow = $('#tableItems tbody tr:last');
 
-            // reset value dan disable harga
-            row.find('input').val('');
-            row.find('select').val('');
-            row.find('.unit_price').prop('disabled', true);
-            $('#tableItems tbody').append(row);
+            // Hapus select2 instance dari row terakhir (biar yang ke-clone clean)
+            lastRow.find('.select2').each(function() {
+                if ($(this).hasClass('select2-hidden-accessible')) {
+                    $(this).select2('destroy');
+                }
+            });
+
+            // Clone row terakhir
+            let newRow = lastRow.clone();
+
+            // Reset semua value input di row baru
+            newRow.find('input').val('');
+            newRow.find('select').val('').trigger('change');
+            newRow.find('.unit_price').prop('disabled', true).addClass('bg-soft-secondary');
+            newRow.find('.subtotal').val('0');
+
+            // Append row baru ke tbody
+            $('#tableItems tbody').append(newRow);
+
+            // Reinit select2 di row lama + row baru
+            initSelect2(lastRow);
+            initSelect2(newRow);
         });
+
 
         // Hapus baris
         $(document).on('click', '.btn-delete-row', function() {
@@ -294,11 +305,37 @@
                 recalcTotals();
             } else {
                 swet_gagal('Minimal 1 item harus ada.');
-
             }
         });
 
-        // Format otomatis huruf besar di awal nama
+        // Customer select2 AJAX
+        $("#customer_id").select2({
+            placeholder: 'Nama Customer Or ID Customer',
+            minimumInputLength: 1,
+            allowClear: true,
+            ajax: {
+                url: "<?= base_url('C_customers/search') ?>",
+                dataType: "json",
+                delay: 250,
+                data: function(params) {
+                    return {
+                        getCustomers: params.term
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: $.map(data, function(item) {
+                            return {
+                                id: item.customer_id,
+                                text: item.customer_id + ' - ' + item.name
+                            };
+                        })
+                    };
+                }
+            }
+        });
+
+        // Auto kapital nama proyek
         $('#project_name').on('keyup', function() {
             let val = $(this).val();
             $(this).val(val.replace(/\b\w/g, char => char.toUpperCase()));
@@ -316,9 +353,7 @@
                     type: 'POST',
                     dataType: 'JSON',
                     data: form.serialize(),
-                    beforeSend: function() {
-                        showLoader();
-                    },
+                    beforeSend: showLoader,
                     success: function(data) {
                         if (data.hasil === 'true') {
                             swet_sukses(data.pesan);
@@ -329,7 +364,6 @@
                         }
                     },
                     error: function(xhr) {
-                        console.error("ERROR:", xhr);
                         swet_gagal("Terjadi kesalahan server (" + xhr.status + ")");
                         hideLoader();
                     }

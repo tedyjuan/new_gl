@@ -36,6 +36,8 @@ class C_customers extends CI_Controller
 		$load_grid  = 'C_customers/griddata';
 
 		$result = [];
+		$no = $start + 1; // biar sesuai pagination
+
 		foreach ($data as $row) {
 
 			// ===== BADGE STATUS =====
@@ -53,33 +55,35 @@ class C_customers extends CI_Controller
 			if (strtolower($row->stage) === 'deal') {
 				$stage_badge = '<span class="badge bg-success">Deal</span>';
 			} elseif (strtolower($row->stage) === 'negotiation') {
-				$stage_badge = '<span class="badge bg-info">Negosiasi</span>';
+				$stage_badge = '<span class="badge bg-warning">Negosiasi</span>';
 			} else {
 				$stage_badge = '<span class="badge bg-secondary">' . htmlspecialchars($row->status) . '</span>';
 			}
 
 			// ===== AKSI =====
-			$aksi = '<div class="dropdown">
-            <button type="button" class="btn btn-white btn-sm" id="aksi-dropdown-' . $row->customer_id . '" data-bs-toggle="dropdown" aria-expanded="false">
-                More <i class="bi-chevron-down ms-1"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->customer_id . '">
-                <button class="dropdown-item editbtn" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
-                    <i class="bi bi-pen"></i> Edit
-                </button>
-                <div class="dropdown-divider"></div>
-                <button class="dropdown-item text-danger" onclick="hapus(\'' . $row->uuid . '\', \'' . $url_delete . '\', \'' . $load_grid . '\')">
-                    <i class="bi bi-trash3"></i> Delete
-                </button>
-            </div>
-        </div>';
+			$aksi = '
+		<div class="dropdown">
+			<button type="button" class="btn btn-white btn-sm" id="aksi-dropdown-' . $row->customer_id . '" data-bs-toggle="dropdown" aria-expanded="false">
+				More <i class="bi-chevron-down ms-1"></i>
+			</button>
+			<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->customer_id . '">
+				<button class="dropdown-item editbtn" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
+					<i class="bi bi-pen"></i> Edit
+				</button>
+				<div class="dropdown-divider"></div>
+				<button class="dropdown-item text-danger" onclick="hapus(\'' . $row->uuid . '\', \'' . $url_delete . '\', \'' . $load_grid . '\')">
+					<i class="bi bi-trash3"></i> Delete
+				</button>
+			</div>
+		</div>';
 
 			$result[] = [
+				$no++, // kolom nomor urut
 				$row->customer_id,
-				$row->name,
-				$row->phone,
-				$row->email,
-				$row->address,
+				htmlspecialchars($row->name),
+				htmlspecialchars($row->phone),
+				htmlspecialchars($row->email),
+				htmlspecialchars($row->address),
 				$stage_badge,
 				$status_badge,
 				$aksi
@@ -87,12 +91,13 @@ class C_customers extends CI_Controller
 		}
 
 		echo json_encode([
-			"draw" => $_GET['draw'],
+			"draw" => intval($this->input->get('draw')),
 			"recordsTotal" => $total_records,
 			"recordsFiltered" => $total_filtered,
 			"data" => $result
 		]);
 	}
+
 
 
 	function add()
@@ -276,16 +281,17 @@ class C_customers extends CI_Controller
 	}
 	public function search()
 	{
-		$get_value = $this->input->get('getcustomers');
-		$cari = trim($get_value); // cukup trim biar spasi di ujung hilang
-
+		$get_value = $this->input->get('getCustomers');
+		$cari = trim($get_value);
+	
 		// Ambil semua kolom dari tabel
 		$fields = $this->db->list_fields('ord_customer');
-
+	
 		// Mulai query
 		$this->db->from('ord_customer');
-		$this->db->group_start(); // buka grup WHERE
-
+		$this->db->where('status', 'active'); // hanya yang aktif
+		$this->db->group_start();
+	
 		foreach ($fields as $i => $field) {
 			if ($i === 0) {
 				$this->db->like($field, $cari);
@@ -293,12 +299,40 @@ class C_customers extends CI_Controller
 				$this->db->or_like($field, $cari);
 			}
 		}
-
-		$this->db->group_end(); // tutup grup WHERE
-
+	
+		$this->db->group_end();
+	
 		$hasil = $this->db->get()->result();
 		echo json_encode($hasil);
 	}
+	
+
+	public function search_deal()
+	{
+		$get_value = $this->input->get('getCustomers');
+		$cari = trim($get_value);
+	
+		$fields = $this->db->list_fields('ord_customer');
+	
+		$this->db->from('ord_customer');
+		$this->db->where('status', 'active'); // masih aktif
+		$this->db->where('stage', 'deal');    // dan stage deal
+		$this->db->group_start();
+	
+		foreach ($fields as $i => $field) {
+			if ($i === 0) {
+				$this->db->like($field, $cari);
+			} else {
+				$this->db->or_like($field, $cari);
+			}
+		}
+	
+		$this->db->group_end();
+	
+		$hasil = $this->db->get()->result();
+		echo json_encode($hasil);
+	}
+	
 
 	public function hapusdata()
 	{
@@ -358,13 +392,13 @@ class C_customers extends CI_Controller
 			// Commit transaksi
 			$this->db->trans_commit();
 			echo json_encode([
-				'hasil' => true,
+				'hasil' => 'true',
 				'pesan' => 'Data berhasil dihapus'
 			]);
 		} catch (Exception $e) {
 			$this->db->trans_rollback();
 			echo json_encode([
-				'hasil' => false,
+				'hasil' => 'false',
 				'pesan' => 'Terjadi error: ' . $e->getMessage()
 			]);
 		}

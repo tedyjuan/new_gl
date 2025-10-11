@@ -88,7 +88,13 @@
 			</div>
 			<div class="navbar-nav-wrap-content-end">
 				<!-- Navbar -->
-				<ul class="navbar-nav">
+				<ul class="navbar-nav align-items-center">
+					<li class="nav-item me-2">
+						<a href="javascript:;" class="btn btn-icon btn-ghost-secondary" title="Clear Cache" onclick="clearPageCache()">
+							<i class="bi bi-eraser fs-5"></i>
+						</a>
+					</li>
+
 					<li class="nav-item">
 						<div class="dropdown">
 							<a class="navbar-dropdown-account-wrapper" href="javascript:;" id="accountNavbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -112,18 +118,15 @@
 								<div class="dropdown-divider"></div>
 
 								<a class="dropdown-item" href="javascript:;" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-									Sign out
-								</a>
-								<a class="dropdown-item" href="javascript:;" onclick="clearPageCache()">
-									Clear Cahce
+									<i class="bi bi-box-arrow-right me-2"></i> Sign out
 								</a>
 								<!-- Hidden logout form -->
-								<form id="logout-form" action="<?php echo site_url('auth/logout'); ?>" method="POST" style="display: none;">
-								</form>
+								<form id="logout-form" action="<?php echo site_url('auth/logout'); ?>" method="POST" style="display: none;"></form>
 							</div>
 						</div>
 					</li>
 				</ul>
+
 				<!-- End Navbar -->
 			</div>
 		</div>

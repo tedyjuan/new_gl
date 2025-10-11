@@ -18,18 +18,20 @@
 	<div class="card-body">
 		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%">
 			<thead>
-				<tr class="table-primary">
-					<th style="width: 20%">ID</th>
-					<th style="width: 60%">Nama</th>
-					<th style="width: 60%">Nomor Telepon</th>
-					<th style="width: 60%">Email</th>
-					<th style="width: 60%">Alamat</th>
-					<th style="width: 60%">Status Transaksi</th>
-					<th style="width: 60%">Status Customer</th>
-					<th style="width: 10%" class="text-center">Aksi</th>
+				<tr class="table-primary text-center align-middle">
+					<th style="width: 5%">No</th>
+					<th style="width: 15%">ID Budget</th>
+					<th style="width: 20%">Nama Proyek</th>
+					<th style="width: 15%">Customer</th>
+					<th style="width: 10%">Total Budget</th>
+					<th style="width: 10%">Timeline</th>
+					<th style="width: 10%">Status</th>
+					<th style="width: 10%">File</th>
+					<th style="width: 10%">Aksi</th>
 				</tr>
 			</thead>
 		</table>
+
 	</div>
 </div>
 <script>
@@ -44,7 +46,7 @@
 			processing: true,
 			serverSide: true, // Mengaktifkan server-side processing
 			ajax: {
-				url: "<?= base_url('C_customers/griddata'); ?>", // URL ke controller
+				url: "<?= base_url('C_customers_budget/griddata'); ?>", // URL ke controller
 				type: "GET", // Gunakan GET untuk request
 			},
 			columnDefs: [{

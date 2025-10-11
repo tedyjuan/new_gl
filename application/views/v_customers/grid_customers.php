@@ -19,6 +19,7 @@
 		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%">
 			<thead>
 				<tr class="table-primary">
+					<th style="width: 20%">NO</th>
 					<th style="width: 20%">ID</th>
 					<th style="width: 60%">Nama</th>
 					<th style="width: 60%">Nomor Telepon</th>
