@@ -78,6 +78,9 @@ class C_budget extends CI_Controller
 	}
 	public function simpandata()
 	{
+		$d = $this->input->post();
+		var_dump($d);
+		die;
 		// Validasi input
 		$this->form_validation->set_rules('perusahaan', 'Perusahaan', 'required');
 		$this->form_validation->set_rules('kode_budget', 'Code Budget', 'required');
