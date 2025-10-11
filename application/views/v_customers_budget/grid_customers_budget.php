@@ -27,7 +27,7 @@
 					<th style="width: 10%">Timeline</th>
 					<th style="width: 10%">Status</th>
 					<th style="width: 10%">File</th>
-					<th style="width: 10%">Aksi</th>
+					<th style="width: 10%">Action</th>
 				</tr>
 			</thead>
 		</table>

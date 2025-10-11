@@ -27,7 +27,7 @@
 					<th style="width: 60%">Alamat</th>
 					<th style="width: 60%">Status Transaksi</th>
 					<th style="width: 60%">Status Customer</th>
-					<th style="width: 10%" class="text-center">Aksi</th>
+					<th style="width: 10%" class="text-center">Action</th>
 				</tr>
 			</thead>
 		</table>

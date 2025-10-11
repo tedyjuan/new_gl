@@ -90,7 +90,7 @@ class C_customers_budget extends CI_Controller
 			$aksi = '
 			<div class="dropdown">
 				<button type="button" class="btn btn-white btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-					Aksi
+					More
 				</button>
 				<div class="dropdown-menu dropdown-menu-end">';
 		
