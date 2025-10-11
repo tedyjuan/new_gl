@@ -677,8 +677,7 @@ class C_customers_budget extends CI_Controller
 			$dataCustomer = [
 				'stage'        => 'deal',
 				'updated_at'    => date('Y-m-d H:i:s'),
-				'status_at'    => date('Y-m-d H:i:s'),
-
+ 
 			];
 
 			$this->db->where('customer_id', $budget->customer_id);
