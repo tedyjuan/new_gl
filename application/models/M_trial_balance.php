@@ -164,8 +164,9 @@ class M_trial_balance extends CI_Model
 		$this->db->select('
 						a.uuid,
 						a.code_company,
-						a.code_trialbalance3,
+						a.code_trialbalance1,
 						a.code_trialbalance2,
+						a.code_trialbalance3,
 						a.description,
 						b.name');
 		$this->db->from('trial_balance_account_group_3 as a');

@@ -20,7 +20,7 @@
 			</li>
 			<li class="nav-item ms-auto" id="btnmodaltb3" style="display: none;">
 				<div class="d-flex justify-content-end mb-2">
-					<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modaltbg3">
+					<button type="button" class="btn btn-primary" id="btnmodaltbag" data-bs-toggle="modal" data-bs-target="#modaltbg3">
 						<i class="bi bi-plus-circle"></i> Tambah
 					</button>
 				</div>

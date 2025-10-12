@@ -22,12 +22,10 @@
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title" id="modaltbg3Label"></h4>
+				<h4 class="modal-title" id="modaltbg3Label">Tambah Group 3</h4>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<form id="forms_add">
-				<input type="hidden" readonly id="aksi">
-				<input type="hidden" name="uuid" readonly id="uuid">
 				<div class="modal-body">
 					<div class="row">
 						<div class="col-6">
@@ -134,7 +132,6 @@
 	$('.kapital').on('input', function(e) {
 		this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
 	});
-
 	$("#perusahaan").select2({
 		placeholder: 'Cari kode atau nama',
 		minimumInputLength: 1,
@@ -163,76 +160,14 @@
 			}
 		}
 	});
-</script>
-<script>
-	$(document).ready(function() {
-		// Ketika perusahaan dipilih
-		$('#perusahaan').on('change', function() {
-			var companyCode = $(this).val();
-			// Mengosongkan dropdown dan reset nilai default sebelum AJAX
-			if (companyCode) {
-				$('#kode_tbg1').empty().append('<option value="">Pilih</option>');
-				$('#kode_tbg2').empty().append('<option value="">Pilih</option>');
-				$.ajax({
-					url: '<?= base_url('C_global/getTgb1ByCompany/'); ?>' + companyCode,
-					method: 'GET',
-					dataType: 'JSON',
-					success: function(data) {
-						data.forEach(function(val) {
-							$('#kode_tbg1').append('<option value="' + val.code_trialbalance1 + '" data-company="' + val.code_company + '">' + val.code_trialbalance1 + '-' + val.description + ' ( ' + val.account_type + ' )' + '</option>');
-						});
-					}
-				});
-			}
-		});
-
-		$("#kode_tbg1").select2({
-			dropdownParent: $('#modaltbg3')
-		});
-		$("#kode_tbg2").select2({
-			dropdownParent: $('#modaltbg3')
-		});
-		$('#kode_tbg1').on('change', function() {
-			var kode_tbg1 = $(this).val();
-			var company = $('#kode_tbg1 option:selected').data('company');
-			if (kode_tbg1) {
-				$('#kode_tbg2').empty().append('<option value="">Pilih</option>');
-				$.ajax({
-					url: '<?= base_url('C_global/getTgb2'); ?>',
-					method: 'POST',
-					data: {
-						companyCode: company,
-						kode_tbg1: kode_tbg1,
-					},
-					dataType: 'JSON',
-					success: function(data) {
-						data.forEach(function(val) {
-							$('#kode_tbg2').append('<option value="' + val.code_trialbalance2 + '" >' + val.code_trialbalance2 + '-' + val.description + '</option>');
-						});
-					}
-				});
-			}
-		});
-
-	});
 
 	$('#btnsubmit').click(function(e) {
 		e.preventDefault();
-		var seturl;
-		var aksi = $("#aksi").val();
-		if (aksi == 'ADD') {
-			seturl = "<?= base_url('C_trial_balance/simpandata') ?>";
-		} else if (aksi == 'EDIT') {
-			seturl = "<?= base_url('C_trial_balance/update') ?>";
-		} else {
-			swet_gagal("Parameter aksi tidak di temukan");
-			return;
-		}
 		let form = $('#forms_add');
 		form.parsley().validate();
 		if (form.parsley().isValid()) {
 			$.ajax({
-				url: seturl,
+				url: "<?= base_url('C_trial_balance/simpandata') ?>",
 				type: 'POST',
 				method: 'POST',
 				dataType: 'JSON',
@@ -271,65 +206,56 @@
 			});
 		}
 	});
-
-	function editforms(uuid) {
-		// id button = btnsubmit
-		$("#modaltbg3Label").text("Edit Group 3");
-		$("#aksi").val("EDIT");
-		$('#forms_add').parsley().reset();
-		$("#btnsubmit").prop("disabled", true); // Menonaktifkan tombol
-		$.ajax({
-			url: '<?= base_url('C_trial_balance/editform'); ?>',
-			method: 'POST',
-			dataType: 'JSON',
-			data: {
-				uuid: uuid,
-			},
-			success: function(data) {
-				if (data.hasil == 'true') {
-					var posdata = data.posdata;
-					// Menetapkan nilai-nilai ke elemen HTML
-					$("#kode_tbg3").val(posdata.code_trialbalance3);
-					$("#des").val(posdata.description);
-					$("#uuid").val(posdata.uuid);
-					var code_tbg1 = posdata.code_trialbalance1;
-					var code_tbg2 = posdata.code_trialbalance2;
-					var code_company = posdata.code_company;
-
-					// Menambahkan options untuk #kode_tbg1 dan memilih yang sesuai
-					$.each(data.tbag1_Bycompany, function(index, val) {
-						var selected = (val.code_trialbalance1 === code_tbg1) ? 'selected' : '';
-						$('#kode_tbg1').append('<option value="' + val.code_trialbalance1 + '" data-company="' + val.code_company + '" ' + selected + '>' + val.code_trialbalance1 + '-' + val.description + ' ( ' + val.account_type + ' )' + '</option>');
-					});
-
-					// Menambahkan options untuk #kode_tbg2 dan memilih yang sesuai
-					$.each(data.tbag2_Bycompany, function(index, val) {
-						var selected = (val.code_trialbalance2 === code_tbg2) ? 'selected' : '';
-						$('#kode_tbg2').append('<option value="' + val.code_trialbalance2 + '" ' + selected + '>' + val.code_trialbalance2 + '-' + val.description + '</option>');
-					});
-
-					// Menambahkan options untuk #perusahaan dan memilih yang sesuai
-					$.each(data.allcompany, function(index, val) {
-						var selected = (val.code_company === code_company) ? 'selected' : '';
-						$('#perusahaan').append('<option value="' + val.code_company + '" ' + selected + '>' + val.code_company + '-' + val.name + '</option>');
-					});
-				} else {
-					swet_gagal(data.pesan);
-				}
-			},
-			complete: function() {
-				$("#btnsubmit").prop("disabled", false);
+</script>
+<script>
+	$(document).ready(function() {
+		// Ketika perusahaan dipilih
+		$('#perusahaan').on('change', function() {
+			var companyCode = $(this).val();
+			// Mengosongkan dropdown dan reset nilai default sebelum AJAX
+			if (companyCode) {
+				$('#kode_tbg1').empty().append('<option value="">Pilih</option>');
+				$('#kode_tbg2').empty().append('<option value="">Pilih</option>');
+				$.ajax({
+					url: '<?= base_url('C_global/getTgb1ByCompany/'); ?>' + companyCode,
+					method: 'GET',
+					dataType: 'JSON',
+					success: function(data) {
+						data.forEach(function(val) {
+							$('#kode_tbg1').append('<option value="' + val.code_trialbalance1 + '" data-company="' + val.code_company + '">' + val.code_trialbalance1 + '-' + val.description + ' ( ' + val.account_type + ' )' + '</option>');
+						});
+					}
+				});
 			}
 		});
-	}
-	$('#btnmodaltbag').on('click', function() {
-		$("#aksi").val("ADD");
-		$("#modaltbg3Label").text("Tambah Group 3");
-		$('#perusahaan').empty().append('<option value="">Pilih</option>');
-		$('#kode_tbg1').empty().append('<option value="">Pilih</option>');
-		$('#kode_tbg2').empty().append('<option value="">Pilih</option>');
-		$("#kode_tbg3").val('');
-		$("#des").val('');
-		$('#forms_add').parsley().reset();
+		$("#kode_tbg1").select2({
+			dropdownParent: $('#modaltbg3')
+		});
+		$("#kode_tbg2").select2({
+			dropdownParent: $('#modaltbg3')
+		});
+		$('#kode_tbg1').on('change', function() {
+			var kode_tbg1 = $(this).val();
+			var company = $('#kode_tbg1 option:selected').data('company');
+			if (kode_tbg1) {
+				$('#kode_tbg2').empty().append('<option value="">Pilih</option>');
+				$.ajax({
+					url: '<?= base_url('C_global/getTgb2'); ?>',
+					method: 'POST',
+					data: {
+						companyCode: company,
+						kode_tbg1: kode_tbg1,
+					},
+					dataType: 'JSON',
+					success: function(data) {
+						data.forEach(function(val) {
+							$('#kode_tbg2').append('<option value="' + val.code_trialbalance2 + '" >' + val.code_trialbalance2 + '-' + val.description + '</option>');
+						});
+					}
+				});
+			}
+		});
+
+
 	});
 </script>
