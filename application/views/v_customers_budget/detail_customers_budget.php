@@ -13,129 +13,141 @@
     </div>
 
     <div class="card-body">
-        <!-- STATUS SECTION -->
-        <div class="mb-4">
-            <h5 class="fw-bold">Status Proyek</h5>
-            <?php
-            $status = $data->status ?? 'pending';
-            $statusClass = [
-                 'approved'  => 'success',
-                'rejected'  => 'danger',
-                'pending'   => 'warning',
-            ][$status] ?? 'secondary';
-            ?>
-            <span class="badge bg-<?= $statusClass ?> px-3 py-2 text-uppercase">
-                <?= ucfirst($status) ?>
-            </span>
 
-            <?php if (!empty($data->status_notes)) : ?>
-                <div class="mt-2 text-muted">
-                    <strong>Catatan:</strong> <?= htmlspecialchars($data->status_notes) ?>
-                </div>
-            <?php endif; ?>
+<!-- STATUS + FILE SECTION (flex container) -->
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap">
+  
+  <!-- STATUS -->
+  <div>
+    <h5 class="fw-bold mb-2">Status Proyek</h5>
+    <?php 
+      $status = $data->status ?? 'pending';
+      $statusClass = [
+        'approved' => 'success',
+        'rejected' => 'danger',
+        'pending'  => 'warning',
+      ][$status] ?? 'secondary';
+    ?>
+    <span class="badge bg-<?= $statusClass ?> px-3 py-2 text-uppercase">
+      <?= ucfirst($status) ?>
+    </span>
 
-            <?php if (!empty($data->status_at)) : ?>
-                <div class="text-muted">
-                    <small>Terakhir diupdate: <?= date('d/m/Y H:i:s', strtotime($data->status_at)) ?></small>
-                </div>
-            <?php endif; ?>
-        </div>
+    <?php if (!empty($data->status_notes)) : ?>
+      <div class="mt-2 text-muted">
+        <strong>Catatan:</strong> <?= htmlspecialchars($data->status_notes) ?>
+      </div>
+    <?php endif; ?>
 
-        <!-- FORM VIEW ONLY -->
-        <form id="form_customers_budget_view">
-            <div class="row">
-                <!-- Customer -->
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Customer</label>
-                    <input type="text" class="form-control bg-light" value="<?= $data->customer_id . ' - ' . $data->customer_name ?>" readonly>
-                </div>
+    <?php if (!empty($data->status_at)) : ?>
+      <div class="text-muted">
+        <small>Terakhir diupdate: <?= date('d/m/Y H:i:s', strtotime($data->status_at)) ?></small>
+      </div>
+    <?php endif; ?>
+  </div>
 
-                <!-- Project Name -->
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Nama Proyek</label>
-                    <input type="text" class="form-control bg-light" value="<?= htmlspecialchars($data->project_name) ?>" readonly>
-                </div>
+  <!-- FILE LINKS -->
+  <div class="text-end">
+    <?php if (!empty($data->path_pdf)) : ?>
+      <a href="<?= base_url($data->path_pdf) ?>" target="_blank" 
+         class="btn btn-outline-secondary btn-sm mb-2">
+        <i class="bi bi-file-earmark-pdf"></i> Lihat Proposal PDF
+      </a><br>
+    <?php endif; ?>
 
-                <!-- Description -->
-                <div class="col-md-12 mb-3">
-                    <label class="form-label">Deskripsi</label>
-                    <textarea class="form-control bg-light" rows="2" readonly><?= htmlspecialchars($data->description) ?></textarea>
-                </div>
+    <?php if (!empty($data->path_archive)) : ?>
+      <a href="<?= base_url($data->path_archive) ?>" target="_blank" 
+         class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-archive"></i> Lihat Arsip TTD
+      </a>
+    <?php endif; ?>
+  </div>
+</div>
 
-                <!-- Budget -->
-                <div class="col-md-4 mb-3">
-                    <label class="form-label">Total Budget</label>
-                    <input type="text" class="form-control bg-light text-end" value="<?= number_format($data->total_budget, 0, ',', '.') ?>" readonly>
-                </div>
+<!-- FORM VIEW ONLY -->
+<form id="form_customers_budget_view">
+          <div class="row">
 
-                <!-- Timeline -->
-                <div class="col-md-4 mb-3">
-                    <label class="form-label">Mulai</label>
-                    <input type="text" class="form-control bg-light" value="<?= date('d/m/Y', strtotime($data->start_timeline)) ?>" readonly>
-                </div>
+              <!-- Customer -->
+              <div class="col-md-6 mb-3">
+                  <label class="form-label">Customer</label>
+                  <input type="text" class="form-control bg-light" value="<?= $data->customer_id . ' - ' . $data->customer_name ?>" readonly>
+              </div>
 
-                <div class="col-md-4 mb-3">
-                    <label class="form-label">Selesai</label>
-                    <input type="text" class="form-control bg-light" value="<?= date('d/m/Y', strtotime($data->end_timeline)) ?>" readonly>
-                </div>
+              <!-- Project Name -->
+              <div class="col-md-6 mb-3">
+                  <label class="form-label">Nama Proyek</label>
+                  <input type="text" class="form-control bg-light" value="<?= htmlspecialchars($data->project_name) ?>" readonly>
+              </div>
 
-                <!-- File Arsip -->
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">File Proposal / PDF</label>
-                    <?php if (!empty($data->path_archive)) : ?>
-                        <div>
-                            <a href="<?= base_url($data->path_archive) ?>" target="_blank" class="btn btn-outline-secondary btn-sm">
-                                <i class="bi bi-file-earmark-pdf"></i> Lihat File
-                            </a>
-                        </div>
-                    <?php else : ?>
-                        <input type="text" class="form-control bg-light" value="Tidak ada file diunggah" readonly>
-                    <?php endif; ?>
-                </div>
+              <!-- Description -->
+              <div class="col-md-12 mb-3">
+                  <label class="form-label">Deskripsi</label>
+                  <textarea class="form-control bg-light" rows="2" readonly><?= htmlspecialchars($data->description) ?></textarea>
+              </div>
 
-                <!-- Notes -->
-                <div class="col-md-12 mb-3">
-                    <label class="form-label">Catatan</label>
-                    <textarea class="form-control bg-light" rows="2" readonly><?= htmlspecialchars($data->notes ?? '-') ?></textarea>
-                </div>
+              <!-- Budget -->
+              <div class="col-md-4 mb-3">
+                  <label class="form-label">Total Budget</label>
+                  <input type="text" class="form-control bg-light text-end" value="<?= number_format($data->total_budget, 0, ',', '.') ?>" readonly>
+              </div>
 
-                <!-- Item Budget -->
-                <div class="col-md-12 mt-4">
-                    <h5 class="fw-bold">Item Budget</h5>
-                    <table class="table table-bordered align-middle mt-2">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Tipe</th>
-                                <th>Nama Item</th>
-                                <th class="text-end">Qty</th>
-                                <th>Satuan</th>
-                                <th class="text-end">Harga Satuan</th>
-                                <th class="text-end">Subtotal</th>
-                                <th>Catatan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (!empty($items)) : ?>
-                                <?php foreach ($items as $item) : ?>
-                                    <tr>
-                                        <td><?= ucfirst($item->item_type) ?></td>
-                                        <td><?= htmlspecialchars($item->item_name) ?></td>
-                                        <td class="text-end"><?= number_format($item->qty, 0, ',', '.') ?></td>
-                                        <td><?= htmlspecialchars($item->unit) ?></td>
-                                        <td class="text-end"><?= number_format($item->unit_price, 0, ',', '.') ?></td>
-                                        <td class="text-end"><?= number_format($item->qty * $item->unit_price, 0, ',', '.') ?></td>
-                                        <td><?= htmlspecialchars($item->notes_item ?? '-') ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else : ?>
-                                <tr><td colspan="7" class="text-center text-muted">Belum ada item budget</td></tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </form>
-    </div>
+              <!-- Timeline -->
+              <div class="col-md-4 mb-3">
+                  <label class="form-label">Mulai</label>
+                  <input type="text" class="form-control bg-light" value="<?= date('d/m/Y', strtotime($data->start_timeline)) ?>" readonly>
+              </div>
+
+              <div class="col-md-4 mb-3">
+                  <label class="form-label">Selesai</label>
+                  <input type="text" class="form-control bg-light" value="<?= date('d/m/Y', strtotime($data->end_timeline)) ?>" readonly>
+              </div>
+
+            
+
+              <!-- Notes -->
+              <div class="col-md-12 mb-3">
+                  <label class="form-label">Catatan</label>
+                  <textarea class="form-control bg-light" rows="2" readonly><?= htmlspecialchars($data->notes ?? '-') ?></textarea>
+              </div>
+
+              <!-- Item Budget -->
+              <div class="col-md-12 mt-4">
+                  <h5 class="fw-bold">Item Budget</h5>
+                  <table class="table table-bordered align-middle mt-2">
+                      <thead class="table-light">
+                          <tr>
+                              <th>Tipe</th>
+                              <th>Nama Item</th>
+                              <th class="text-end">Qty</th>
+                              <th>Satuan</th>
+                              <th class="text-end">Harga Satuan</th>
+                              <th class="text-end">Subtotal</th>
+                              <th>Catatan</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <?php if (!empty($items)) : ?>
+                              <?php foreach ($items as $item) : ?>
+                                  <tr>
+                                      <td><?= ucfirst($item->item_type) ?></td>
+                                      <td><?= htmlspecialchars($item->item_name) ?></td>
+                                      <td class="text-end"><?= number_format($item->qty, 0, ',', '.') ?></td>
+                                      <td><?= htmlspecialchars($item->unit) ?></td>
+                                      <td class="text-end"><?= number_format($item->unit_price, 0, ',', '.') ?></td>
+                                      <td class="text-end"><?= number_format($item->qty * $item->unit_price, 0, ',', '.') ?></td>
+                                      <td><?= htmlspecialchars($item->notes_item ?? '-') ?></td>
+                                  </tr>
+                              <?php endforeach; ?>
+                          <?php else : ?>
+                              <tr><td colspan="7" class="text-center text-muted">Belum ada item budget</td></tr>
+                          <?php endif; ?>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      </form>
+  </div>
+</div>
 </div>
 
 
