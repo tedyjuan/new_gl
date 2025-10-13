@@ -147,7 +147,6 @@ class C_cost_center extends CI_Controller
 			]);
 			return;
 		}
-		// Ambil data untuk cek alias dan status_data
 		$this->db->trans_start();
 		try {
 			$datainsert = [
@@ -268,7 +267,6 @@ class C_cost_center extends CI_Controller
 				return;
 			}
 		}
-		// Ambil data untuk cek alias dan status_data
 		$this->db->trans_start();
 		try {
 			$dataupdate = [

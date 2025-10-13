@@ -78,89 +78,64 @@ class C_budget extends CI_Controller
 	}
 	public function simpandata()
 	{
-		$d = $this->input->post();
-		var_dump($d);
-		die;
-		// Validasi input
-		$this->form_validation->set_rules('perusahaan', 'Perusahaan', 'required');
-		$this->form_validation->set_rules('kode_budget', 'Code Budget', 'required');
-		$this->form_validation->set_rules('nama_budget', 'Nama Budget', 'required');
-		$this->form_validation->set_rules('alias', 'Nama Alias', 'required');
-		if ($this->form_validation->run() == FALSE) {
-			// Jika validasi gagal
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => validation_errors(),
-			];
-			echo json_encode($jsonmsg);
-			return;
-		}
-		// Ambil data dari request
-		$perusahaan  = $this->input->post('perusahaan');
-		$code_budget = $this->input->post('kode_budget');
-		$nama_budget = $this->input->post('nama_budget');
-		$alias       = $this->input->post('alias');
-		// Cek apakah kode Budget sudah ada
-		$param_kode =[
-			'code_budget'  => $code_budget
+		// Membaca data JSON yang dikirim dari AJAX
+		$data = json_decode(file_get_contents("php://input"), true);
+
+		// Header: Mengambil data umum dari JSON
+		$header = [
+			'perusahaan' => $data['perusahaan'],
+			'department' => $data['department'],
+			'saldo_awal' => $data['saldo_awal'],
+			'perpanjang_angaran' => $data['perpanjang_angaran'],
+			'jumlah_project' => $data['jumlah_project']
 		];
-		$exisCode = $this->M_global->getWhere('budgetons', $param_kode)->num_rows();
-		if ($exisCode != null) {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Kode Budget sudah digunakan',
+
+		// Projects: Mengelompokkan data per project
+		$projects = [];
+		foreach ($data['projects'] as $project) {
+			$projectData = [
+				'project_name' => $project['project_name'],
+				'usulan_anggaran' => $project['usulan_anggaran'],
+				'project_desc' => $project['project_desc'],
 			];
-			echo json_encode($jsonmsg);
-			exit;
+
+			// Detail per project: Mengambil counta dan countb
+			$countaDetails = [];
+			foreach ($project['counta'] as $counta) {
+				$countaDetails[] = [
+					'account' => $counta['account'],
+					'keterangan' => $counta['keterangan'],
+					'jumlah' => $counta['jumlah']
+				];
+			}
+
+			$countbDetails = [];
+			foreach ($project['countb'] as $countb) {
+				$countbDetails[] = [
+					'keterangan' => $countb['keterangan'],
+					'jumlah' => $countb['jumlah']
+				];
+			}
+
+			// Menambahkan counta dan countb ke projectData
+			$projectData['counta'] = $countaDetails;
+			$projectData['countb'] = $countbDetails;
+
+			// Menambahkan project data ke array projects
+			$projects[] = $projectData;
 		}
-		$param_alias = ['alias'  => $alias];
-		$exisalias = $this->M_global->getWhere('budgetons', $param_alias)->num_rows();
-		if ($exisalias != null) {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Alias sudah digunakan',
-			];
-			echo json_encode($jsonmsg);
-			exit;
-		}
-		$param_nama = [
-			'name'         => $nama_budget,
-			'code_company' => $perusahaan,
+
+		// Menyiapkan array final untuk dikirim ke view atau diproses lebih lanjut
+		$finalData = [
+			'header' => $header,
+			'projects' => $projects
 		];
-		$exisName = $this->M_global->getWhere('budgetons', $param_nama)->num_rows();
-		if ($exisName != null) {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Kode Budget sudah digunakan',
-			];
-			echo json_encode($jsonmsg);
-			exit;
-		} 
-		// Data untuk insert ke database
-		$datainsert = [
-			'uuid'         => $this->uuid->v4(),
-			'code_budget'  => $code_budget,
-			'code_company' => $perusahaan,
-			'name'         => $nama_budget,
-			'alias'        => $alias,
-			'created_at'   => date('Y-m-d H:i:s'),
-			'updated_at'   => date('Y-m-d H:i:s')
-		];
-		// Melakukan insert data
-		$this->db->insert('budgetons', $datainsert);
-		if ($this->db->affected_rows() > 0) {
-			$jsonmsg = [
-				'hasil' => 'true',
-				'pesan' => 'Data Berhasil Disimpan',
-			];
-		} else {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Gagal Menyimpan Data',
-			];
-		}
-		echo json_encode($jsonmsg);
+
+		// Debug output: Untuk melihat hasilnya
+		var_dump($finalData);
+		die;  // Untuk menghentikan eksekusi dan melihat output
 	}
+
 	public function editform($uuid)
 	{
 		$data =  $this->M_budget->get_where_budget(['a.uuid' => $uuid])->row();

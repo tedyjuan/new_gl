@@ -40,4 +40,21 @@ class C_global extends CI_Controller
 		// Mengembalikan data dalam format JSON
 		echo json_encode($segmentList);
 	}
+	public function getTgb1ByCompany($companyCode)
+	{
+		$param = ['code_company' => $companyCode];
+		$segmentList = $this->M_global->getWhere('trial_balance_account_group_1', $param)->result();
+		// Mengembalikan data dalam format JSON
+		echo json_encode($segmentList);
+	}
+	public function getTgb2()
+	{
+		$param = [
+			'code_company' => $this->input->post('companyCode'),
+			'code_trialbalance1' => $this->input->post('kode_tbg1'),
+		];
+		$segmentList = $this->M_global->getWhere('trial_balance_account_group_2', $param)->result();
+		// Mengembalikan data dalam format JSON
+		echo json_encode($segmentList);
+	}
 }

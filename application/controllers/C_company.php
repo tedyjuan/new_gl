@@ -28,7 +28,7 @@ class C_company extends CI_Controller
 		$dir    = $this->input->get('order')[0]['dir'];     // Urutan 'asc' atau 'desc'
 
 		// Menentukan kolom untuk pengurutan berdasarkan parameter 'order'
-		$order_by = ['code_company', 'name', 'status_data', 'action'][$order];
+		$order_by = ['code_company', 'name', 'action'][$order];
 
 		// Mengambil data dengan pagination dan pencarian
 		$data = $this->M_company->get_paginated_companies($length, $start, $search, $order_by, $dir);
