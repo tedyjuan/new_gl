@@ -20,7 +20,27 @@
         <form id="form_customer">
             <input type="hidden" name="uuid" value="<?= $data->uuid ?>">
 
+         
+
             <div class="row">
+
+            <div class="col-6">
+					<div class="mb-3">
+						<label class="form-label" for="company_id">Perusahaan</label>
+						<select id="company_id" name="company_id" class="form-control-hover-light form-control"
+							data-parsley-required="true" data-parsley-errors-container=".err_company" required="">
+							<?php if (isset($data->company_id)) : ?>
+                                <option value="<?= $data->company_id ?>" selected>
+                                    <?= $data->company_id . ' - ' . $data->company_name ?>
+                                </option>
+                            <?php else : ?>
+                                <option value="">Pilih Customer</option>
+                            <?php endif; ?>
+						</select>
+						<span class="text-danger err_company"></span>
+					</div>
+				</div>
+
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label class="form-label" for="name">Nama Customer</label>
@@ -46,7 +66,7 @@
                 </div>
 
 
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="mb-3">
                         <label class="form-label" for="status">Status</label>
                         <select id="status" name="status" class="form-select select2" data-parsley-required="true" data-parsley-errors-container=".err_status">
@@ -146,7 +166,33 @@
 <script>
     $(document).ready(function() {
 
-
+        $("#company_id").select2({
+			placeholder: 'Cari kode atau nama',
+			minimumInputLength: 1,
+			allowClear: true,
+			ajax: {
+				url: "<?= base_url('C_company/search') ?>",
+				dataType: "json",
+				delay: 250,
+				data: function(params) {
+					return {
+						getCompany: params.term
+					};
+				},
+				processResults: function(data) {
+					var results = [];
+					$.each(data, function(index, item) {
+						results.push({
+							id: item.code_company,
+							text: item.code_company + ' - ' + item.name,
+						});
+					});
+					return {
+						results: results
+					};
+				}
+			}
+		});
         // Submit update
         $('#btnsubmit').click(function(e) {
             e.preventDefault();

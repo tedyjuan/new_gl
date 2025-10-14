@@ -94,14 +94,6 @@
                     </div>
                 </div>
 
-                <!-- File Arsip (Upload Proposal / PDF) -->
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label" for="path_archive">Upload File Proposal / PDF</label>
-                        <input type="file" id="path_archive" name="path_archive" class="form-control" accept=".pdf,.jpg,.jpeg,.png" data-parsley-errors-container=".err_path_archive">
-                        <span class="text-danger err_path_archive"></span>
-                    </div>
-                </div>
 
 
                 <!-- Notes -->

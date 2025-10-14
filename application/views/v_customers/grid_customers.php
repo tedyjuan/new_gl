@@ -21,7 +21,8 @@
 				<tr class="table-primary">
 					<th style="width: 20%">NO</th>
 					<th style="width: 20%">ID</th>
-					<th style="width: 60%">Nama</th>
+					<th style="width: 60%">Perusahaan</th>
+					<th style="width: 60%">Customer</th>
 					<th style="width: 60%">Nomor Telepon</th>
 					<th style="width: 60%">Email</th>
 					<th style="width: 60%">Alamat</th>

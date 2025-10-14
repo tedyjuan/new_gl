@@ -13,7 +13,6 @@
             color: #000;
         }
 
-        /* Header / Kop Surat */
         .header {
             text-align: center;
             border-bottom: 2px solid #000;
@@ -76,7 +75,6 @@
             font-style: italic;
         }
 
-        /* Signature block pakai tabel biar sejajar */
         .ttd-table {
             margin-top: 50px;
             width: 100%;
@@ -111,9 +109,12 @@
 
     <!-- KOP SURAT -->
     <div class="header">
-        <h1>PT. NAMA PERUSAHAAN</h1>
-        <p>Jl. Contoh Alamat No.123, Jakarta</p>
-        <p>Telp. (021) 1234567 | Email: info@namaperusahaan.co.id</p>
+        <h1><?= strtoupper($dataHeader->company_name) ?></h1>
+        <p><?= $dataHeader->company_address ?? 'Alamat perusahaan belum tersedia' ?></p>
+        <p>
+            Telp. <?= $dataHeader->company_phone ?? '-' ?> |
+            Email: <?= $dataHeader->company_email ?? '-' ?>
+        </p>
     </div>
 
     <h2>PROPOSAL PENAWARAN HARGA</h2>
@@ -200,7 +201,7 @@
             <td>
                 <p><strong>Diajukan Oleh,</strong></p>
                 <div class="sign-space"></div>
-                <p><strong>PT. Nama Perusahaan</strong></p>
+                <p><strong><?= $dataHeader->company_owner ?></strong></p>
                 <p>(Authorized Signature)</p>
             </td>
         </tr>

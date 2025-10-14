@@ -25,7 +25,7 @@ class C_customers extends CI_Controller
 		$order  = $this->input->get('order')[0]['column'];
 		$dir    = $this->input->get('order')[0]['dir'];
 
-		$order_by = ['customer_id', 'name', 'email', 'phone', 'email', 'alamat', 'type', 'status', 'action'][$order];
+		$order_by = ['customer_id', 'company_name', 'name', 'email', 'phone', 'email', 'alamat', 'type', 'status', 'action'][$order];
 
 		$data = $this->M_customers->get_paginated_ord_customer($length, $start, $search, $order_by, $dir);
 		$total_records = $this->M_customers->count_all_ord_customer();
@@ -80,7 +80,8 @@ class C_customers extends CI_Controller
 			$result[] = [
 				$no++, // kolom nomor urut
 				$row->customer_id,
-				htmlspecialchars($row->name),
+				$row->company_id . ' - '.htmlspecialchars($row->company_name),
+				$row->customer_id . ' - ' . htmlspecialchars($row->name),
 				htmlspecialchars($row->phone),
 				htmlspecialchars($row->email),
 				htmlspecialchars($row->address),
@@ -126,6 +127,7 @@ class C_customers extends CI_Controller
 
 		// Ambil data dari form
 		$name    = $this->input->post('name', TRUE);
+		$company_id    = $this->input->post('company_id', TRUE);
 		$email   = $this->input->post('email', TRUE);
 		$phone   = $this->input->post('phone', TRUE);
 		$address = $this->input->post('address', TRUE);
@@ -159,6 +161,7 @@ class C_customers extends CI_Controller
 			'phone'      => $phone,
 			'address'    => $address,
 			'status'     => $status,
+			'company_id'       => $company_id,
 			'created_at' => date('Y-m-d H:i:s'),
 			'updated_at' => date('Y-m-d H:i:s')
 		];
@@ -183,23 +186,29 @@ class C_customers extends CI_Controller
 		}
 	}
 	public function editform($uuid)
-	{
-		// Ambil data langsung dari tabel berdasarkan UUID
-		$data = $this->db->get_where('ord_customer', ['uuid' => $uuid])->row();
+{
+	// Ambil data ord_customer + nama company
+	$sql = "
+		SELECT oc.*, c.name AS company_name
+		FROM ord_customer oc
+		LEFT JOIN companies c ON oc.company_id = c.code_company
+		WHERE oc.uuid = ?
+	";
+	$data = $this->db->query($sql, [$uuid])->row();
 
-		if ($data) {
-			$this->load->view('v_customers/edit_customers', [
-				'judul'        => 'Form Edit Customer',
-				'load_back'    => 'C_customers',
-				'load_refresh' => 'C_customers/editform/' . $uuid,
-				'data'         => $data,
-				'uuid'         => $uuid
-			]);
-		} else {
-			// Kalau UUID tidak ditemukan, tampilkan halaman error
-			$this->load->view('error');
-		}
+	if ($data) {
+		$this->load->view('v_customers/edit_customers', [
+			'judul'        => 'Form Edit Customer',
+			'load_back'    => 'C_customers',
+			'load_refresh' => 'C_customers/editform/' . $uuid,
+			'data'         => $data,
+			'uuid'         => $uuid
+		]);
+	} else {
+		$this->load->view('error');
 	}
+}
+
 
 	// Fungsi untuk update data perusahaan
 	public function updatedata()
@@ -209,6 +218,7 @@ class C_customers extends CI_Controller
 		// Ambil data dari POST
 		$uuid    = $this->input->post('uuid', TRUE);
 		$name    = $this->input->post('name', TRUE);
+		$company_id    = $this->input->post('company_id', TRUE);
 		$email   = $this->input->post('email', TRUE);
 		$phone   = $this->input->post('phone', TRUE);
 		$address = $this->input->post('address', TRUE);
@@ -259,6 +269,7 @@ class C_customers extends CI_Controller
 			'phone'      => $phone,
 			'address'    => $address,
 			'status'     => $status,
+			'company_id'       => $company_id,
 			'updated_at' => date('Y-m-d H:i:s')
 		];
 

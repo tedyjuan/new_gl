@@ -104,11 +104,11 @@ class C_customers_budget extends CI_Controller
 			} else {
 				// kalau belum approved -> semua opsi aktif
 				$aksi .= '
-					<button class="dropdown-item" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
-						<i class="bi bi-pencil"></i> Edit
-					</button>
 					<button class="dropdown-item" onclick="editform(\'' . $url_status . '\', \'' . $row->uuid . '\')">
 						<i class="bi bi-clipboard-check"></i> Edit Status
+					</button>
+					<button class="dropdown-item" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
+					<i class="bi bi-pencil"></i> Edit
 					</button>
 					<button class="dropdown-item" onclick="editform(\'' . $url_detail . '\', \'' . $row->uuid . '\')">
 						<i class="bi bi-eye"></i> Detail
@@ -262,12 +262,26 @@ class C_customers_budget extends CI_Controller
 		$this->db->trans_commit();
 
 		// === 🔥 Auto Generate Proposal PDF ===
-		$dataHeader = $this->db->select('b.*, c.name as customer_name, c.address, c.phone, c.email')
+			$dataHeader = $this->db->select('
+			b.*, 
+			c.name AS customer_name, 
+			c.address, 
+			c.phone, 
+			c.email, 
+			comp.name AS company_name,
+			comp.phone AS company_phone,
+			comp.email AS company_email,
+			comp.address AS company_address,
+			comp.owner_name AS company_owner
+
+			')
 			->from('ord_customer_budget b')
 			->join('ord_customer c', 'b.customer_id = c.customer_id', 'left')
+			->join('companies comp', 'c.company_id = comp.code_company', 'left')
 			->where('b.uuid', $uuid)
 			->get()
 			->row();
+
 
 		$dataItem = $this->db->get_where('ord_customer_budget_item', ['budget_id' => $budget_id])->result();
 
@@ -534,12 +548,25 @@ class C_customers_budget extends CI_Controller
 		}
 
 		// === Generate PDF baru ===
-		$dataHeader = $this->db->select('b.*, c.name as customer_name, c.address, c.phone, c.email')
-			->from('ord_customer_budget b')
-			->join('ord_customer c', 'b.customer_id = c.customer_id', 'left')
-			->where('b.uuid', $uuid)
-			->get()
-			->row();
+		$dataHeader = $this->db->select('
+		b.*, 
+		c.name AS customer_name, 
+		c.address, 
+		c.phone, 
+		c.email, 
+		comp.name AS company_name,
+		comp.phone AS company_phone,
+		comp.email AS company_email,
+		comp.address AS company_address,
+		comp.owner_name AS company_owner
+
+		')
+		->from('ord_customer_budget b')
+		->join('ord_customer c', 'b.customer_id = c.customer_id', 'left')
+		->join('companies comp', 'c.company_id = comp.code_company', 'left')
+		->where('b.uuid', $uuid)
+		->get()
+		->row();
 
 		$dataItem = $this->db->get_where('ord_customer_budget_item', ['budget_id' => $budget_id])->result();
 
