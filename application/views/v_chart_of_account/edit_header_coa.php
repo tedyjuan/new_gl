@@ -94,36 +94,42 @@
 						<label class="form-label" for="tbag1">Trial Balance Group 1</label>
 						<select id="tbag1" name="tbag1" class="form-control-hover-light form-control select2">
 							<option value="">Pilih</option>
-							<?php foreach ($tbag1List as $tbg1) : ?>
-								<option value="<?= $tbg1->code_trialbalance1 ?>"
-									<?= $data->code_trialbalance1 == "$tbg1->code_trialbalance1" ? 'selected' : '' ?>>
-									<?= $tbg1->code_trialbalance1 ?> - <?= $tbg1->description ?>
-								</option>
-							<?php endforeach; ?>
+							<?php if ($data->code_trialbalance1 != '') { ?>
+								<?php foreach ($tbag1List as $tbg1) : ?>
+									<option value="<?= $tbg1->code_trialbalance1 ?>"
+										<?= $data->code_trialbalance1 == "$tbg1->code_trialbalance1" ? 'selected' : '' ?>>
+										<?= $tbg1->code_trialbalance1 ?> - <?= $tbg1->description ?>
+									</option>
+								<?php endforeach; ?>
+							<?php } ?>
 						</select>
 					</div>
 					<div class="mb-3">
 						<label class="form-label" for="tbag2">Trial Balance Group 2</label>
 						<select id="tbag2" name="tbag2" class="form-control-hover-light form-control select2">
 							<option value="">Pilih</option>
-							<?php foreach ($tbag2List as $tbg2) : ?>
-								<option value="<?= $tbg2->code_trialbalance2 ?>"
-									<?= $data->code_trialbalance2 == "$tbg2->code_trialbalance2" ? 'selected' : '' ?>>
-									<?= $tbg2->code_trialbalance2 ?> - <?= $tbg2->description ?>
-								</option>
-							<?php endforeach; ?>
+							<?php if ($data->code_trialbalance2 != '') { ?>
+								<?php foreach ($tbag2List as $tbg2) : ?>
+									<option value="<?= $tbg2->code_trialbalance2 ?>"
+										<?= $data->code_trialbalance2 == "$tbg2->code_trialbalance2" ? 'selected' : '' ?>>
+										<?= $tbg2->code_trialbalance2 ?> - <?= $tbg2->description ?>
+									</option>
+								<?php endforeach; ?>
+							<?php } ?>
 						</select>
 					</div>
 					<div class="mb-3">
 						<label class="form-label" for="tbag3">Trial Balance Group 3</label>
 						<select id="tbag3" name="tbag3" class="form-control-hover-light form-control select2">
 							<option value="">Pilih</option>
-							<?php foreach ($tbag3List as $tbg3) : ?>
-								<option value="<?= $tbg3->code_trialbalance3 ?>"
-									<?= $data->code_trialbalance3 == "$tbg3->code_trialbalance3" ? 'selected' : '' ?>>
-									<?= $tbg3->code_trialbalance3 ?> - <?= $tbg3->description ?>
-								</option>
-							<?php endforeach; ?>
+							<?php if ($data->code_trialbalance3 != '') { ?>
+								<?php foreach ($tbag3List as $tbg3) : ?>
+									<option value="<?= $tbg3->code_trialbalance3 ?>"
+										<?= $data->code_trialbalance3 == "$tbg3->code_trialbalance3" ? 'selected' : '' ?>>
+										<?= $tbg3->code_trialbalance3 ?> - <?= $tbg3->description ?>
+									</option>
+								<?php endforeach; ?>
+							<?php } ?>
 						</select>
 					</div>
 					<div class="mb-3">
@@ -320,6 +326,7 @@
 	$('#btnsubmit').click(function(e) {
 		e.preventDefault();
 		let form = $('#forms_add');
+		var uuid = "<?= ($uuid) ?>";
 		form.parsley().validate();
 		if (form.parsley().isValid()) {
 			$.ajax({
@@ -327,7 +334,7 @@
 				type: 'POST',
 				method: 'POST',
 				dataType: 'JSON',
-				data: form.serialize(),
+				data: form.serialize() + '&uuid=' + uuid,
 				// beforeSend: function() {
 				// 	showLoader();
 				// },

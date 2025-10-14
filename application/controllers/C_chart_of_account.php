@@ -99,7 +99,6 @@ class C_chart_of_account extends CI_Controller
 	}
 	public function simpandata()
 	{
-		
 		// Validasi input
 		$this->form_validation->set_rules('perusahaan', 'Perusahaan', 'required');
 		$this->form_validation->set_rules('no_akun', 'No Chart Of Account', 'required');
@@ -207,94 +206,80 @@ class C_chart_of_account extends CI_Controller
 			$this->load->view('error');
 		}
 	}
-	// public function update()
-	// {
-	// 	// Ambil data dari POST request
-	// 	$uuid = $this->input->post('uuid'); 
-	// 	$account_number = $this->input->post('kode_chart_of_account');
-	// 	$nama_chart_of_account = $this->input->post('nama_chart_of_account');
-	// 	$alias_post       = $this->input->post('alias');
-	// 	// Cek apakah UUID Chart Of Account ada di database
-	// 	$data =  $this->M_chart_of_account->get_where_chart_of_account(['a.uuid' => $uuid])->row();
-	// 	if ($data != null) {
-	// 		$code_company = $data->code_company;
-	// 		$cek_cost_center =  $this->M_global->getWhere('cost_centers', ['account_number' => $data->account_number])->num_rows();
-	// 		if ($cek_cost_center != 0) {
-	// 			$jsonmsg = [
-	// 				'hasil' => 'false',
-	// 				'pesan' => 'Tidak bisa mengubah Data Chart Of Account karena sedang digunakan di cost centers.',
-	// 			];
-	// 			echo json_encode($jsonmsg);
-	// 			exit;
-	// 		}
-	// 		if($data->account_number != $account_number){
-	// 			$cekkode =  $this->M_chart_of_account->get_where_chart_of_account(['a.account_number' => $account_number, "a.code_company" => $code_company ])->num_rows();
-	// 			if ($cekkode != 0) {
-	// 				$jsonmsg = [
-	// 					'hasil' => 'false',
-	// 					'pesan' => 'Kode Depo sudah terdaftar',
-	// 				];
-	// 				echo json_encode($jsonmsg);
-	// 				exit;
-	// 			}
-	// 		}
-	// 		if($data->name != $nama_chart_of_account){
-	// 			$param_nama = ['a.name' => $nama_chart_of_account, "a.code_company" => $code_company];
-	// 			$ceknama =  $this->M_chart_of_account->get_where_chart_of_account($param_nama)->num_rows();
-	// 			if ($ceknama !== 0) {
-	// 				$jsonmsg = [
-	// 					'hasil' => 'false',
-	// 					'pesan' => 'Nama sudah terdaftar',
-	// 				];
-	// 				echo json_encode($jsonmsg);
-	// 				exit;
-	// 			}
-	// 		}
-	// 		if($data->alias !== $alias_post){
-	// 			$cekalias =  $this->M_chart_of_account->get_where_chart_of_account(['a.alias' => $alias_post])->num_rows();
-	// 			if ($cekalias !== 0) {
-	// 				$jsonmsg = [
-	// 					'hasil' => 'false',
-	// 					'pesan' => 'Alias sudah terdaftar',
-	// 				];
-	// 				echo json_encode($jsonmsg);
-	// 				exit;
-	// 			}
-	// 		}
-	// 		$dataupdate = [
-	// 			'uuid'         => $this->uuid->v4(),
-	// 			'account_number'  => $account_number,
-	// 			'name'         => $nama_chart_of_account,
-	// 			'alias'        => $alias_post,
-	// 			'updated_at'   => date('Y-m-d H:i:s')
-	// 		];
-	// 		// Melakukan update data
-	// 		$update = $this->M_global->update($dataupdate, 'C_chart_of_accountons', ['uuid' => $uuid]);
-	// 		if ($update) {
-	// 			// Jika update berhasil
-	// 			$jsonmsg = [
-	// 				'hasil' => 'true',
-	// 				'pesan' => 'Data Berhasil Diupdate',
-	// 			];
-	// 			echo json_encode($jsonmsg);
-	// 		} else {
-	// 			// Jika gagal update
-	// 			$jsonmsg = [
-	// 				'hasil' => 'false',
-	// 				'pesan' => 'Gagal Menyimpan Data',
-	// 			];
-	// 			echo json_encode($jsonmsg);
-	// 		}
-			
-	// 	} else {
-	// 		// Jika UUID Chart Of Account tidak ditemukan
-	// 		$jsonmsg = [
-	// 			'hasil' => 'false',
-	// 			'pesan' => 'UUID Chart Of Account tidak ditemukan',
-	// 		];
-	// 		echo json_encode($jsonmsg);
-	// 	}
-	// }
+	public function update()
+	{
+		// Ambil data dari POST request
+		$uuid       = $this->input->post('uuid');
+		$perusahaan = $this->input->post('perusahaan');
+		$no_akun    = $this->input->post('no_akun');
+		$nama_akun  = $this->input->post('nama_akun');
+		$akun_dc    = $this->input->post('akun_dc');
+		$akun_group = $this->input->post('akun_group');
+		$akun_type  = $this->input->post('akun_type');
+		$tbag1      = $this->input->post('tbag1');
+		$tbag2      = $this->input->post('tbag2');
+		$tbag3      = $this->input->post('tbag3');
+		$deskripsi  = $this->input->post('deskripsi');
+		// Cek apakah kode Chart Of Account sudah ada
+		$param_kode = [
+			'account_number'  => $no_akun,
+			'code_company'  => $perusahaan,
+		];
+		$exisCode = $this->M_global->getWhere('chart_of_accounts', $param_kode)->num_rows();
+		if ($exisCode != null) {
+			$jsonmsg = [
+				'hasil' => 'false',
+				'pesan' => 'Kode Chart Of Account sudah digunakan',
+			];
+			echo json_encode($jsonmsg);
+			exit;
+		}
+		$param_nama = [
+			'name'         => $nama_akun,
+			'code_company' => $perusahaan,
+		];
+		$exisName = $this->M_global->getWhere('chart_of_accounts', $param_nama)->num_rows();
+		if ($exisName != null) {
+			$jsonmsg = [
+				'hasil' => 'false',
+				'pesan' => 'Nama Chart Of Account sudah digunakan',
+			];
+			echo json_encode($jsonmsg);
+			exit;
+		}
+		// Data untuk insert ke database
+		// kalau 4 = unit 
+		$datainsert = [
+			'uuid'               => $this->uuid->v4(),
+			'account_number'     => $no_akun,
+			'code_company'       => $perusahaan,
+			'name'               => $nama_akun,
+			'description'        => $deskripsi,
+			'account_type'       => $akun_type,
+			'account_method'     => $akun_dc,
+			'account_group'      => $akun_group,
+			'cost_center_type'   => 'unit',
+			'code_trialbalance1' => $tbag1,
+			'code_trialbalance2' => $tbag2,
+			'code_trialbalance3' => $tbag3,
+			'created_at'         => date('Y-m-d H:i:s'),
+			'updated_at'         => date('Y-m-d H:i:s')
+		];
+		// Melakukan insert data
+		$this->db->insert('chart_of_accounts', $datainsert);
+		if ($this->db->affected_rows() > 0) {
+			$jsonmsg = [
+				'hasil' => 'true',
+				'pesan' => 'Data Berhasil Disimpan',
+			];
+		} else {
+			$jsonmsg = [
+				'hasil' => 'false',
+				'pesan' => 'Gagal Menyimpan Data',
+			];
+		}
+		echo json_encode($jsonmsg);
+	}
 	public function hapusdata()
 	{
 		$uuid = $this->input->post('uuid');
