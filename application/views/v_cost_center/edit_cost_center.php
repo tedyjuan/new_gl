@@ -56,7 +56,6 @@
 						<select id="depo" name="depo" class="form-control-hover-light form-control select2"
 							data-parsley-required="true" data-parsley-errors-container=".err_depo" required="">
 							<?php foreach ($depoList as $depo) : ?>
-
 								<option value="<?= $depo->code_depo ?>"
 									<?= $data->code_depo == "$depo->code_depo" ? 'selected' : '' ?>
 									data-alias="<?= $depo->alias ?>" data-area="<?= $depo->code_area ?>">

@@ -163,7 +163,7 @@ class C_trial_balance extends CI_Controller
 		if ($exisCode != null) {
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Kode Divisi sudah digunakan',
+				'pesan' => 'Kode Trial Balance sudah digunakan',
 			];
 			echo json_encode($jsonmsg);
 			exit;
@@ -284,51 +284,63 @@ class C_trial_balance extends CI_Controller
 	{
 		
 		// Ambil data dari request
-		$uuid = $this->input->post('uuid');
-		 var_dump($uuid); die; 
+		$uuid       = $this->input->post('uuid');
 		$perusahaan = $this->input->post('perusahaan');
 		$kode_tbg1  = $this->input->post('kode_tbg1');
 		$kode_tbg2  = $this->input->post('kode_tbg2');
 		$kode_tbg3  = $this->input->post('kode_tbg3');
 		$des        = $this->input->post('des');
-		$param_kode = [
-			'code_trialbalance3'  => $kode_tbg3,
-			'code_company'  => $perusahaan,
-		];
-		$exisCode = $this->M_global->getWhere('trial_balance_account_group_3', $param_kode)->num_rows();
-		if ($exisCode != null) {
+		$cek_data = $this->M_global->getWhere('trial_balance_account_group_3', ['uuid' => $uuid])->row();
+		if($cek_data == null){
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Kode Divisi sudah digunakan',
+				'pesan' => 'Uuid Tidak ditemukan',
 			];
 			echo json_encode($jsonmsg);
 			exit;
 		}
-
-		// Data untuk insert ke database
-		$datainsert = [
-			'uuid'               => $this->uuid->v4(),
-			'code_company'       => $perusahaan,
-			'code_trialbalance3' => $kode_tbg3,
-			'description'        => $des,
-			'code_trialbalance1' => $kode_tbg1,
-			'code_trialbalance2' => $kode_tbg2,
-			'created_at'         => date('Y-m-d H:i:s'),
-			'updated_at'         => date('Y-m-d H:i:s')
-		];
-		// Melakukan insert data
-		$this->db->insert('trial_balance_account_group_3', $datainsert);
-		if ($this->db->affected_rows() > 0) {
-			$jsonmsg = [
-				'hasil' => 'true',
-				'pesan' => 'Data Berhasil Disimpan',
-			];
-		} else {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Gagal Menyimpan Data',
-			];
+		if ($cek_data->code_trialbalance3 !== $kode_tbg3) {
+			$param = ['code_trialbalance3' => $kode_tbg3, 'code_company' => $perusahaan];
+			if ($this->M_global->getWhere("trial_balance_account_group_3", $param)->num_rows() != 0) {
+				echo json_encode([
+					'hasil' => 'false',
+					'pesan' => 'Kode Trial Balance sudah digunakan',
+				]);
+				return;
+			}
 		}
-		echo json_encode($jsonmsg);
+		// Data untuk insert ke database
+		$this->db->trans_start();
+		try {
+			$dataupdate = [
+				'code_company'       => $perusahaan,
+				'code_trialbalance3' => $kode_tbg3,
+				'description'        => $des,
+				'code_trialbalance1' => $kode_tbg1,
+				'code_trialbalance2' => $kode_tbg2,
+				'updated_at'         => date('Y-m-d H:i:s')
+			];
+			// Melakukan insert data
+			if (!$this->M_global->update($dataupdate, "trial_balance_account_group_3", ['uuid' => $uuid])) {
+				$this->db->trans_rollback();
+				echo json_encode([
+					'hasil' => 'false',
+					'pesan' => 'Gagal Menyimpan Data',
+				]);
+				return;
+			}
+			// Commit transaksi jika semua berhasil
+			$this->db->trans_complete();
+			echo json_encode([
+				'hasil' => 'true',
+				'pesan' => 'Data Berhasil Diupdate',
+			]);
+		} catch (Exception $e) {
+			$this->db->trans_rollback();
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Gagal Menyimpan Data: ' . $e->getMessage(),
+			]);
+		}
 	}
 }

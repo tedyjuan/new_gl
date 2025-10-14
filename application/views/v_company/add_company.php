@@ -20,7 +20,7 @@
             <div class="row">
                 <div class="col-6">
                     <div class="mb-3">
-                        <label class="form-label" for="company_code">Kode Perusahaan</label>
+                        <label class="form-label" for="company_code">Code Company</label>
                         <input type="text" id="company_code" name="company_code" data-parsley-minlength="3"
                             class="form-control-hover-light form-control" placeholder="input kode perusahaan max:5 min:3 karakter"
                             data-parsley-required="true" data-parsley-errors-container=".err_code" required="">
@@ -29,7 +29,7 @@
                 </div>
                 <div class="col-6">
                     <div class="mb-3">
-                        <label class="form-label" for="company_name">Nama Perusahaan</label>
+                        <label class="form-label" for="company_name">Name Company</label>
                         <input type="text" id="company_name" name="company_name"
                             class="form-control-hover-light form-control" placeholder="input nama perusahaan"
                             data-parsley-required="true" data-parsley-errors-container=".err_name" required="">

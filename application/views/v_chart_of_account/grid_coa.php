@@ -20,9 +20,11 @@
 		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%">
 			<thead>
 				<tr class="table-primary">
-					<th style="width: 20%">Code Company</th>
-					<th style="width: 60%">Name Company</th>
-					<th style="width: 10%" class="text-center">Aksi</th>
+					<th style="width: 5%">Code Company</th>
+					<th style="width: 15%">ID Akun</th>
+					<th >Nama Akun</th>
+					<th style="width: 15%">Type Akun</th>
+					<th style="width: 5%">Action</th>
 				</tr>
 			</thead>
 		</table>
@@ -40,8 +42,8 @@
 			processing: true,
 			serverSide: true, // Mengaktifkan server-side processing
 			ajax: {
-				url: "<?= base_url('C_company/griddata'); ?>", // URL ke controller
-				type: "GET", // Gunakan GET untuk request
+				url: "<?= base_url('C_chart_of_account/griddata'); ?>", // URL ke controller
+				type: "POST", // Gunakan GET untuk request
 			},
 			columnDefs: [{
 				orderable: false,
