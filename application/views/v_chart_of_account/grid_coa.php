@@ -22,8 +22,8 @@
 				<tr class="table-primary">
 					<th style="width: 5%">Code Company</th>
 					<th style="width: 15%">ID Akun</th>
-					<th style="width: 17%">Nama Akun</th>
-					<th style="width: 8%">Type Akun</th>
+					<th >Nama Akun</th>
+					<th style="width: 15%">Type Akun</th>
 					<th style="width: 5%">Action</th>
 				</tr>
 			</thead>

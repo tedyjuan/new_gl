@@ -6,9 +6,8 @@
 				<h2 class="mb-0"><?= $judul ?></h2>
 				<div class="div ">
 					<button class="btn btn-sm btn-primary" onclick="loadform('<?= $load_grid ?>')"><i
-							class="bi bi-arrow-left-circle"></i> Back</button>
-					<a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
-						onclick="loadform('<?= $load_refresh ?>')">
+							class="bi bi-arrow-left-circle"></i> Kembali</button>
+					<a href="javascript:void(0)" class="btn btn-sm btn-outline-primary" onclick="loadform('<?= $load_refresh ?>')">
 						<i class="bi bi-arrow-clockwise"></i> Refresh
 					</a>
 				</div>
@@ -20,44 +19,117 @@
 			<div class="row">
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="perusahaan">Perusahaan</label>
-						<select id="perusahaan" name="perusahaan" class="bg-soft-dark form-control select2"
-							disabled data-parsley-required="true" data-parsley-errors-container=".err_name" required="">
+						<label class="form-label" for="perusahaan">Company</label>
+						<select id="perusahaan" name="perusahaan" class="form-control-hover-light form-control" disabled>
 							<option value="">Pilih</option>
+							<?php foreach ($companys as $company) : ?>
+								<option value="<?= $company->code_company ?>"
+									<?= $data->code_company == "$company->code_company" ? 'selected' : '' ?>>
+									<?= $company->code_company ?> - <?= $company->name ?>
+								</option>
+							<?php endforeach; ?>
 						</select>
-						<span class="text-danger err_name"></span>
 					</div>
-				</div>
-				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="kode_divisi">Kode Divisi</label>
-						<input type="text" id="kode_divisi" name="kode_divisi" data-parsley-required="true"
-							data-parsley-errors-container=".err_kodedivisi" required=""
-							value="<?= $data->code_divisi ?>" class="form-control-hover-light form-control"
-							placeholder="input kode divisi max:2 karakter">
-						<span class="text-danger err_kodedivisi"></span>
+						<label class="form-label" for="no_akun">No Akun</label>
+						<input type="text" id="no_akun" name="no_akun" data-parsley-required="true"
+							data-parsley-errors-container=".err_no_akun" value="<?= $data->account_number; ?>" required="" class="form-control-hover-light form-control"
+							placeholder="Nomor 4 angka">
+						<span class="text-danger err_no_akun"></span>
 					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="nama_divisi">Nama Divisi</label>
-						<input type="text" id="nama_divisi" name="nama_divisi" value="<?= $data->name ?>"
-							class="form-control-hover-light form-control kapital" data-parsley-required="true"
-							data-parsley-errors-container=".err_namadivisi" required=""
-							placeholder="input nama divisi">
-						<span class="text-danger err_namadivisi"></span>
-					</div>
-				</div>
-				<div class="col-6">
-					<div class="mb-3">
-						<label class="form-label" for="alias">Alias</label>
-						<input type="text" id="alias" name="alias" data-parsley-required="true"
-							data-parsley-errors-container=".err_sing_cc" required="" value="<?= $data->alias ?>"
+						<label class="form-label" for="nama_akun">Nama Akun</label>
+						<input type="text" id="nama_akun" name="nama_akun" value="<?= $data->name; ?>" data-parsley-required="true"
+							data-parsley-errors-container=".err_nama_akun" required=""
 							class="form-control-hover-light form-control kapital"
-							placeholder="input singkatan cost center">
-						<span class="text-danger err_sing_cc"></span>
+							placeholder="input nama akun">
+						<span class="text-danger err_nama_akun"></span>
+					</div>
+					<div class="row">
+						<div class="col-6">
+							<div class="mb-3">
+								<label class="form-label" for="akun_dc">Debit / Kredit</label>
+								<select id="akun_dc" name="akun_dc" class="form-control-hover-light form-control select2"
+									data-parsley-required="true" data-parsley-errors-container=".err_akun_dc" required="">
+									<option value="">Pilih</option>
+									<option value="debit" <?= $data->account_method == "debit" ? 'selected' : '' ?>>Debit</option>
+									<option value="credit" <?= $data->account_method == "credit" ? 'selected' : '' ?>>Kredit</option>
+								</select>
+								<span class="text-danger err_akun_dc"></span>
+							</div>
+						</div>
+						<div class="col-6">
+							<div class="mb-3">
+								<label class="form-label" for="akun_group">COA Group</label>
+								<select id="akun_group" name="akun_group" class="form-control-hover-light form-control select2"
+									data-parsley-required="true" data-parsley-errors-container=".err_akun_group" required="">
+									<option value="">Pilih</option>
+									<option value="kas" <?= $data->account_group == "kas" ? 'selected' : '' ?>>Kas</option>
+									<option value="bank" <?= $data->account_group == "bank" ? 'selected' : '' ?>>Bank</option>
+									<option value="inventory" <?= $data->account_group == "inventory" ? 'selected' : '' ?>>inventory</option>
+									<option value="sales" <?= $data->account_group == "sales" ? 'selected' : '' ?>>Sales</option>
+								</select>
+								<span class="text-danger err_akun_group"></span>
+							</div>
+						</div>
+					</div>
+					<div class="mb-3">
+						<label class="form-label" for="akun_type">Tipe Akun</label>
+						<select id="akun_type" name="akun_type" class="form-control-hover-light form-control select2"
+							data-parsley-required="true" data-parsley-errors-container=".err_akun_type" required="">
+							<option value="">Pilih </option>
+							<?php foreach ($type_akun as $type) : ?>
+								<option value="<?= $type->account_type ?>"
+									<?= $data->account_type == "$type->account_type" ? 'selected' : '' ?>>
+									<?= $type->account_type ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+						<span class="text-danger err_akun_type"></span>
+					</div>
+				</div>
+				<div class="col-6">
+
+					<div class="mb-3">
+						<label class="form-label" for="tbag1">Trial Balance Group 1</label>
+						<select id="tbag1" name="tbag1" class="form-control-hover-light form-control select2">
+							<option value="">Pilih</option>
+							<?php foreach ($tbag1List as $tbg1) : ?>
+								<option value="<?= $tbg1->code_trialbalance1 ?>"
+									<?= $data->code_trialbalance1 == "$tbg1->code_trialbalance1" ? 'selected' : '' ?>>
+									<?= $tbg1->code_trialbalance1 ?> - <?= $tbg1->description ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</div>
+					<div class="mb-3">
+						<label class="form-label" for="tbag2">Trial Balance Group 2</label>
+						<select id="tbag2" name="tbag2" class="form-control-hover-light form-control select2">
+							<option value="">Pilih</option>
+							<?php foreach ($tbag2List as $tbg2) : ?>
+								<option value="<?= $tbg2->code_trialbalance2 ?>"
+									<?= $data->code_trialbalance2 == "$tbg2->code_trialbalance2" ? 'selected' : '' ?>>
+									<?= $tbg2->code_trialbalance2 ?> - <?= $tbg2->description ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</div>
+					<div class="mb-3">
+						<label class="form-label" for="tbag3">Trial Balance Group 3</label>
+						<select id="tbag3" name="tbag3" class="form-control-hover-light form-control select2">
+							<option value="">Pilih</option>
+							<?php foreach ($tbag3List as $tbg3) : ?>
+								<option value="<?= $tbg3->code_trialbalance3 ?>"
+									<?= $data->code_trialbalance3 == "$tbg3->code_trialbalance3" ? 'selected' : '' ?>>
+									<?= $tbg3->code_trialbalance3 ?> - <?= $tbg3->description ?>
+								</option>
+							<?php endforeach; ?>
+						</select>
+					</div>
+					<div class="mb-3">
+						<label class="form-label" for="deskripsi">Deskripsi</label>
+						<textarea name="deskripsi" id="deskripsi" cols="4" rows="4" placeholder="Input deskripsi"
+							class="form-control-hover-light form-control"><?= $data->description; ?></textarea>
 					</div>
 				</div>
 			</div>
@@ -73,22 +145,192 @@
 		</form>
 	</div>
 </div>
+
+<script>
+	$(document).ready(function() {
+		$(".select2").select2();
+		$('#no_akun').mask('0000');
+		$('#no_akun').on('blur', function() {
+			let inputValue = $(this).val();
+			if (inputValue.length === 1) {
+				inputValue = inputValue + '000';
+			} else if (inputValue.length === 2) {
+				inputValue = inputValue + '00';
+			} else if (inputValue.length === 3) {
+				inputValue = inputValue + '0';
+			}
+			$(this).val(inputValue);
+		});
+		$('#no_akun').on('keyup', function() {
+			let inputValue = $(this).val();
+
+			if (inputValue.startsWith('0')) {
+				inputValue = inputValue.slice(1);
+			}
+			// Jika input lebih kecil dari 1, kosongkan input
+			if (parseInt(inputValue) < 1 && inputValue !== '') {
+				inputValue = '';
+			}
+			// Set kembali value setelah manipulasi
+			$(this).val(inputValue);
+		});
+		$('.kapital').on('input', function(e) {
+			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
+		});
+		$("#perusahaan").select2({
+			placeholder: 'Cari kode atau nama',
+			minimumInputLength: 1,
+			allowClear: true,
+			ajax: {
+				url: "<?= base_url('C_company/search') ?>",
+				dataType: "json",
+				delay: 250,
+				data: function(params) {
+					return {
+						getCompany: params.term
+					};
+				},
+				processResults: function(data) {
+					var results = [];
+					$.each(data, function(index, item) {
+						results.push({
+							id: item.code_company,
+							text: item.code_company + ' - ' + item.name,
+						});
+					});
+					return {
+						results: results
+					};
+				}
+			}
+		});
+	})
+</script>
+<script>
+	$('#perusahaan').on('change', function() {
+		var companyCode = $(this).val();
+		if (companyCode == '') {
+			$('#akun_type').empty().append('<option value="">Pilih company dahulu</option>');
+			$('#tbag1').empty().append('<option value="">Pilih Type dahulu</option>');
+			$('#tbag2').empty().append('<option value="">Pilih group 1 dahulu</option>');
+			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
+		} else {
+			$('#akun_type').empty().append('<option value="">Pilih</option>');
+		}
+		if (companyCode) {
+			$.ajax({
+				url: '<?= base_url('C_chart_of_account/get_tbag1'); ?>',
+				method: 'POST',
+				dataType: 'JSON',
+				data: {
+					code_company: companyCode,
+				},
+				success: function(data) {
+					data.forEach(function(coa) {
+						$('#akun_type').append('<option value="' + coa.account_type + '" data-company="' + companyCode + '" >' + coa.account_type + '</option>');
+					});
+				}
+			});
+
+		}
+	});
+	$('#akun_type').on('change', function() {
+		var akun_type = $(this).val();
+		if (akun_type == '') {
+			$('#tbag1').empty().append('<option value="">Pilih Type dahulu</option>');
+			$('#tbag2').empty().append('<option value="">Pilih group 1 dahulu</option>');
+			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
+		} else {
+			$('#tbag1').empty().append('<option value="">Pilih</option>');
+		}
+		var company = $('#akun_type option:selected').data('company');
+		if (akun_type) {
+			$.ajax({
+				url: '<?= base_url('C_chart_of_account/get_tbag1'); ?>',
+				method: 'POST',
+				dataType: 'JSON',
+				data: {
+					akun_type: akun_type,
+					code_company: company,
+				},
+				success: function(data) {
+					data.forEach(function(coa) {
+						$('#tbag1').append('<option value="' + coa.code_trialbalance1 + '" data-company="' + company + '" >' + '(' + coa.code_trialbalance1 + ') ' + coa.description + '</option>');
+					});
+				}
+			});
+
+		}
+	});
+	$('#tbag1').on('change', function() {
+		var val_tbag1 = $(this).val();
+		if (val_tbag1 == '') {
+			$('#tbag2').empty().append('<option value="">Pilih group 1 dahulu</option>');
+			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
+		} else {
+			$('#tbag2').empty().append('<option value="">Pilih</option>');
+		}
+		var company = $('#tbag1 option:selected').data('company');
+		if (val_tbag1) {
+			$.ajax({
+				url: '<?= base_url('C_chart_of_account/get_tbag2'); ?>',
+				method: 'POST',
+				dataType: 'JSON',
+				data: {
+					tbag1: val_tbag1,
+					code_company: company,
+				},
+				success: function(data) {
+					data.forEach(function(tbg2) {
+						$('#tbag2').append('<option value="' + tbg2.code_trialbalance2 + '" data-company="' + company + '" >' + '(' + tbg2.code_trialbalance2 + ') ' + tbg2.description + '</option>');
+					});
+				}
+			});
+
+		}
+	});
+	$('#tbag2').on('change', function() {
+		var val_tbag2 = $(this).val();
+		if (val_tbag2 == '') {
+			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
+		} else {
+			$('#tbag3').empty().append('<option value="">Pilih</option>');
+		}
+		if (val_tbag2) {
+			var company = $('#tbag2 option:selected').data('company');
+			$.ajax({
+				url: '<?= base_url('C_chart_of_account/get_tbag3'); ?>',
+				method: 'POST',
+				dataType: 'JSON',
+				data: {
+					tbag2: val_tbag2,
+					code_company: company,
+				},
+				success: function(data) {
+					data.forEach(function(tbg3) {
+						$('#tbag3').append('<option value="' + tbg3.code_trialbalance3 + '" data-company="' + company + '" >' + '(' + tbg3.code_trialbalance3 + ') ' + tbg3.description + '</option>');
+					});
+				}
+			});
+
+		}
+	});
+</script>
 <script>
 	$('#btnsubmit').click(function(e) {
 		e.preventDefault();
 		let form = $('#forms_add');
-		var uuid = "<?= ($uuid) ?>";
 		form.parsley().validate();
 		if (form.parsley().isValid()) {
 			$.ajax({
-				url: "<?= base_url('C_divisi/update') ?>",
+				url: "<?= base_url('C_chart_of_account/simpandata') ?>",
 				type: 'POST',
 				method: 'POST',
 				dataType: 'JSON',
-				data: form.serialize() + '&uuid=' + uuid,
-				beforeSend: function() {
-					showLoader();
-				},
+				data: form.serialize(),
+				// beforeSend: function() {
+				// 	showLoader();
+				// },
 				success: function(data) {
 					if (data.hasil == 'true') {
 						swet_sukses(data.pesan);
@@ -98,30 +340,18 @@
 						hideLoader();
 					}
 				},
+				error: function(xhr) {
+					console.log("ERROR:", xhr);
+					if (xhr.status === 422) {
+						let errors = xhr.responseJSON.errors;
+						$.each(errors, function(key, value) {
+							$(`.err_${key}`).html(value[0]);
+						});
+					} else {
+						swet_gagal("Terjadi kesalahan server (" + xhr.status + ")");
+					}
+				},
 			});
 		}
 	});
-
-	$(document).ready(function() {
-		$("#perusahaan").empty().append(`<option class='form-control' value="<?= $data->code_company ?>"><?= $data->code_company ?> - <?= $data->nm_company ?></option>`).val("<?= $data->code_company ?>").trigger('change');
-		$('#kode_divisi').on('keyup', function() {
-			var currentValue = $(this).val();
-			currentValue = currentValue.replace(/[^0-9]/g, '');
-			if (currentValue === '') {
-				var incrementedValue = 0;
-			} else {
-				var incrementedValue = parseInt(currentValue);
-			}
-			var formattedValue = String(incrementedValue).padStart(2, '0');
-			if (formattedValue.length > 2) {
-				$(this).val(formattedValue.slice(0, 2));
-			} else {
-				$(this).val(formattedValue).trigger("input");
-			}
-		});
-		$('.kapital').on('input', function(e) {
-			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
-		});
-
-	})
 </script>

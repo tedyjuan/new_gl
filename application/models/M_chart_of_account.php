@@ -53,4 +53,42 @@ class M_chart_of_account extends CI_Model
 		$this->db->where($param);
 		return $this->db->get();
 	}
+	public function get_tbag1Bycompany($code_company, $akun_type = null)
+	{
+		$this->db->select('account_type, code_trialbalance1, description, code_company');
+		$this->db->from('trial_balance_account_group_1');
+		$this->db->where('code_company', $code_company);
+		if($akun_type == null){
+			// hanya menampilkan type akun
+			$this->db->group_by('account_type');
+		}else{
+			// hanya menampilkan ke tbg1 by akun spesifix
+			$this->db->where('account_type', $akun_type);
+			$this->db->group_by('account_type, code_trialbalance1, description, code_company');
+		}
+		$this->db->order_by('account_type', 'ASC');
+		$query = $this->db->get();
+		return $query->result();
+	}
+	public function get_tbag2Bycompany($code_company, $tbag1)
+	{
+		$this->db->select('code_trialbalance2, description');
+		$this->db->from('trial_balance_account_group_2');
+		$this->db->where('code_company', $code_company);
+		$this->db->where('code_trialbalance1', $tbag1);
+		$this->db->order_by('code_trialbalance2', 'ASC');
+		$query = $this->db->get();
+		return $query->result();
+	}
+	public function get_tbag3Bycompany($code_company, $tbag2)
+	{
+		$this->db->select('code_trialbalance3, description');
+		$this->db->from('trial_balance_account_group_3');
+		$this->db->where('code_company', $code_company);
+		$this->db->where('code_trialbalance2', $tbag2);
+		$this->db->order_by('code_trialbalance3', 'ASC');
+		$query = $this->db->get();
+		return $query->result();
+	}
+	
 }
