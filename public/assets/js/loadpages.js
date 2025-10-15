@@ -22,7 +22,6 @@ function tocontroller(controller, active, dropdown, head_nav) {
 function loadform(controller) {
 	var base = BASE_URL;
 	var url = base + "/" + controller;
-	showLoader();
 	// Jika tidak ada di cache, lakukan AJAX request
 	$("#contentdata").load(url, function (response, status, xhr) {
 		hideLoader(); // Sembunyikan preloader setelah AJAX selesai

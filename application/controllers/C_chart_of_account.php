@@ -19,6 +19,7 @@ class C_chart_of_account extends CI_Controller
 	}
 	public function griddata()
 	{
+		// Catat waktu mulai
 		$start          = $this->input->post('start') ?? 0;
 		$length         = $this->input->post('length') ?? 10;
 		$search_input   = $this->input->post('search');
@@ -31,29 +32,49 @@ class C_chart_of_account extends CI_Controller
 		$data           = $this->M_chart_of_account->get_paginated_chart_of_account($length, $start, $search, $order_by, $dir);
 		$total_records  = $this->M_chart_of_account->count_all_chart_of_account();
 		$total_filtered = $this->M_chart_of_account->count_filtered_chart_of_account($search);
+		$url_add_ledger       = 'C_chart_of_account/add_ledger/';
+		$url_add_subledger       = 'C_chart_of_account/add_subledger/';
 		$url_edit       = 'C_chart_of_account/editform/';
 		$url_delete     = 'C_chart_of_account/hapusdata/';
 		$load_grid      = 'C_chart_of_account/griddata';
 		$result = [];
 		foreach ($data as $row) {
 			$aksi = '<div class="dropdown">
-				<button type="button" class="btn btn-white btn-sm" id="aksi-dropdown-' . $row->account_number . '" data-bs-toggle="dropdown" aria-expanded="false">
-					More <i class="bi-chevron-down ms-1"></i>
-				</button>
-				<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->account_number . '">
-					<button class="dropdown-item editbtn" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
-						<i class="bi bi-pen"></i> Edit
+					<button type="button" class="btn btn-white btn-sm" id="aksi-dropdown-' . $row->account_number . '" data-bs-toggle="dropdown" aria-expanded="false">
+						More <i class="bi-chevron-down ms-1"></i>
 					</button>
-					<div class="dropdown-divider"></div>
-					<button class="dropdown-item text-danger" onclick="hapus(\'' . $row->uuid . '\', \'' . $url_delete . '\', \'' . $load_grid . '\')">
-						<i class="bi bi-trash3"></i> Delete
-					</button>
-				</div>
-			</div>';
+					<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->account_number . '">';
+
+			// Kondisi untuk menambahkan tombol "Tambah Ledger" atau "Tambah Subledger"
+			if ($row->code_header == null && $row->code_ledger == null) {
+				// Jika code_header dan code_ledger null, tampilkan tombol "Tambah Ledger"
+				$aksi .= '<button class="dropdown-item" onclick="add_ledger(\'' . $url_add_ledger . '\', \'' . $row->uuid . '\')">
+                      <i class="bi bi-plus-circle"></i> Tambah Ledger
+                  </button>';
+			} elseif ($row->code_header != null && $row->code_ledger == null) {
+				// Jika code_header terisi dan code_ledger null, tampilkan tombol "Tambah Subledger"
+				$aksi .= '<button class="dropdown-item" onclick="add_subledger(\'' . $url_add_subledger . '\', \'' . $row->uuid . '\')">
+                      <i class="bi bi-plus-circle"></i> Tambah Subledger
+                  </button>';
+			}
+
+			// Tambahkan divider antara tombol "Tambah" dan tombol "Edit"
+			$aksi .= '<button class="dropdown-item editbtn" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
+                  <i class="bi bi-pen"></i> Edit
+              </button>
+              <div class="dropdown-divider"></div>';
+
+			// Tombol "Delete"
+			$aksi .= '<button class="dropdown-item text-danger" onclick="hapus(\'' . $row->uuid . '\', \'' . $url_delete . '\', \'' . $load_grid . '\')">
+                  <i class="bi bi-trash3"></i> Delete
+              </button>';
+
+			$aksi .= '</div></div>';
+
 			$spacing = '';
-			if (strlen($row->account_number) == 6) {
+			if ($row->account_category == 'ledger') {
 				$spacing = '&nbsp;&nbsp;&nbsp;&nbsp;';  // 1 tab untuk 6 digit
-			} elseif (strlen($row->account_number) == 8) {
+			} elseif ($row->account_category == 'subledger') {
 				$spacing = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';  // 2 tab untuk 8 digit
 			}
 			$result[] = [
@@ -68,8 +89,25 @@ class C_chart_of_account extends CI_Controller
 			"draw" => intval($this->input->post('draw')) ?? 1,
 			"recordsTotal" => $total_records,
 			"recordsFiltered" => $total_filtered,
-			"data" => $result
+			"data" => $result,
+			
 		]);
+	}
+	function add_ledger($uuid)
+	{
+		// kirim parameter account_number dan nanti akan di simpan di code_header
+		$data['judul']     = "Form Tambah Leadger COA";
+		$data['load_back'] = 'C_chart_of_account/add';
+		$data['load_grid'] = 'C_chart_of_account';
+		$this->load->view("v_chart_of_account/add_ledger_coa", $data);
+	}
+	function add_subledger($uuid)
+	{
+		// kirim parameter account_number dan nanti akan di simpan di code_ledger
+		$data['judul']     = "Form Tambah Leadger COA";
+		$data['load_back'] = 'C_chart_of_account/add';
+		$data['load_grid'] = 'C_chart_of_account';
+		$this->load->view("v_chart_of_account/add_ledger_coa", $data);
 	}
 	function add()
 	{
@@ -164,6 +202,7 @@ class C_chart_of_account extends CI_Controller
 			'account_method'     => $akun_dc,
 			'account_group'      => $akun_group,
 			'cost_center_type'   => 'unit',
+			'account_category'   => 'header',
 			'code_trialbalance1' => $tbag1,
 			'code_trialbalance2' => $tbag2,
 			'code_trialbalance3' => $tbag3,
@@ -208,9 +247,10 @@ class C_chart_of_account extends CI_Controller
 	}
 	public function update()
 	{
+		// Mulai transaksi
+
 		// Ambil data dari POST request
 		$uuid       = $this->input->post('uuid');
-		$perusahaan = $this->input->post('perusahaan');
 		$no_akun    = $this->input->post('no_akun');
 		$nama_akun  = $this->input->post('nama_akun');
 		$akun_dc    = $this->input->post('akun_dc');
@@ -220,66 +260,93 @@ class C_chart_of_account extends CI_Controller
 		$tbag2      = $this->input->post('tbag2');
 		$tbag3      = $this->input->post('tbag3');
 		$deskripsi  = $this->input->post('deskripsi');
+
 		// Cek apakah kode Chart Of Account sudah ada
-		$param_kode = [
-			'account_number'  => $no_akun,
-			'code_company'  => $perusahaan,
-		];
-		$exisCode = $this->M_global->getWhere('chart_of_accounts', $param_kode)->num_rows();
-		if ($exisCode != null) {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Kode Chart Of Account sudah digunakan',
+		$exisCoa = $this->M_global->getWhere('chart_of_accounts', ['uuid' => $uuid])->row();
+
+		if ($exisCoa != null) {
+			// Mengecek apakah nomor akun sudah ada
+			if ($exisCoa->account_number != $no_akun) {
+				$param_kode = [
+					'account_number'  => $no_akun,
+					'code_company'  => $exisCoa->code_company,
+				];
+				$exisCode = $this->M_global->getWhere('chart_of_accounts', $param_kode)->num_rows();
+				if ($exisCode != 0) {
+					// Rollback transaksi jika kode sudah ada
+					$this->db->trans_rollback();
+					$jsonmsg = [
+						'hasil' => 'false',
+						'pesan' => 'Kode Chart Of Account sudah digunakan',
+					];
+					echo json_encode($jsonmsg);
+					exit;
+				}
+			}
+
+			// Mengecek apakah nama akun sudah ada
+			if ($exisCoa->name != $nama_akun) {
+				$param_nama = [
+					'name'         => $nama_akun,
+					'code_company' => $exisCoa->code_company,
+				];
+				$exisName = $this->M_global->getWhere('chart_of_accounts', $param_nama)->num_rows();
+				if ($exisName != null) {
+					// Rollback transaksi jika nama sudah ada
+					$this->db->trans_rollback();
+					$jsonmsg = [
+						'hasil' => 'false',
+						'pesan' => 'Nama Chart Of Account sudah digunakan',
+					];
+					echo json_encode($jsonmsg);
+					exit;
+				}
+			}
+			// Data untuk update
+			$dataupdate = [
+				'account_number'     => $no_akun,
+				'name'               => $nama_akun,
+				'description'        => $deskripsi,
+				'account_type'       => $akun_type,
+				'account_method'     => $akun_dc,
+				'account_group'      => $akun_group,
+				'cost_center_type'   => 'unit',
+				'code_trialbalance1' => $tbag1,
+				'code_trialbalance2' => $tbag2,
+				'code_trialbalance3' => $tbag3,
+				'created_at'         => date('Y-m-d H:i:s'),
+				'updated_at'         => date('Y-m-d H:i:s')
 			];
-			echo json_encode($jsonmsg);
-			exit;
-		}
-		$param_nama = [
-			'name'         => $nama_akun,
-			'code_company' => $perusahaan,
-		];
-		$exisName = $this->M_global->getWhere('chart_of_accounts', $param_nama)->num_rows();
-		if ($exisName != null) {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Nama Chart Of Account sudah digunakan',
-			];
-			echo json_encode($jsonmsg);
-			exit;
-		}
-		// Data untuk insert ke database
-		// kalau 4 = unit 
-		$datainsert = [
-			'uuid'               => $this->uuid->v4(),
-			'account_number'     => $no_akun,
-			'code_company'       => $perusahaan,
-			'name'               => $nama_akun,
-			'description'        => $deskripsi,
-			'account_type'       => $akun_type,
-			'account_method'     => $akun_dc,
-			'account_group'      => $akun_group,
-			'cost_center_type'   => 'unit',
-			'code_trialbalance1' => $tbag1,
-			'code_trialbalance2' => $tbag2,
-			'code_trialbalance3' => $tbag3,
-			'created_at'         => date('Y-m-d H:i:s'),
-			'updated_at'         => date('Y-m-d H:i:s')
-		];
-		// Melakukan insert data
-		$this->db->insert('chart_of_accounts', $datainsert);
-		if ($this->db->affected_rows() > 0) {
-			$jsonmsg = [
-				'hasil' => 'true',
-				'pesan' => 'Data Berhasil Disimpan',
-			];
+
+			// Melakukan update data
+			$updatedb =$this->M_global->update($dataupdate, 'chart_of_accounts', ['uuid' => $uuid]);
+
+			if ($updatedb == TRUE) {
+				$jsonmsg = [
+					'hasil' => 'true',
+					'pesan' => 'Data Berhasil Diupdate',
+				];
+				echo json_encode($jsonmsg);
+			} else {
+				$jsonmsg = [
+					'hasil' => 'false',
+					'pesan' => 'Gagal Update Data',
+				];
+				echo json_encode($jsonmsg);
+			}
 		} else {
-			$jsonmsg = [
+			// Rollback transaksi jika UUID tidak terdaftar
+			$this->db->trans_rollback();
+			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'Gagal Menyimpan Data',
-			];
+				'pesan' => 'UUID tidak Terdaftar'
+			]);
+			return;
 		}
-		echo json_encode($jsonmsg);
+
+		// Menampilkan hasil
 	}
+
 	public function hapusdata()
 	{
 		$uuid = $this->input->post('uuid');
@@ -302,14 +369,7 @@ class C_chart_of_account extends CI_Controller
 			]);
 			return;
 		}
-		// $cek_cc = $this->M_global->getWhere('chart_of_accounts', ['account_number' => $Cek_coa->account_number])->num_rows();
-		// if ($cek_cc != 0) {
-		// 	echo json_encode([
-		// 		'hasil' => 'false',
-		// 		'pesan' => 'Tidak bisa Menghapus Data, karena sedang digunakan di cost centers.',
-		// 	]);
-		// 	return;
-		// }
+		
 		$this->db->trans_begin();
 		try {
 			

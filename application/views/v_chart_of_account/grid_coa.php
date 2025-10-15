@@ -20,7 +20,7 @@
 		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%">
 			<thead>
 				<tr class="table-primary">
-					<th style="width: 5%">Code Company</th>
+					<th style="width: 15%">Code Company</th>
 					<th style="width: 15%">ID Akun</th>
 					<th >Nama Akun</th>
 					<th style="width: 15%">Type Akun</th>
@@ -59,12 +59,5 @@
 		initTable();
 	});
 
-	function filters() {
-		$('#btn_cancel').click();
-		if (window.mytableDT) {
-			window.mytableDT.ajax.reload(null, false); // Reload data tanpa reset paging
-		} else {
-			initTable(); // fallback kalau belum ke-init
-		}
-	}
+	
 </script>

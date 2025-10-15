@@ -121,14 +121,7 @@
 
 	});
 
-	function filters() {
-		$('#btn_cancel').click();
-		if (window.mytableDT) {
-			window.mytableDT.ajax.reload(null, false); // Reload data tanpa reset paging
-		} else {
-			initTable(); // fallback kalau belum ke-init
-		}
-	}
+	
 	$('.kapital').on('input', function(e) {
 		this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
 	});
