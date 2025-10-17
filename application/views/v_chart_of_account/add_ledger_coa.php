@@ -1,4 +1,10 @@
 <!-- Card -->
+<style>
+	input[type="search"].form-control {
+		margin-bottom: 10px;
+		/* Menambahkan margin bawah 10px */
+	}
+</style>
 <div class="card">
 	<div class="card-header">
 		<div class="row align-items-center mb-2">
@@ -7,8 +13,7 @@
 				<div class="div ">
 					<button class="btn btn-sm btn-primary" onclick="loadform('<?= $load_grid ?>')"><i
 							class="bi bi-arrow-left-circle"></i> Kembali</button>
-					<a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
-						onclick="loadform('<?= $load_back ?>')">
+					<a href="javascript:void(0)" class="btn btn-sm btn-outline-primary" onclick="loadform('<?= $load_refresh ?>')">
 						<i class="bi bi-arrow-clockwise"></i> Refresh
 					</a>
 				</div>
@@ -19,90 +24,142 @@
 		<form id="forms_add">
 			<div class="row">
 				<div class="col-6">
-					<div class="mb-3">
-						<label class="form-label" for="perusahaan">Company</label>
-						<select id="perusahaan" name="perusahaan" class="form-control-hover-light form-control"
-							data-parsley-required="true" data-parsley-errors-container=".err_name" required="">
-							<option value="">Pilih</option>
-						</select>
-						<span class="text-danger err_name"></span>
-					</div>
-					<div class="mb-3">
-						<label class="form-label" for="no_akun">No Akun</label>
-						<input type="text" id="no_akun" name="no_akun" data-parsley-required="true"
-							data-parsley-errors-container=".err_no_akun" required="" class="form-control-hover-light form-control"
-							placeholder="Nomor 4 angka">
-						<span class="text-danger err_no_akun"></span>
-					</div>
-					<div class="mb-3">
-						<label class="form-label" for="nama_akun">Nama Akun</label>
-						<input type="text" id="nama_akun" name="nama_akun" data-parsley-required="true"
-							data-parsley-errors-container=".err_nama_akun" required=""
-							class="form-control-hover-light form-control kapital"
-							placeholder="input nama akun">
-						<span class="text-danger err_nama_akun"></span>
-					</div>
-					<div class="row">
-						<div class="col-6">
-							<div class="mb-3">
-								<label class="form-label" for="akun_dc">Debit / Kredit</label>
-								<select id="akun_dc" name="akun_dc" class="form-control-hover-light form-control select2"
-									data-parsley-required="true" data-parsley-errors-container=".err_akun_dc" required="">
-									<option value="">Pilih</option>
-									<option value="debit">Debit</option>
-									<option value="credit">Kredit</option>
-								</select>
-								<span class="text-danger err_akun_dc"></span>
-							</div>
-						</div>
-						<div class="col-6">
-							<div class="mb-3">
-								<label class="form-label" for="akun_group">COA Group</label>
-								<select id="akun_group" name="akun_group" class="form-control-hover-light form-control select2"
-									data-parsley-required="true" data-parsley-errors-container=".err_akun_group" required="">
-									<option value="">Pilih</option>
-									<option value="kas">Kas</option>
-									<option value="bank">Bank</option>
-									<option value="inventory">inventory</option>
-									<option value="sales">Sales</option>
-								</select>
-								<span class="text-danger err_akun_group"></span>
-							</div>
-						</div>
-					</div>
-					<div class="mb-3">
-						<label class="form-label" for="akun_type">Tipe Akun</label>
-						<select id="akun_type" name="akun_type" class="form-control-hover-light form-control select2"
-							data-parsley-required="true" data-parsley-errors-container=".err_akun_type" required="">
-							<option value="">Pilih company dahulu</option>
-						</select>
-						<span class="text-danger err_akun_type"></span>
-					</div>
+					<h2>Informasi Header</h2>
+					<table class="table table-bordered">
+						<tbody>
+							<tr>
+								<th style="width: 35%">ID Akun Header</th>
+								<td><?= $data->account_number; ?></td>
+							</tr>
+							<tr>
+								<th style="width: 35%">Nama</th>
+								<td><?= $data->name_coa; ?></td>
+							</tr>
+							<tr>
+								<th style="width: 35%">Company </th>
+								<td><?= $data->code_company; ?> - <?= $data->name_company; ?> </td>
+							</tr>
+							<tr>
+								<th style="width: 35%">Debit / Credit</th>
+								<td><?= $data->account_method ?></td>
+							</tr>
+							<tr>
+								<th style="width: 35%">Tipe Account</th>
+								<td><?= $data->account_type  ?></td>
+							</tr>
+							<tr>
+								<th style="width: 35%">COA Group</th>
+								<td><?= $data->account_group  ?></td>
+							</tr>
+							<tr>
+								<th style="width: 35%">Tbag 1</th>
+								<td><?= $data->code_trialbalance1 ?> - <?= $data->tbag1 ?></td>
+							</tr>
+							<tr>
+								<th style="width: 35%">Tbag 2</th>
+								<td><?= $data->code_trialbalance2 ?> - <?= $data->tbag2 ?> </td>
+							</tr>
+							<tr>
+								<th style="width: 35%">Tbag 3</th>
+								<td><?= $data->code_trialbalance3 ?> - <?= $data->tbag3 ?></td>
+							</tr>
+							<tr>
+								<th style="width: 35%">Deskripsi</th>
+								<td> <?= $data->des ?></td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
-				<div class="col-6">
-
+				<div class="col-6 mt-1">
 					<div class="mb-3">
-						<label class="form-label" for="tbag1">Trial Balance Group 1</label>
-						<select id="tbag1" name="tbag1" class="form-control-hover-light form-control select2">
-							<option value="">Pilih Type dahulu</option>
-						</select>
+						<label class="form-label" for="id_number_ledger">ID Akun Ledger</label>
+						<div class="input-group mb-3">
+							<span class="input-group-text" id="id-number-ledger"><?= $data->account_number; ?></span>
+							<input type="text" class="form-control" id="id_number_ledger" name="id_number_ledger" style="width: 80%;"
+								data-parsley-required="true" data-parsley-errors-container=".err_id_akun_ledger" required=""
+								placeholder="input 2 number" aria-describedby="id-number-ledger">
+							<span class="text-danger err_id_akun_ledger"></span>
+						</div>
 					</div>
 					<div class="mb-3">
-						<label class="form-label" for="tbag2">Trial Balance Group 2</label>
-						<select id="tbag2" name="tbag2" class="form-control-hover-light form-control select2">
-							<option value="">Pilih group 1 dahulu</option>
-						</select>
+						<label class="form-label" for="nama_akun_ledger">Nama Ledger</label>
+						<input type="text" id="nama_akun_ledger" name="nama_akun_ledger" data-parsley-required="true"
+							data-parsley-errors-container=".err_nama_akun_ledger" required=""
+							class="form-control-hover-light form-control kapital"
+							placeholder="input nama akun ledger">
+						<span class="text-danger err_nama_akun_ledger"></span>
 					</div>
 					<div class="mb-3">
-						<label class="form-label" for="tbag3">Trial Balance Group 3</label>
-						<select id="tbag3" name="tbag3" class="form-control-hover-light form-control select2">
-							<option value="">Pilih group 2 dahulu</option>
-						</select>
+						<label class="form-label" for="type_costcenter">Type Cost Center</label>
+						<div class="row">
+							<div class="col-sm mb-2 mb-sm-0">
+								<label class="form-control" for="formControlRadioEg1">
+									<span class="form-check">
+										<input type="radio" class="form-check-input" onclick="showtabel('depo')" name="formControlRadioEg" id="formControlRadioEg1">
+										<span class="form-check-label">Depo</span>
+									</span>
+								</label>
+							</div>
+							<div class="col-sm mb-2 mb-sm-0">
+								<label class="form-control" for="formControlRadioEg2">
+									<span class="form-check">
+										<input type="radio" class="form-check-input" onclick="showtabel('satuan')" name="formControlRadioEg" id="formControlRadioEg2">
+										<span class="form-check-label">Satuan</span>
+									</span>
+								</label>
+							</div>
+						</div>
 					</div>
+					<table class="table table-sm  table-bordered" id="resulttabel_satuan" style="width: 100%; display: none;">
+						<thead>
+							<tr class="table-primary">
+								<th style="width: 50%">Start CC Satuan</th>
+								<th style="width: 50%">End CC Satuan</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td style="width: 50%">
+									<input type="text" id="cc_start" onclick="tabeldata('<?= $data->code_company ?>', 'cc_satuan_start')"
+										name="cc_start" data-parsley-required="true" required="" readonly
+										data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"
+										data-parsley-errors-container=".err_cc_start" class="form-control-hover-light form-control" placeholder="-">
+									<span class="text-danger err_cc_start"></span>
+								</td>
+								<td style="width: 50%">
+									<input type="text" id="cc_end" onclick="tabeldata('<?= $data->code_company ?>', 'cc_satuan_end')"
+										name="cc_end" data-parsley-required="true" required="" readonly
+										data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"
+										data-parsley-errors-container=".err_cc_end" class="form-control-hover-light form-control" placeholder="-">
+									<span class="text-danger err_cc_end"></span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<table class="table table-sm  table-bordered" id="resulttabel_depo" style="width: 100%; display: none;">
+						<thead>
+							<tr class="table-primary">
+								<th style="width: 100%">Cost Center Depo</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td style="width: 50%">
+									<input type="text" id="cc_depo" onclick="tabeldata('<?= $data->code_company ?>', 'cc_depo')"
+										name="cc_depo" data-parsley-required="true" required="" readonly
+										data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"
+										data-parsley-errors-container=".err_cc_depo" class="form-control-hover-light form-control" placeholder="-">
+									<span class="text-danger err_cc_depo"></span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
 					<div class="mb-3">
 						<label class="form-label" for="deskripsi">Deskripsi</label>
-						<textarea name="deskripsi" id="deskripsi" cols="4" rows="4" placeholder="Input deskripsi"
-						 class="form-control-hover-light form-control"></textarea>
+						<input type="text" id="deskripsi" name="deskripsi" data-parsley-required="true"
+							data-parsley-errors-container=".err_deskripsi" required=""
+							class="form-control-hover-light form-control" placeholder="-">
+						<span class="text-danger err_deskripsi"></span>
 					</div>
 				</div>
 			</div>
@@ -118,65 +175,42 @@
 		</form>
 	</div>
 </div>
-
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+	<div class="offcanvas-header">
+		<h5 id="offcanvasRightLabel">Type Cost Center</h5>
+		<button type="button" class="btn-close" data-bs-dismiss="offcanvas" id="canvas_close" aria-label="Close"></button>
+	</div>
+	<div class="offcanvas-body" style=" padding-top: 0; padding-right: 10px;  padding-left: 10px;">
+		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%;">
+			<thead>
+				<tr class="table-primary">
+					<th style="width: 5%">Pilih</th>
+					<th style="width: 95%">Cost Center</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</div>
 <script>
 	$(document).ready(function() {
 		$(".select2").select2();
-		$('#no_akun').mask('0000');
-		$('#no_akun').on('blur', function() {
+		$('#id_number_ledger').mask('00');
+		$('#id_number_ledger').on('blur', function() {
 			let inputValue = $(this).val();
 			if (inputValue.length === 1) {
-				inputValue = inputValue + '000';
-			} else if (inputValue.length === 2) {
-				inputValue = inputValue + '00';
-			} else if (inputValue.length === 3) {
 				inputValue = inputValue + '0';
 			}
-			$(this).val(inputValue);
+			if (inputValue == '00') {
+				$(this).val('01');
+			} else {
+				$(this).val(inputValue);
+			}
 		});
-		$('#no_akun').on('keyup', function() {
-			let inputValue = $(this).val();
 
-			if (inputValue.startsWith('0')) {
-				inputValue = inputValue.slice(1);
-			}
-			// Jika input lebih kecil dari 1, kosongkan input
-			if (parseInt(inputValue) < 1 && inputValue !== '') {
-				inputValue = '';
-			}
-			// Set kembali value setelah manipulasi
-			$(this).val(inputValue);
-		});
 		$('.kapital').on('input', function(e) {
 			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
 		});
-		$("#perusahaan").select2({
-			placeholder: 'Cari kode atau nama',
-			minimumInputLength: 1,
-			allowClear: true,
-			ajax: {
-				url: "<?= base_url('C_company/search') ?>",
-				dataType: "json",
-				delay: 250,
-				data: function(params) {
-					return {
-						getCompany: params.term
-					};
-				},
-				processResults: function(data) {
-					var results = [];
-					$.each(data, function(index, item) {
-						results.push({
-							id: item.code_company,
-							text: item.code_company + ' - ' + item.name,
-						});
-					});
-					return {
-						results: results
-					};
-				}
-			}
-		});
+
 	})
 </script>
 <script>
@@ -293,14 +327,15 @@
 	$('#btnsubmit').click(function(e) {
 		e.preventDefault();
 		let form = $('#forms_add');
+		var uuid = "<?= ($uuid) ?>";
 		form.parsley().validate();
 		if (form.parsley().isValid()) {
 			$.ajax({
-				url: "<?= base_url('C_chart_of_account/simpandata') ?>",
+				url: "<?= base_url('C_chart_of_account/update') ?>",
 				type: 'POST',
 				method: 'POST',
 				dataType: 'JSON',
-				data: form.serialize(),
+				data: form.serialize() + '&uuid=' + uuid,
 				beforeSend: function() {
 					showLoader();
 				},
@@ -327,4 +362,84 @@
 			});
 		}
 	});
+
+
+	function tabeldata(data_company, type) {
+		// kalau sebelumnya sudah ada instance, hancurkan dulu
+		if (window.mytableDT && $.fn.dataTable.isDataTable('#mytable')) {
+			window.mytableDT.clear().destroy();
+			window.mytableDT = null;
+		}
+		var url = '';
+		if (type === 'cc_depo') {
+			url = "<?= base_url('C_chart_of_account/griddata_depo') ?>"; // Ganti dengan URL untuk depo
+		} else {
+			url = "<?= base_url('C_chart_of_account/griddata_cc') ?>"; // Ganti dengan URL untuk cost center
+		}
+		window.mytableDT = $('#mytable').DataTable({
+			processing: true,
+			serverSide: true,
+			destroy: true,
+			retrieve: true,
+			pageLength: 100,
+			info: false,
+			lengthChange: false,
+			ajax: {
+				url: url,
+				type: "POST",
+				data: {
+					company_id: data_company,
+				},
+			},
+			columnDefs: [{
+					orderable: false,
+					targets: 0
+				},
+				{
+					orderable: true,
+					targets: 1
+				}
+			],
+		});
+	}
+
+	function pilihdepo(param) {
+		$("#canvas_close").trigger('click');
+		$('#forms_add').parsley().reset();
+		$('#cc_depo').val(param);
+	}
+
+	function pilihsatuan(param) {
+		$("#canvas_close").trigger('click');
+		$('#forms_add').parsley().reset();
+		var statr = $('#cc_start').val();
+		var end = $('#cc_end').val();
+		if (statr == '') {
+			$('#cc_start').val(param);
+		} else {
+			if (statr != '' && end != '') {
+				$('#cc_start').val(param);
+				$('#cc_end').val('');
+			}else{
+				$('#cc_end').val(param);
+			}
+		}
+	}
+
+
+	function showtabel(type) {
+		$('#cc_start').val('');
+		$('#cc_end').val('');
+		$('#cc_depo').val('');
+		// Hide both tables by default
+		$('#resulttabel_satuan').hide();
+		$('#resulttabel_depo').hide();
+
+		// Show the correct table based on the selected type
+		if (type === 'satuan') {
+			$('#resulttabel_satuan').show();
+		} else if (type === 'depo') {
+			$('#resulttabel_depo').show();
+		}
+	}
 </script>

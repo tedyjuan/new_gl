@@ -90,5 +90,48 @@ class M_chart_of_account extends CI_Model
 		$query = $this->db->get();
 		return $query->result();
 	}
-	
+	public function get_coa($uuid)
+	{
+		// Menggunakan query builder untuk membangun query
+		$this->db->select('
+			a.uuid,
+			a.account_number,
+			a.code_company,
+			a.name AS name_coa,
+			a.account_method,
+			a.account_type,
+			a.account_group,
+			a.code_trialbalance1,
+			a.code_trialbalance2,
+			a.code_trialbalance3,
+			a.description AS des,
+			b.name AS name_company,
+			c.description AS tbag1,
+			d.description AS tbag2,
+			e.description AS tbag3
+		');
+		$this->db->from('chart_of_accounts a');
+
+		// Menggunakan join untuk menggabungkan tabel
+		$this->db->join('companies b', 'b.code_company = a.code_company', 'left');
+		$this->db->join('trial_balance_account_group_1 c', 'c.code_trialbalance1 = a.code_trialbalance1 AND c.code_company = a.code_company', 'left');
+		$this->db->join('trial_balance_account_group_2 d', 'd.code_trialbalance2 = a.code_trialbalance2 AND d.code_company = a.code_company', 'left');
+		$this->db->join('trial_balance_account_group_3 e', 'e.code_trialbalance3 = a.code_trialbalance3 AND e.code_company = a.code_company', 'left');
+
+		// Menggunakan query binding untuk menggantikan penyisipan langsung variabel
+		$this->db->where('a.uuid', $uuid);
+
+		// Menjalankan query dan mengembalikan hasilnya
+		return $this->db->get();
+	}
+	public function get_depo($code_company)
+	{
+		$this->db->select('
+			a.code_company,
+			a.name
+		');
+		$this->db->from('depos a');
+		$this->db->where('a.code_company', $code_company);
+		return $this->db->get();
+	}
 }

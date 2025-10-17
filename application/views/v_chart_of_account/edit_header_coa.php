@@ -335,9 +335,9 @@
 				method: 'POST',
 				dataType: 'JSON',
 				data: form.serialize() + '&uuid=' + uuid,
-				// beforeSend: function() {
-				// 	showLoader();
-				// },
+				beforeSend: function() {
+					showLoader();
+				},
 				success: function(data) {
 					if (data.hasil == 'true') {
 						swet_sukses(data.pesan);

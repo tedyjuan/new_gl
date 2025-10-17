@@ -32,11 +32,11 @@ class C_chart_of_account extends CI_Controller
 		$data           = $this->M_chart_of_account->get_paginated_chart_of_account($length, $start, $search, $order_by, $dir);
 		$total_records  = $this->M_chart_of_account->count_all_chart_of_account();
 		$total_filtered = $this->M_chart_of_account->count_filtered_chart_of_account($search);
-		$url_add_ledger       = 'C_chart_of_account/add_ledger/';
-		$url_add_subledger       = 'C_chart_of_account/add_subledger/';
-		$url_edit       = 'C_chart_of_account/editform/';
-		$url_delete     = 'C_chart_of_account/hapusdata/';
-		$load_grid      = 'C_chart_of_account/griddata';
+		$url_add_ledger    = 'C_chart_of_account/add_ledger/';
+		$url_add_subledger = 'C_chart_of_account/add_subledger/';
+		$url_edit          = 'C_chart_of_account/editform/';
+		$url_delete        = 'C_chart_of_account/hapusdata/';
+		$load_grid         = 'C_chart_of_account/griddata';
 		$result = [];
 		foreach ($data as $row) {
 			$aksi = '<div class="dropdown">
@@ -95,12 +95,32 @@ class C_chart_of_account extends CI_Controller
 	}
 	function add_ledger($uuid)
 	{
-		// kirim parameter account_number dan nanti akan di simpan di code_header
-		$data['judul']     = "Form Tambah Leadger COA";
-		$data['load_back'] = 'C_chart_of_account/add';
-		$data['load_grid'] = 'C_chart_of_account';
-		$this->load->view("v_chart_of_account/add_ledger_coa", $data);
+		$cekdata =  $this->M_chart_of_account->get_coa($uuid)->row();
+		if ($cekdata != null) {
+			
+			$data['data']          = $cekdata;
+			$data['uuid']          = $uuid;
+			$data['judul']         = "Form Tambah Ledger COA";
+			$data['load_grid']     = "C_chart_of_account";
+			$data['load_refresh']  = "C_chart_of_account/add_ledger/" . $uuid;
+			$this->load->view('v_chart_of_account/add_ledger_coa', $data);
+		} else {
+			$this->load->view('error');
+		}
 	}
+	public function depoData()
+	{
+		$company = $this->input->post('company_id');
+		$data   = $this->M_chart_of_account->get_depo($company)->result_array();
+		echo json_encode(['data' => $data]);
+	}
+	public function costCenterData()
+	{
+		$company = $this->input->post('company_id');
+		$data = $this->M_global->getWhere('cost_centers', ['code_company' => $company])->result_array();
+		echo json_encode(['data' => $data]);
+	}
+
 	function add_subledger($uuid)
 	{
 		// kirim parameter account_number dan nanti akan di simpan di code_ledger
@@ -405,5 +425,65 @@ class C_chart_of_account extends CI_Controller
 				'pesan' => 'Terjadi error: ' . $e->getMessage()
 			]);
 		}
+	}
+	public function griddata_depo()
+	{
+		$this->load->model('M_depos');
+		$start    = $this->input->post('start');
+		$length   = $this->input->post('length');
+		$search   = $this->input->post('search')['value'];
+		$order    = $this->input->post('order')[0]['column'];
+		$dir      = $this->input->post('order')[0]['dir'];
+		$order_by = ['code_depo', 'name', 'action'][$order];
+		  // Ambil data dari model
+		$data           = $this->M_depos->get_paginated_depos($length, $start, $search, $order_by, $dir);
+		$total_records  = $this->M_depos->count_all_depos();
+		$total_filtered = $this->M_depos->count_filtered_depos($search);
+		  // Format data untuk DataTables
+		$result = [];
+		foreach ($data as $key => $row) {
+			$depo = $row->code_depo . ' - ' . $row->name;
+			$aksi = '<input type="radio"  onclick="pilihdepo(\''. $depo. '\')" class="form-check-input" id="radio' . $key . '">';
+			$result[] = [
+				$aksi,
+				$depo,
+			];
+		}
+
+		// Output JSON ke DataTables
+		echo json_encode([
+			"draw"            => intval($this->input->post('draw')),
+			"recordsTotal"    => $total_records,
+			"recordsFiltered" => $total_filtered,
+			"data"            => $result
+		]);
+	}
+	public function griddata_cc()
+	{
+		$this->load->model('M_cost_center');
+		$start    = $this->input->post('start');
+		$length   = $this->input->post('length');
+		$search   = $this->input->post('search')['value'];
+		$order    = $this->input->post('order')[0]['column'];
+		$dir      = $this->input->post('order')[0]['dir'];
+		$order_by = ['group_team', 'action'][$order];
+		$data           = $this->M_cost_center->get_paginated_cost_center($length, $start, $search, $order_by, $dir);
+		$total_records  = $this->M_cost_center->count_all_cost_center();
+		$total_filtered = $this->M_cost_center->count_filtered_cost_center($search);
+		$result = [];
+		foreach ($data as $key => $row) {
+			$group = $row->group_team;
+			$aksi = '<input type="radio"  onclick="pilihsatuan(\'' . $group . '\')" class="form-check-input" id="radio' . $key . '">';
+			$result[] = [
+				$aksi,
+				$group,
+			];
+		}
+		echo json_encode([
+			"draw" => intval($this->input->post('draw')) ?? 1,
+			"recordsTotal" => $total_records,
+			"recordsFiltered" => $total_filtered,
+			"data" => $result
+		]);
 	}
 }
