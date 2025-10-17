@@ -271,9 +271,6 @@
 	<script src="<?php echo base_url('public/assets/vendor/parsleyjs/parsley.min.js?v=1.0'); ?>"></script>
 	<script src="<?php echo base_url('public/assets/vendor/parsleyjs/id.js?v=1.0'); ?>"></script>
 	<script src="<?php echo base_url('public/assets/vendor/jquery-mask/jquery.mask.min.js?v=1.0'); ?>"></script>
-
-
-
 	<script>
 		<?php
 		$flashTypes = ['success', 'info', 'error', 'warning'];
@@ -292,6 +289,8 @@
 			}
 		})()
 	</script>
+	
+
 </body>
 
 </html>
