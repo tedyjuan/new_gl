@@ -17,7 +17,7 @@ class M_customers extends CI_Model
 		$order_dir = strtoupper($order_dir) === 'DESC' ? 'DESC' : 'ASC'; // hanya ASC/DESC
 
 		$sql = "
-			SELECT oc.*, c.name AS company_name,
+			SELECT oc.*, c.name AS company_name
 			FROM ord_customer oc
 			LEFT JOIN companies c ON oc.company_id = c.code_company
 			WHERE oc.name LIKE '%{$search}%' 
