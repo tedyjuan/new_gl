@@ -11,7 +11,7 @@ class C_company extends CI_Controller
 	}
 	function index()
 	{
-		$data['judul']      = 'List data company';
+		$data['judul']      = 'Data Company';
 		$data['load_grid']  = 'C_company';
 		$data['load_add']   = 'C_company/add';
 		$data['url_delete'] = 'C_company/delete';
@@ -74,7 +74,7 @@ class C_company extends CI_Controller
 
 	function add()
 	{
-		$data['judul']     = "Form Tambah Perusahaan";
+		$data['judul']     = "Form Tambah Company";
 		$data['load_back'] = 'C_company/add';
 		$data['load_grid'] = 'C_company';
 		$this->load->view("v_company/add_company", $data);
@@ -141,7 +141,7 @@ class C_company extends CI_Controller
 	{
 		$data = $this->M_company->get_company_by_uuid($uuid);
 		if ($data) {
-			$judul = "Form Edit Perusahaan";
+			$judul = "Form Edit Company";
 			$load_grid = "C_company";
 			$load_refresh = "C_company/editform/" . $uuid;
 			$this->load->view('v_company/edit_company', [

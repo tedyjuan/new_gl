@@ -20,8 +20,8 @@
 		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%">
 			<thead>
 				<tr class="table-primary">
-					<th style="width: 20%">Kode Perusahaan</th>
-					<th style="width: 60%">Nama Perusahaan</th>
+					<th style="width: 20%">Code Company</th>
+					<th style="width: 60%">Name Company</th>
 					<th style="width: 10%" class="text-center">Aksi</th>
 				</tr>
 			</thead>
@@ -57,12 +57,5 @@
 		initTable();
 	});
 
-	function filters() {
-		$('#btn_cancel').click();
-		if (window.mytableDT) {
-			window.mytableDT.ajax.reload(null, false); // Reload data tanpa reset paging
-		} else {
-			initTable(); // fallback kalau belum ke-init
-		}
-	}
+	
 </script>
