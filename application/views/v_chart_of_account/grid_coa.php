@@ -22,7 +22,7 @@
 				<tr class="table-primary">
 					<th style="width: 15%">Code Company</th>
 					<th style="width: 15%">ID Akun</th>
-					<th >Nama Akun</th>
+					<th>Nama Akun</th>
 					<th style="width: 15%">Type Akun</th>
 					<th style="width: 5%">Action</th>
 				</tr>
@@ -59,5 +59,13 @@
 		initTable();
 	});
 
-	
+	function add_ledger(route, uuid) {
+		var url = route + "/" + uuid;
+		loadform(url);
+	}
+
+	function add_subledger(route, uuid) {
+		var url = route + "/" + uuid;
+		loadform(url);
+	}
 </script>
