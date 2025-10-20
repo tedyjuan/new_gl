@@ -329,9 +329,13 @@
 		let form = $('#forms_add');
 		var uuid = "<?= ($uuid) ?>";
 		form.parsley().validate();
+		console.log("test");
+
 		if (form.parsley().isValid()) {
+			console.log("ok");
+
 			$.ajax({
-				url: "<?= base_url('C_chart_of_account/update') ?>",
+				url: "<?= base_url('C_chart_of_account/simpanLedger') ?>",
 				type: 'POST',
 				method: 'POST',
 				dataType: 'JSON',
@@ -360,6 +364,8 @@
 					}
 				},
 			});
+		} else {
+			console.log("tidak ok");
 		}
 	});
 
@@ -420,7 +426,7 @@
 			if (statr != '' && end != '') {
 				$('#cc_start').val(param);
 				$('#cc_end').val('');
-			}else{
+			} else {
 				$('#cc_end').val(param);
 			}
 		}
@@ -428,18 +434,36 @@
 
 
 	function showtabel(type) {
-		$('#cc_start').val('');
-		$('#cc_end').val('');
-		$('#cc_depo').val('');
-		// Hide both tables by default
-		$('#resulttabel_satuan').hide();
-		$('#resulttabel_depo').hide();
+		// Sembunyikan kedua tabel
+		$('#resulttabel_satuan, #resulttabel_depo').hide();
 
-		// Show the correct table based on the selected type
+		// Siapkan reference input
+		const $satuan = $('#cc_start, #cc_end');
+		const $depo = $('#cc_depo');
+
+		// Bersihkan error Parsley (kalau dipakai)
+		if ($('#myForm').length && $('#myForm').parsley) {
+			$('#myForm').parsley().reset();
+		}
+
+		// Matikan kewajiban pada semua input dulu
+		$satuan.prop('required', false).removeAttr('data-parsley-required').prop('disabled', true);
+		$depo.prop('required', false).removeAttr('data-parsley-required').prop('disabled', true);
+
+		// (opsional) kosongkan nilai & error message yang tidak dipakai
+		$satuan.val('');
+		$('.err_cc_start, .err_cc_end').text('');
+		$depo.val('');
+		$('.err_cc_depo').text('');
+
 		if (type === 'satuan') {
 			$('#resulttabel_satuan').show();
+			// Aktifkan required utk Satuan
+			$satuan.prop('disabled', false).prop('required', true).attr('data-parsley-required', 'true');
 		} else if (type === 'depo') {
 			$('#resulttabel_depo').show();
+			// Aktifkan required utk Depo
+			$depo.prop('disabled', false).prop('required', true).attr('data-parsley-required', 'true');
 		}
 	}
 </script>

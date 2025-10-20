@@ -179,6 +179,10 @@
 		// Ketika perusahaan dipilih
 		$('#perusahaan').on('change', function() {
 			var companyCode = $(this).val();
+			if (companyCode == '') {
+				$('#group_team').val('');
+				$('#cost_center').val('');
+			}
 			// Mengosongkan dropdown dan reset nilai default sebelum AJAX
 			$('#depo').empty().append('<option value="">Pilih</option>');
 			$('#Department').empty().append('<option value="">Pilih</option>');
@@ -243,23 +247,29 @@
 		});
 		// Event handler untuk menggabungkan nilai
 		$('#depo, #Department, #divisi, #segment').on('change', function() {
+			// Ambil data dari masing-masing elemen
 			var selectedOption = $('#depo').find('option:selected');
-			var dataArea = selectedOption.data('area');
-			var code_dept = $('#Department').val();
-			var code_divisi = $('#divisi').val();
-			var code_segment = $('#segment').val();
+			var dataArea = selectedOption.data('area') || '--'; 
+			var code_dept = $('#Department').val() || '--'; 
+			var code_divisi = $('#divisi').val() || '--';
+			var code_segment = $('#segment').val() || '--'; 
+
+			// Gabungkan nilai menjadi satu
 			var concatenatedValue = dataArea + code_dept + code_divisi + code_segment;
+
+			// Masukkan hasil gabungan ke dalam input dengan id 'cost_center'
 			$('#cost_center').val(concatenatedValue);
 		});
+
 		$('#depo, #Department, #divisi, #segment').on('change', function() {
 			var selectedOptionDepo = $('#depo').find('option:selected');
-			var alias_depo = selectedOptionDepo.data('alias') || '';
+			var alias_depo = selectedOptionDepo.data('alias') || '--';
 			var selectedOptionDept = $('#Department').find('option:selected');
-			var alias_dept = selectedOptionDept.data('alias') || '';
+			var alias_dept = selectedOptionDept.data('alias') || '--';
 			var selectedOptionDivisi = $('#divisi').find('option:selected');
-			var alias_divisi = selectedOptionDivisi.data('alias') || '';
+			var alias_divisi = selectedOptionDivisi.data('alias') || '--';
 			var selectedOptionSegment = $('#segment').find('option:selected');
-			var alias_segment = selectedOptionSegment.data('alias') || '';
+			var alias_segment = selectedOptionSegment.data('alias') || '--';
 			var concatenatedValue = '';
 			if (alias_depo) concatenatedValue += alias_depo + '/';
 			if (alias_dept) concatenatedValue += alias_dept + '/';

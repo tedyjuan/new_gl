@@ -486,4 +486,102 @@ class C_chart_of_account extends CI_Controller
 			"data" => $result
 		]);
 	}
+
+	// ================= ledger =========================
+	public function simpanLedger()
+	{
+		
+		$this->form_validation->set_rules('id_number_ledger', 'Number ledger', 'required');
+		$this->form_validation->set_rules('nama_akun_ledger', 'Nama Ledger COA', 'required');
+		$this->form_validation->set_rules('deskripsi', 'Deskripsi COA', 'required');
+		$this->form_validation->set_rules('uuid', 'uuid header coa ', 'required');
+		if ($this->form_validation->run() == FALSE) {
+			// Jika validasi gagal
+			$jsonmsg = [
+				'hasil' => 'false',
+				'pesan' => validation_errors(),
+			];
+			echo json_encode($jsonmsg);
+			return;
+		}
+		
+		$uuid             = $this->input->post('uuid');
+		$cekcoa = $this->M_global->getWhere('chart_of_accounts', ['uuid' => $uuid])->row();
+		if($cekcoa != null){
+			$cc_start           = $this->input->post('cc_start');
+			$cc_end             = $this->input->post('cc_end');
+			$cc_depo            = $this->input->post('cc_depo');
+			 var_dump($cc_depo); die; 
+			$id_number_ledger   = $this->input->post('id_number_ledger');
+			$nama_akun_ledger   = $this->input->post('nama_akun_ledger');
+			$deskripsi          = $this->input->post('deskripsi');
+			$account_number     = $cekcoa->account_number;
+			$code_company       = $cekcoa->code_company;
+			$account_type       = $cekcoa->account_type;
+			$account_method     = $cekcoa->account_method;
+			$account_group      = $cekcoa->account_group;
+			$cost_center_type   = $cekcoa->cost_center_type;
+			$code_trialbalance1 = $cekcoa->code_trialbalance1;
+			$code_trialbalance2 = $cekcoa->code_trialbalance2;
+			$code_trialbalance3 = $cekcoa->code_trialbalance3;
+			$noakun_ledger = $account_number. $id_number_ledger;
+			$param = [
+				'account_number' => $noakun_ledger,
+				'code_company'   => $code_company,
+			];
+			$cekledger = $this->M_global->getWhere('chart_of_accounts', $param)->num_rows();
+			if($cekledger != 0){
+				$jsonmsg = [
+					'hasil' => 'false',
+					'pesan' => 'No Ledger sudah di gunakan pada company ' . $code_company,
+				];
+				echo json_encode($jsonmsg);
+				exit;
+			}
+			$datainsert = [
+				'uuid'               => $this->uuid->v4(),
+				'account_number'     => (int)$noakun_ledger,
+				'name'               => $nama_akun_ledger,
+				'code_company'       => $code_company,
+				'description'        => $deskripsi,
+				'account_type'       => $account_type,
+				'account_method'     => $account_method,
+				'account_group'      => $account_group,
+				'cost_center_type'   => $cost_center_type,
+				'code_header'        => $account_number,
+				'account_category'   => 'ledger',
+				'code_trialbalance1' => $code_trialbalance1,
+				'code_trialbalance2' => $code_trialbalance2,
+				'code_trialbalance3' => $code_trialbalance3,
+				'created_at'         => date('Y-m-d H:i:s'),
+				'updated_at'         => date('Y-m-d H:i:s')
+			];
+			// Melakukan insert data
+			// === TRANSAKSI DB ===
+			$this->db->trans_strict(TRUE);
+			$this->db->trans_begin();
+			$this->db->insert('chart_of_accounts', $datainsert);
+			if ($this->db->trans_status() === FALSE || $this->db->affected_rows() <= 0) {
+				$jsonmsg = [
+					'hasil' => 'false',
+					'pesan' => 'Gagal Menyimpan Data',
+				];
+				echo json_encode($jsonmsg);
+				exit;
+			}
+			$this->db->trans_commit();
+			echo json_encode([
+				'hasil' => 'true',
+				'pesan' => 'Data Berhasil Disimpan',
+			]);
+			return;
+		}else{
+			$jsonmsg = [
+				'hasil' => 'false',
+				'pesan' => 'Data ID-COA tidak ditemukan',
+			];
+			echo json_encode($jsonmsg);
+		}
+		
+	}
 }
