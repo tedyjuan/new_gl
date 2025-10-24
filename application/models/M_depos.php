@@ -12,8 +12,7 @@ class M_depos extends CI_Model
 		$this->db->like('name', $search);
 		$this->db->or_like('code_depo', $search);
 		$this->db->limit($limit, $start);
-		$this->db->order_by($order_by, $order_dir); // Sorting berdasarkan kolom dan arah
-
+		$this->db->order_by($order_by, $order_dir);
 		$query = $this->db->get('depos');
 		return $query->result();
 	}

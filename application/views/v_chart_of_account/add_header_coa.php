@@ -21,7 +21,7 @@
 				<div class="col-6">
 					<div class="mb-3">
 						<label class="form-label" for="perusahaan">Company</label>
-						<select id="perusahaan" name="perusahaan" class="form-control-hover-light form-control"
+						<select id="perusahaan" name="perusahaan" class="form-control-hover-light form-control" style="width: 100%;"
 							data-parsley-required="true" data-parsley-errors-container=".err_name" required="">
 							<option value="">Pilih</option>
 						</select>

@@ -76,15 +76,15 @@
 						<div class="input-group mb-3">
 							<span class="input-group-text" id="id-number-ledger"><?= $data->account_number; ?></span>
 							<input type="text" class="form-control" id="id_number_ledger" name="id_number_ledger" style="width: 80%;"
-								data-parsley-required="true" data-parsley-errors-container=".err_id_akun_ledger" required=""
-								placeholder="input 2 number" aria-describedby="id-number-ledger">
+								value="<?= substr($data_ledger->account_number, -2); ?>" placeholder="input 2 number" aria-describedby="id-number-ledger"
+								data-parsley-required="true" data-parsley-errors-container=".err_id_akun_ledger" required="">
 							<span class="text-danger err_id_akun_ledger"></span>
 						</div>
 					</div>
 					<div class="mb-3">
 						<label class="form-label" for="nama_akun_ledger">Nama Ledger</label>
 						<input type="text" id="nama_akun_ledger" name="nama_akun_ledger" data-parsley-required="true"
-							data-parsley-errors-container=".err_nama_akun_ledger" required=""
+							data-parsley-errors-container=".err_nama_akun_ledger" required="" value="<?= $data_ledger->name_coa; ?>"
 							class="form-control-hover-light form-control kapital"
 							placeholder="input nama akun ledger">
 						<span class="text-danger err_nama_akun_ledger"></span>
@@ -95,7 +95,8 @@
 							<div class="col-sm mb-2 mb-sm-0">
 								<label class="form-control" for="formControlRadioEg1">
 									<span class="form-check">
-										<input type="radio" class="form-check-input" onclick="showtabel('depo')" name="formControlRadioEg" id="formControlRadioEg1">
+										<input type="radio" class="form-check-input" name="formControlRadioEg" id="formControlRadioEg1"
+											<?= ($data_ledger->cost_center_type == 'depo') ? 'checked' : ''; ?> onclick="showtabel('depo')">
 										<span class="form-check-label">Depo</span>
 									</span>
 								</label>
@@ -103,7 +104,8 @@
 							<div class="col-sm mb-2 mb-sm-0">
 								<label class="form-control" for="formControlRadioEg2">
 									<span class="form-check">
-										<input type="radio" class="form-check-input" onclick="showtabel('satuan')" name="formControlRadioEg" id="formControlRadioEg2">
+										<input type="radio" class="form-check-input" name="formControlRadioEg" id="formControlRadioEg2"
+											<?= ($data_ledger->cost_center_type == 'unit') ? 'checked' : ''; ?> onclick="showtabel('satuan')">
 										<span class="form-check-label">Satuan</span>
 									</span>
 								</label>
@@ -113,7 +115,7 @@
 					<div class="mb-3">
 						<label class="form-label" for="deskripsi">Deskripsi</label>
 						<input type="text" id="deskripsi" name="deskripsi" data-parsley-required="true"
-							data-parsley-errors-container=".err_deskripsi" required=""
+							data-parsley-errors-container=".err_deskripsi" required="" value="<?= $data_ledger->des; ?>"
 							class="form-control-hover-light form-control" placeholder="-">
 						<span class="text-danger err_deskripsi"></span>
 					</div>
@@ -202,6 +204,15 @@
 </div>
 <script>
 	$(document).ready(function() {
+
+		var initialType = '<?= $data_ledger->cost_center_type; ?>'; // 'depo' atau 'satuan'
+		if (initialType == 'unit') {
+			var type = 'satuan';
+		} else {
+			var type = 'depo';
+		}
+		// Panggil showtabel untuk menampilkan tabel sesuai tipe
+		showtabel(type);
 		$(".select2").select2();
 		$('#id_number_ledger').mask('00');
 		$('#id_number_ledger').on('blur', function() {
@@ -443,8 +454,8 @@
 				var endNum = endValue[1];
 				if (startNum > endNum) {
 					swet_gagal("Inputan pertama harus lebih kecil dari inputan kedua.");
-					 $('#cc_start').val('');
-					 $('#cc_end').val('');
+					$('#cc_start').val('');
+					$('#cc_end').val('');
 					return;
 				}
 				$('#cc_end').val(param);

@@ -68,4 +68,5 @@
 		var url = route + "/" + uuid;
 		loadform(url);
 	}
+
 </script>

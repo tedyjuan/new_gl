@@ -23,6 +23,7 @@ function loadform(controller) {
 	var base = BASE_URL;
 	var url = base + "/" + controller;
 	// Jika tidak ada di cache, lakukan AJAX request
+	showLoader();
 	$("#contentdata").load(url, function (response, status, xhr) {
 		hideLoader(); // Sembunyikan preloader setelah AJAX selesai
 

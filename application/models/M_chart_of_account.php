@@ -90,7 +90,7 @@ class M_chart_of_account extends CI_Model
 		$query = $this->db->get();
 		return $query->result();
 	}
-	public function get_coa($uuid)
+	public function get_coa($param)
 	{
 		// Menggunakan query builder untuk membangun query
 		$this->db->select('
@@ -100,6 +100,9 @@ class M_chart_of_account extends CI_Model
 			a.name AS name_coa,
 			a.account_method,
 			a.account_type,
+			a.cost_center_type,
+			a.code_header,
+			a.code_ledger,
 			a.account_group,
 			a.code_trialbalance1,
 			a.code_trialbalance2,
@@ -111,7 +114,6 @@ class M_chart_of_account extends CI_Model
 			e.description AS tbag3
 		');
 		$this->db->from('chart_of_accounts a');
-
 		// Menggunakan join untuk menggabungkan tabel
 		$this->db->join('companies b', 'b.code_company = a.code_company', 'left');
 		$this->db->join('trial_balance_account_group_1 c', 'c.code_trialbalance1 = a.code_trialbalance1 AND c.code_company = a.code_company', 'left');
@@ -119,7 +121,7 @@ class M_chart_of_account extends CI_Model
 		$this->db->join('trial_balance_account_group_3 e', 'e.code_trialbalance3 = a.code_trialbalance3 AND e.code_company = a.code_company', 'left');
 
 		// Menggunakan query binding untuk menggantikan penyisipan langsung variabel
-		$this->db->where('a.uuid', $uuid);
+		$this->db->where($param);
 
 		// Menjalankan query dan mengembalikan hasilnya
 		return $this->db->get();
@@ -133,5 +135,45 @@ class M_chart_of_account extends CI_Model
 		$this->db->from('depos a');
 		$this->db->where('a.code_company', $code_company);
 		return $this->db->get();
+	}
+	public function get_paginated_depos($limit, $start, $search, $order_by, $order_dir, $code_company)
+	{
+		$this->db->select('a.code_depo, a.name');
+		$this->db->from('depos a');
+		$this->db->join('cost_centers b', 'b.code_depo = a.code_depo AND b.code_company = a.code_company', 'inner');
+		$this->db->like('a.name', $search);
+		$this->db->or_like('a.code_depo', $search);
+		if ($code_company !== null) {
+			$this->db->where('a.code_company', $code_company);
+		}
+		$this->db->limit($limit, $start);
+		$this->db->order_by($order_by, $order_dir);
+		$this->db->group_by('a.code_depo');
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	// Fungsi untuk menghitung total data
+	public function count_all_depos($code_company)
+	{
+		$this->db->select('a.code_depo');
+		$this->db->from('depos a');
+		$this->db->join('cost_centers b', 'b.code_depo = a.code_depo AND b.code_company = a.code_company', 'inner');
+		$this->db->where('a.code_company', $code_company);
+		$this->db->group_by('a.code_depo');
+		return $this->db->count_all_results();
+	}
+
+	public function count_filtered_depos($search, $code_company)
+	{
+		$this->db->select('a.code_depo');
+		$this->db->from('depos a');
+		$this->db->join('cost_centers b', 'b.code_depo = a.code_depo AND b.code_company = a.code_company', 'inner');
+		$this->db->like('a.name', $search);
+		$this->db->or_like('a.code_depo', $search);
+		$this->db->where('a.code_company', $code_company);
+		$this->db->group_by('a.code_depo');
+		$query = $this->db->get();
+		return $query->num_rows();
 	}
 }
