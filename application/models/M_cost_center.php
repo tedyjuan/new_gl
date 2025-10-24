@@ -69,4 +69,16 @@ class M_cost_center extends CI_Model
 		$this->db->where('e.code_segment', $segment);
 		return $this->db->get()->row();
 	}
+	public function getCC_Start_End_ByCompany($start, $end, $code_company)
+	{
+		$this->db->select('a.code_cost_center');
+		$this->db->from('cost_centers a');
+		$this->db->where('a.code_company', $code_company);
+		$this->db->where('a.code_cost_center >=', $start);
+		$this->db->where('a.code_cost_center <=', $end);
+		$query = $this->db->get();
+
+		// Menampilkan hasil query
+		return  $query->result();
+	}
 }

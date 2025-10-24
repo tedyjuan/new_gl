@@ -32,10 +32,7 @@
 					</div>
 					<div class="mb-3">
 						<label class="form-label" for="no_akun">No Akun</label>
-						<input type="text" id="no_akun" name="no_akun" data-parsley-required="true"
-							data-parsley-errors-container=".err_no_akun" value="<?= $data->account_number; ?>" required="" class="form-control-hover-light form-control"
-							placeholder="Nomor 4 angka">
-						<span class="text-danger err_no_akun"></span>
+						<input type="text" id="no_akun" name="no_akun" disabled value="<?= $data->account_number; ?>" class="bg-soft-dark form-control">
 					</div>
 					<div class="mb-3">
 						<label class="form-label" for="nama_akun">Nama Akun</label>
