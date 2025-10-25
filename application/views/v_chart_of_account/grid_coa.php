@@ -59,14 +59,10 @@
 		initTable();
 	});
 
-	function add_ledger(route, uuid) {
+	function add_data(route, uuid) {
 		var url = route + "/" + uuid;
 		loadform(url);
 	}
 
-	function add_subledger(route, uuid) {
-		var url = route + "/" + uuid;
-		loadform(url);
-	}
 
 </script>

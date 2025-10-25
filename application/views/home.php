@@ -150,7 +150,7 @@
 				<div class="navbar-vertical-content">
 					<div id="navbarVerticalMenu" class="nav nav-pills nav-vertical card-navbar-nav">
 						<div class="nav-item">
-							<a class="nav-link sub_reset active" id="nav_dashboard" href="<?php echo site_url('Dashboard'); ?>" data-placement="left">
+							<a class="nav-link sub_reset active" id="nav_dashboard" href="<?= base_url(); ?>" data-placement="left">
 								<i class="bi bi-speedometer2 nav-icon"></i>
 								<span class="nav-link-title">Dashboards</span>
 							</a>

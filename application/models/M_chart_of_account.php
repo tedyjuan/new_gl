@@ -136,15 +136,15 @@ class M_chart_of_account extends CI_Model
 		$this->db->where('a.code_company', $code_company);
 		return $this->db->get();
 	}
-	public function get_paginated_depos($limit, $start, $search, $order_by, $order_dir, $code_company)
+	public function get_paginated_depos($limit, $start, $search = null, $order_by, $order_dir, $code_company)
 	{
 		$this->db->select('a.code_depo, a.name');
 		$this->db->from('depos a');
 		$this->db->join('cost_centers b', 'b.code_depo = a.code_depo AND b.code_company = a.code_company', 'inner');
-		$this->db->like('a.name', $search);
-		$this->db->or_like('a.code_depo', $search);
-		if ($code_company !== null) {
-			$this->db->where('a.code_company', $code_company);
+		$this->db->where('a.code_company', $code_company);
+		if($search != null){
+			$this->db->like('a.name', $search);
+			$this->db->or_like('a.code_depo', $search);
 		}
 		$this->db->limit($limit, $start);
 		$this->db->order_by($order_by, $order_dir);
@@ -173,6 +173,91 @@ class M_chart_of_account extends CI_Model
 		$this->db->or_like('a.code_depo', $search);
 		$this->db->where('a.code_company', $code_company);
 		$this->db->group_by('a.code_depo');
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+	 public function min_max_cc($uuid,  $type){
+		$this->db->select('b.code_cc AS kode_cc, c.group_team');
+		$this->db->from('chart_of_accounts a');
+		$this->db->join('account_centers b', 'b.code_coa = a.account_number AND b.code_company = a.code_company');
+		$this->db->join('cost_centers c', 'c.code_cost_center = b.code_cc AND c.code_company = a.code_company');
+		$this->db->where('a.uuid', $uuid);
+		if ($type == 'min') {
+			$this->db->order_by('b.code_cc', 'ASC');
+		} else {
+			$this->db->order_by('b.code_cc', 'DESC');
+		}
+		$this->db->limit(1);
+		return $this->db->get()->row();
+	 }
+
+	public function hapus_cc($uuid)
+	{
+		// Query DELETE dengan INNER JOIN dan query binding
+		$sql = "
+		DELETE b
+		FROM account_centers b
+		INNER JOIN chart_of_accounts a ON b.code_coa = a.account_number
+										AND a.code_company = b.code_company
+		WHERE a.uuid = ?
+		";
+		// Eksekusi query dengan binding parameter
+		$this->db->query($sql, array($uuid));
+	}
+	public function get_depo_details($uuid, $code_company)
+	{
+
+		// Query Builder
+		$this->db->select('c.code_depo, d.name');
+		$this->db->from('chart_of_accounts a');
+		$this->db->join('account_centers b', 'b.code_company = a.code_company AND b.code_coa = a.account_number');
+		$this->db->join('cost_centers c', 'c.code_company = a.code_company AND c.code_cost_center = b.code_cc');
+		$this->db->join('depos d', 'd.code_company = a.code_company AND d.code_depo = c.code_depo');
+		$this->db->where('a.uuid', $uuid);
+		$this->db->where('a.code_company', $code_company);
+		$this->db->limit(1);
+
+		// Eksekusi query
+		$query = $this->db->get();
+		return $query->row(); 
+	}
+
+	public function get_paginated_cost_center($limit, $start, $search, $order_by, $order_dir, $code_company)
+	{
+		$this->db->select('*');
+		$this->db->from('cost_centers');
+		if (!empty($search)) {
+			$this->db->group_start()
+				->like('code_cost_center', $search)
+				->or_like('group_team', $search)
+				->or_like('manager', $search)
+				->or_like('description', $search)
+				->group_end();
+		}
+		$this->db->where('code_company', $code_company);
+		// limit & order
+		$this->db->limit($limit, $start);
+		$this->db->order_by($order_by, $order_dir);
+
+		$query = $this->db->get();
+		return $query->result();
+	}
+	public function count_all_cost_center($code_company)
+	{
+		$this->db->select('a.*');
+		$this->db->from('cost_centers a');
+		$this->db->where('a.code_company', $code_company);
+		return $this->db->count_all_results();
+	}
+	public function count_filtered_cost_center($search = null, $code_company)
+	{
+		$this->db->select('a.group_team, a.code_cost_center');
+		$this->db->from('cost_centers a');
+		$this->db->where('a.code_company', $code_company);
+		if($search != null){
+			$this->db->like('a.group_team', $search);
+			$this->db->or_like('a.code_cost_center', $search);
+		}
 		$query = $this->db->get();
 		return $query->num_rows();
 	}

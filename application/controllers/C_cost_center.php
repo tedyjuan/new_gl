@@ -93,7 +93,7 @@ class C_cost_center extends CI_Controller
 	}
 	function add()
 	{
-		$data['judul']          = "Form Tambah cost_center";
+		$data['judul']          = "Form Tambah Cost Center";
 		$data['load_back']      = 'C_cost_center/add';
 		$data['load_grid']      = 'C_cost_center';
 		$data['perusahaanList'] = $this->M_global->getWhereOrder('companies')->result();
@@ -200,7 +200,7 @@ class C_cost_center extends CI_Controller
 			$data['deptList'] = $this->M_global->getWhere("departments", ['code_company' => $code_company])->result();
 			$data['divisiList'] = $this->M_global->getWhere("divisions", ['code_company' => $code_company])->result();
 			$data['segmentList'] = $this->M_global->getWhere("segments", ['code_company' => $code_company])->result();
-			$data['judul'] = "Form Edit cost_center";
+			$data['judul'] = "Form Edit Cost Center";
 			$data['load_grid'] = "C_cost_center";
 			$data['load_refresh'] = "C_cost_center/editform/" . $uuid;
 			$this->load->view('v_cost_center/edit_cost_center', $data);

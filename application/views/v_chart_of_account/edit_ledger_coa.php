@@ -48,10 +48,6 @@
 								<td><?= $data->account_type  ?></td>
 							</tr>
 							<tr>
-								<th style="width: 35%">COA Group</th>
-								<td><?= $data->account_group  ?></td>
-							</tr>
-							<tr>
 								<th style="width: 35%">Tbag 1</th>
 								<td><?= $data->code_trialbalance1 ?> - <?= $data->tbag1 ?></td>
 							</tr>
@@ -63,10 +59,6 @@
 								<th style="width: 35%">Tbag 3</th>
 								<td><?= $data->code_trialbalance3 ?> - <?= $data->tbag3 ?></td>
 							</tr>
-							<tr>
-								<th style="width: 35%">Deskripsi</th>
-								<td> <?= $data->des ?></td>
-							</tr>
 						</tbody>
 					</table>
 				</div>
@@ -74,11 +66,8 @@
 					<div class="mb-3">
 						<label class="form-label" for="id_number_ledger">ID Akun Ledger</label>
 						<div class="input-group mb-3">
-							<span class="input-group-text" id="id-number-ledger"><?= $data->account_number; ?></span>
-							<input type="text" class="form-control" id="id_number_ledger" name="id_number_ledger" style="width: 80%;"
-								value="<?= substr($data_ledger->account_number, -2); ?>" placeholder="input 2 number" aria-describedby="id-number-ledger"
-								data-parsley-required="true" data-parsley-errors-container=".err_id_akun_ledger" required="">
-							<span class="text-danger err_id_akun_ledger"></span>
+							<input type="text" class="form-control bg-soft-dark" id="id_number_ledger" name="id_number_ledger"
+								value="<?= $data_ledger->account_number ?>" disabled>
 						</div>
 					</div>
 					<div class="mb-3">
@@ -95,7 +84,7 @@
 							<div class="col-sm mb-2 mb-sm-0">
 								<label class="form-control" for="formControlRadioEg1">
 									<span class="form-check">
-										<input type="radio" class="form-check-input" name="formControlRadioEg" id="formControlRadioEg1"
+										<input type="radio" class="form-check-input" name="radio_type" id="formControlRadioEg1"
 											<?= ($data_ledger->cost_center_type == 'depo') ? 'checked' : ''; ?> onclick="showtabel('depo')">
 										<span class="form-check-label">Depo</span>
 									</span>
@@ -104,7 +93,7 @@
 							<div class="col-sm mb-2 mb-sm-0">
 								<label class="form-control" for="formControlRadioEg2">
 									<span class="form-check">
-										<input type="radio" class="form-check-input" name="formControlRadioEg" id="formControlRadioEg2"
+										<input type="radio" class="form-check-input" name="radio_type" id="formControlRadioEg2"
 											<?= ($data_ledger->cost_center_type == 'unit') ? 'checked' : ''; ?> onclick="showtabel('satuan')">
 										<span class="form-check-label">Satuan</span>
 									</span>
@@ -178,7 +167,7 @@
 				<div></div>
 				<div>
 					<button type="button" id="btnsubmit" class="btn btn-sm btn-primary"><i class="bi bi-send"></i>
-						Simpan</button>
+						Update</button>
 					<button type="reset" class="btn btn-sm btn-outline-danger"><i class="bi bi-eraser-fill"></i>
 						Reset</button>
 				</div>
@@ -214,18 +203,7 @@
 		// Panggil showtabel untuk menampilkan tabel sesuai tipe
 		showtabel(type);
 		$(".select2").select2();
-		$('#id_number_ledger').mask('00');
-		$('#id_number_ledger').on('blur', function() {
-			let inputValue = $(this).val();
-			if (inputValue.length === 1) {
-				inputValue = inputValue + '0';
-			}
-			if (inputValue == '00') {
-				$(this).val('01');
-			} else {
-				$(this).val(inputValue);
-			}
-		});
+
 
 		$('.kapital').on('input', function(e) {
 			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
@@ -234,128 +212,14 @@
 	})
 </script>
 <script>
-	$('#perusahaan').on('change', function() {
-		var companyCode = $(this).val();
-		if (companyCode == '') {
-			$('#akun_type').empty().append('<option value="">Pilih company dahulu</option>');
-			$('#tbag1').empty().append('<option value="">Pilih Type dahulu</option>');
-			$('#tbag2').empty().append('<option value="">Pilih group 1 dahulu</option>');
-			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
-		} else {
-			$('#akun_type').empty().append('<option value="">Pilih</option>');
-		}
-		if (companyCode) {
-			$.ajax({
-				url: '<?= base_url('C_chart_of_account/get_tbag1'); ?>',
-				method: 'POST',
-				dataType: 'JSON',
-				data: {
-					code_company: companyCode,
-				},
-				success: function(data) {
-					data.forEach(function(coa) {
-						$('#akun_type').append('<option value="' + coa.account_type + '" data-company="' + companyCode + '" >' + coa.account_type + '</option>');
-					});
-				}
-			});
-
-		}
-	});
-	$('#akun_type').on('change', function() {
-		var akun_type = $(this).val();
-		if (akun_type == '') {
-			$('#tbag1').empty().append('<option value="">Pilih Type dahulu</option>');
-			$('#tbag2').empty().append('<option value="">Pilih group 1 dahulu</option>');
-			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
-		} else {
-			$('#tbag1').empty().append('<option value="">Pilih</option>');
-		}
-		var company = $('#akun_type option:selected').data('company');
-		if (akun_type) {
-			$.ajax({
-				url: '<?= base_url('C_chart_of_account/get_tbag1'); ?>',
-				method: 'POST',
-				dataType: 'JSON',
-				data: {
-					akun_type: akun_type,
-					code_company: company,
-				},
-				success: function(data) {
-					data.forEach(function(coa) {
-						$('#tbag1').append('<option value="' + coa.code_trialbalance1 + '" data-company="' + company + '" >' + '(' + coa.code_trialbalance1 + ') ' + coa.description + '</option>');
-					});
-				}
-			});
-
-		}
-	});
-	$('#tbag1').on('change', function() {
-		var val_tbag1 = $(this).val();
-		if (val_tbag1 == '') {
-			$('#tbag2').empty().append('<option value="">Pilih group 1 dahulu</option>');
-			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
-		} else {
-			$('#tbag2').empty().append('<option value="">Pilih</option>');
-		}
-		var company = $('#tbag1 option:selected').data('company');
-		if (val_tbag1) {
-			$.ajax({
-				url: '<?= base_url('C_chart_of_account/get_tbag2'); ?>',
-				method: 'POST',
-				dataType: 'JSON',
-				data: {
-					tbag1: val_tbag1,
-					code_company: company,
-				},
-				success: function(data) {
-					data.forEach(function(tbg2) {
-						$('#tbag2').append('<option value="' + tbg2.code_trialbalance2 + '" data-company="' + company + '" >' + '(' + tbg2.code_trialbalance2 + ') ' + tbg2.description + '</option>');
-					});
-				}
-			});
-
-		}
-	});
-	$('#tbag2').on('change', function() {
-		var val_tbag2 = $(this).val();
-		if (val_tbag2 == '') {
-			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
-		} else {
-			$('#tbag3').empty().append('<option value="">Pilih</option>');
-		}
-		if (val_tbag2) {
-			var company = $('#tbag2 option:selected').data('company');
-			$.ajax({
-				url: '<?= base_url('C_chart_of_account/get_tbag3'); ?>',
-				method: 'POST',
-				dataType: 'JSON',
-				data: {
-					tbag2: val_tbag2,
-					code_company: company,
-				},
-				success: function(data) {
-					data.forEach(function(tbg3) {
-						$('#tbag3').append('<option value="' + tbg3.code_trialbalance3 + '" data-company="' + company + '" >' + '(' + tbg3.code_trialbalance3 + ') ' + tbg3.description + '</option>');
-					});
-				}
-			});
-
-		}
-	});
-</script>
-<script>
 	$('#btnsubmit').click(function(e) {
 		e.preventDefault();
 		let form = $('#forms_add');
 		var uuid = "<?= ($uuid) ?>";
 		form.parsley().validate();
-		console.log("test");
-
 		if (form.parsley().isValid()) {
-			console.log("ok");
-
 			$.ajax({
-				url: "<?= base_url('C_chart_of_account/simpanLedger') ?>",
+				url: "<?= base_url('C_chart_of_account/updateLedger') ?>",
 				type: 'POST',
 				method: 'POST',
 				dataType: 'JSON',
@@ -384,11 +248,8 @@
 					}
 				},
 			});
-		} else {
-			console.log("tidak ok");
 		}
 	});
-
 
 	function tabeldata(data_company, type) {
 		// kalau sebelumnya sudah ada instance, hancurkan dulu
@@ -487,14 +348,29 @@
 		$depo.val('');
 		$('.err_cc_nama_depo').text('');
 
-		if (type === 'satuan') {
+		if (type == 'satuan') {
 			$('#resulttabel_satuan').show();
-			// Aktifkan required utk Satuan
+			var cc_min = "<?= isset($min->kode_cc) && !empty($min->kode_cc) ? $min->kode_cc : ''; ?>";
+			var cc_max = "<?= isset($max->kode_cc) && !empty($max->kode_cc) ? $max->kode_cc : ''; ?>";
+			if (cc_min && cc_max) {
+				var cc_min_display = "(" + cc_min + ") <?= isset($min->group_team) ? $min->group_team : ''; ?>";
+				var cc_max_display = "(" + cc_max + ") <?= isset($max->group_team) ? $max->group_team : ''; ?>";
+				$("#cc_start").val(cc_min_display);
+				$("#cc_end").val(cc_max_display);
+			} 
 			$satuan.prop('disabled', false).prop('required', true).attr('data-parsley-required', 'true');
-		} else if (type === 'depo') {
+		}
+
+		if (type == 'depo') {
 			$('#resulttabel_depo').show();
-			// Aktifkan required utk Depo
+			var cc_depo_code = "<?= isset($depo->code_depo) && !empty($depo->code_depo) ? $depo->code_depo : ''; ?>";
+			var cc_depo_name = "<?= isset($depo->name) && !empty($depo->name) ? $depo->name : ''; ?>";
+			if (cc_depo_code && cc_depo_name) {
+				$('#cc_kode_depo').val(cc_depo_code);
+				$('#cc_nama_depo').val(cc_depo_name);
+			} 
 			$depo.prop('disabled', false).prop('required', true).attr('data-parsley-required', 'true');
 		}
+
 	}
 </script>

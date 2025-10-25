@@ -20,15 +20,8 @@
 				<div class="col-6">
 					<div class="mb-3">
 						<label class="form-label" for="perusahaan">Company</label>
-						<select id="perusahaan" name="perusahaan" class="form-control-hover-light form-control" disabled>
-							<option value="">Pilih</option>
-							<?php foreach ($companys as $company) : ?>
-								<option value="<?= $company->code_company ?>"
-									<?= $data->code_company == "$company->code_company" ? 'selected' : '' ?>>
-									<?= $company->code_company ?> - <?= $company->name ?>
-								</option>
-							<?php endforeach; ?>
-						</select>
+						<input type="text" id="perusahaan" name="perusahaan" disabled
+							value="<?= $data->code_company; ?> - <?= $data->nm_company; ?>" class="bg-soft-dark form-control">
 					</div>
 					<div class="mb-3">
 						<label class="form-label" for="no_akun">No Akun</label>
@@ -76,10 +69,7 @@
 							data-parsley-required="true" data-parsley-errors-container=".err_akun_type" required="">
 							<option value="">Pilih </option>
 							<?php foreach ($type_akun as $type) : ?>
-								<option value="<?= $type->account_type ?>"
-									<?= $data->account_type == "$type->account_type" ? 'selected' : '' ?>>
-									<?= $type->account_type ?>
-								</option>
+								<option value="<?= $type->account_type ?>" <?= $data->account_type == "$type->account_type" ? 'selected' : '' ?>><?= $type->account_type ?></option>
 							<?php endforeach; ?>
 						</select>
 						<span class="text-danger err_akun_type"></span>
@@ -180,63 +170,10 @@
 		$('.kapital').on('input', function(e) {
 			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
 		});
-		$("#perusahaan").select2({
-			placeholder: 'Cari kode atau nama',
-			minimumInputLength: 1,
-			allowClear: true,
-			ajax: {
-				url: "<?= base_url('C_company/search') ?>",
-				dataType: "json",
-				delay: 250,
-				data: function(params) {
-					return {
-						getCompany: params.term
-					};
-				},
-				processResults: function(data) {
-					var results = [];
-					$.each(data, function(index, item) {
-						results.push({
-							id: item.code_company,
-							text: item.code_company + ' - ' + item.name,
-						});
-					});
-					return {
-						results: results
-					};
-				}
-			}
-		});
+
 	})
 </script>
 <script>
-	$('#perusahaan').on('change', function() {
-		var companyCode = $(this).val();
-		if (companyCode == '') {
-			$('#akun_type').empty().append('<option value="">Pilih company dahulu</option>');
-			$('#tbag1').empty().append('<option value="">Pilih Type dahulu</option>');
-			$('#tbag2').empty().append('<option value="">Pilih group 1 dahulu</option>');
-			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
-		} else {
-			$('#akun_type').empty().append('<option value="">Pilih</option>');
-		}
-		if (companyCode) {
-			$.ajax({
-				url: '<?= base_url('C_chart_of_account/get_tbag1'); ?>',
-				method: 'POST',
-				dataType: 'JSON',
-				data: {
-					code_company: companyCode,
-				},
-				success: function(data) {
-					data.forEach(function(coa) {
-						$('#akun_type').append('<option value="' + coa.account_type + '" data-company="' + companyCode + '" >' + coa.account_type + '</option>');
-					});
-				}
-			});
-
-		}
-	});
 	$('#akun_type').on('change', function() {
 		var akun_type = $(this).val();
 		if (akun_type == '') {
@@ -245,8 +182,10 @@
 			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
 		} else {
 			$('#tbag1').empty().append('<option value="">Pilih</option>');
+			$('#tbag2').empty().append('<option value="">Pilih group 1 dahulu</option>');
+			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
 		}
-		var company = $('#akun_type option:selected').data('company');
+		var company = "<?= $code_company; ?>";
 		if (akun_type) {
 			$.ajax({
 				url: '<?= base_url('C_chart_of_account/get_tbag1'); ?>',
@@ -256,7 +195,11 @@
 					akun_type: akun_type,
 					code_company: company,
 				},
+				beforeSend: function() {
+					showLoader();
+				},
 				success: function(data) {
+					hideLoader();
 					data.forEach(function(coa) {
 						$('#tbag1').append('<option value="' + coa.code_trialbalance1 + '" data-company="' + company + '" >' + '(' + coa.code_trialbalance1 + ') ' + coa.description + '</option>');
 					});
@@ -272,6 +215,7 @@
 			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
 		} else {
 			$('#tbag2').empty().append('<option value="">Pilih</option>');
+			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
 		}
 		var company = $('#tbag1 option:selected').data('company');
 		if (val_tbag1) {
@@ -283,7 +227,11 @@
 					tbag1: val_tbag1,
 					code_company: company,
 				},
+				beforeSend: function() {
+					showLoader();
+				},
 				success: function(data) {
+					hideLoader();
 					data.forEach(function(tbg2) {
 						$('#tbag2').append('<option value="' + tbg2.code_trialbalance2 + '" data-company="' + company + '" >' + '(' + tbg2.code_trialbalance2 + ') ' + tbg2.description + '</option>');
 					});
@@ -309,7 +257,11 @@
 					tbag2: val_tbag2,
 					code_company: company,
 				},
+				beforeSend: function() {
+					showLoader();
+				},
 				success: function(data) {
+					hideLoader();
 					data.forEach(function(tbg3) {
 						$('#tbag3').append('<option value="' + tbg3.code_trialbalance3 + '" data-company="' + company + '" >' + '(' + tbg3.code_trialbalance3 + ') ' + tbg3.description + '</option>');
 					});

@@ -48,10 +48,6 @@
 								<td><?= $data->account_type  ?></td>
 							</tr>
 							<tr>
-								<th style="width: 35%">COA Group</th>
-								<td><?= $data->account_group  ?></td>
-							</tr>
-							<tr>
 								<th style="width: 35%">Tbag 1</th>
 								<td><?= $data->code_trialbalance1 ?> - <?= $data->tbag1 ?></td>
 							</tr>
@@ -62,10 +58,6 @@
 							<tr>
 								<th style="width: 35%">Tbag 3</th>
 								<td><?= $data->code_trialbalance3 ?> - <?= $data->tbag3 ?></td>
-							</tr>
-							<tr>
-								<th style="width: 35%">Deskripsi</th>
-								<td> <?= $data->des ?></td>
 							</tr>
 						</tbody>
 					</table>
@@ -95,7 +87,7 @@
 							<div class="col-sm mb-2 mb-sm-0">
 								<label class="form-control" for="formControlRadioEg1">
 									<span class="form-check">
-										<input type="radio" class="form-check-input" onclick="showtabel('depo')" name="formControlRadioEg" id="formControlRadioEg1">
+										<input type="radio" class="form-check-input" onclick="showtabel('depo')" name="radio_type" id="formControlRadioEg1">
 										<span class="form-check-label">Depo</span>
 									</span>
 								</label>
@@ -103,7 +95,7 @@
 							<div class="col-sm mb-2 mb-sm-0">
 								<label class="form-control" for="formControlRadioEg2">
 									<span class="form-check">
-										<input type="radio" class="form-check-input" onclick="showtabel('satuan')" name="formControlRadioEg" id="formControlRadioEg2">
+										<input type="radio" class="form-check-input" onclick="showtabel('satuan')" name="radio_type" id="formControlRadioEg2">
 										<span class="form-check-label">Satuan</span>
 									</span>
 								</label>
@@ -207,7 +199,7 @@
 		$('#id_number_ledger').on('blur', function() {
 			let inputValue = $(this).val();
 			if (inputValue.length === 1) {
-				inputValue = inputValue + '0';
+				inputValue = '0' + inputValue;
 			}
 			if (inputValue == '00') {
 				$(this).val('01');
@@ -221,116 +213,6 @@
 		});
 
 	})
-</script>
-<script>
-	$('#perusahaan').on('change', function() {
-		var companyCode = $(this).val();
-		if (companyCode == '') {
-			$('#akun_type').empty().append('<option value="">Pilih company dahulu</option>');
-			$('#tbag1').empty().append('<option value="">Pilih Type dahulu</option>');
-			$('#tbag2').empty().append('<option value="">Pilih group 1 dahulu</option>');
-			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
-		} else {
-			$('#akun_type').empty().append('<option value="">Pilih</option>');
-		}
-		if (companyCode) {
-			$.ajax({
-				url: '<?= base_url('C_chart_of_account/get_tbag1'); ?>',
-				method: 'POST',
-				dataType: 'JSON',
-				data: {
-					code_company: companyCode,
-				},
-				success: function(data) {
-					data.forEach(function(coa) {
-						$('#akun_type').append('<option value="' + coa.account_type + '" data-company="' + companyCode + '" >' + coa.account_type + '</option>');
-					});
-				}
-			});
-
-		}
-	});
-	$('#akun_type').on('change', function() {
-		var akun_type = $(this).val();
-		if (akun_type == '') {
-			$('#tbag1').empty().append('<option value="">Pilih Type dahulu</option>');
-			$('#tbag2').empty().append('<option value="">Pilih group 1 dahulu</option>');
-			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
-		} else {
-			$('#tbag1').empty().append('<option value="">Pilih</option>');
-		}
-		var company = $('#akun_type option:selected').data('company');
-		if (akun_type) {
-			$.ajax({
-				url: '<?= base_url('C_chart_of_account/get_tbag1'); ?>',
-				method: 'POST',
-				dataType: 'JSON',
-				data: {
-					akun_type: akun_type,
-					code_company: company,
-				},
-				success: function(data) {
-					data.forEach(function(coa) {
-						$('#tbag1').append('<option value="' + coa.code_trialbalance1 + '" data-company="' + company + '" >' + '(' + coa.code_trialbalance1 + ') ' + coa.description + '</option>');
-					});
-				}
-			});
-
-		}
-	});
-	$('#tbag1').on('change', function() {
-		var val_tbag1 = $(this).val();
-		if (val_tbag1 == '') {
-			$('#tbag2').empty().append('<option value="">Pilih group 1 dahulu</option>');
-			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
-		} else {
-			$('#tbag2').empty().append('<option value="">Pilih</option>');
-		}
-		var company = $('#tbag1 option:selected').data('company');
-		if (val_tbag1) {
-			$.ajax({
-				url: '<?= base_url('C_chart_of_account/get_tbag2'); ?>',
-				method: 'POST',
-				dataType: 'JSON',
-				data: {
-					tbag1: val_tbag1,
-					code_company: company,
-				},
-				success: function(data) {
-					data.forEach(function(tbg2) {
-						$('#tbag2').append('<option value="' + tbg2.code_trialbalance2 + '" data-company="' + company + '" >' + '(' + tbg2.code_trialbalance2 + ') ' + tbg2.description + '</option>');
-					});
-				}
-			});
-
-		}
-	});
-	$('#tbag2').on('change', function() {
-		var val_tbag2 = $(this).val();
-		if (val_tbag2 == '') {
-			$('#tbag3').empty().append('<option value="">Pilih group 2 dahulu</option>');
-		} else {
-			$('#tbag3').empty().append('<option value="">Pilih</option>');
-		}
-		if (val_tbag2) {
-			var company = $('#tbag2 option:selected').data('company');
-			$.ajax({
-				url: '<?= base_url('C_chart_of_account/get_tbag3'); ?>',
-				method: 'POST',
-				dataType: 'JSON',
-				data: {
-					tbag2: val_tbag2,
-					code_company: company,
-				},
-				success: function(data) {
-					data.forEach(function(tbg3) {
-						$('#tbag3').append('<option value="' + tbg3.code_trialbalance3 + '" data-company="' + company + '" >' + '(' + tbg3.code_trialbalance3 + ') ' + tbg3.description + '</option>');
-					});
-				}
-			});
-
-		}
-	});
 </script>
 <script>
 	$('#btnsubmit').click(function(e) {
@@ -443,8 +325,8 @@
 				var endNum = endValue[1];
 				if (startNum > endNum) {
 					swet_gagal("Inputan pertama harus lebih kecil dari inputan kedua.");
-					 $('#cc_start').val('');
-					 $('#cc_end').val('');
+					$('#cc_start').val('');
+					$('#cc_end').val('');
 					return;
 				}
 				$('#cc_end').val(param);
