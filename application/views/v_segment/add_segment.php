@@ -128,6 +128,12 @@
 				$(this).val(formattedValue).trigger("input");
 			}
 		});
+		$('#kode_segment').on('blur', function() {
+			var currentValue = $(this).val();
+			if (currentValue === '00') {
+				$(this).val('01');
+			}
+		});
 		$('.kapital').on('input', function(e) {
 			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
 		});

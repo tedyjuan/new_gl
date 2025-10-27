@@ -50,4 +50,36 @@ class M_budget extends CI_Model
 		$this->db->where($param);
 		return $this->db->get();
 	}
+	public function get_coa_expense($cari, $code_company)
+	{
+		$sql = "SELECT 
+			a.account_number,
+			a.name
+            FROM chart_of_accounts a 
+            WHERE a.account_type = 'expense' 
+            AND a.code_company = ? 
+            AND (a.account_number LIKE ? OR a.name LIKE ?)";
+		$param = [$code_company, "%$cari%", "%$cari%"];
+		$query = $this->db->query($sql, $param);
+		return $query->result_array();
+	}
+	public function getcode_budgeting($code_department, $alias, $code_company)
+	{
+		$year = date("Y");
+		$this->db->select_max('counter_budgeting', 'max_serial');
+		$this->db->from('budgeting_header');
+		$this->db->where('code_company', $code_company);
+		$this->db->where('code_department', $code_department);
+		$this->db->where('years', $year);
+		$query = $this->db->get();
+		if ($query->num_rows() > 0) {
+			foreach ($query->result() as $suffix_id) {
+				$tmp = (int)$suffix_id->max_serial + 1;
+				$auto_num = sprintf("%04d", $tmp);
+			}
+		} else {
+			$auto_num = "0001";
+		}
+		return "BGT/{$year}/{$alias}-{$auto_num}";
+	}
 }

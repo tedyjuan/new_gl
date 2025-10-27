@@ -6,12 +6,11 @@
 				<div class="col-md-12 d-flex justify-content-between">
 					<h2 class="mb-0"><?= $judul ?></h2>
 					<div class="div ">
-						<button class="btn btn-sm btn-primary" onclick="loadform('<?= $load_grid ?>')"><i
+						<button type="button" class="btn btn-sm btn-primary" onclick="loadform('<?= $load_grid ?>')"><i
 								class="bi bi-arrow-left-circle"></i> Kembali</button>
-						<a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
-							onclick="loadform('<?= $load_back ?>')">
-							<i class="bi bi-arrow-clockwise"></i> Refresh
-						</a>
+						<button type="button"  class="btn btn-sm btn-outline-primary" onclick="loadform('<?= $load_back ?>')">
+							<i class="bi bi-arrow-clockwise"></i> Refresh</button>
+
 					</div>
 				</div>
 			</div>
@@ -66,8 +65,8 @@
 				<div class="col-3">
 					<div class="mb-3">
 						<label class="form-label" for="jumlah_project">Jumlah Project </label>
-						<input type="number" id="jumlah_project" name="jumlah_project" class="form-control-hover-light form-control duadigit"
-							data-parsley-required="true" data-parsley-errors-container=".err_jmlhprjek" required=""
+						<input type="number" id="jumlah_project" name="jumlah_project" class="form-control-hover-light bg-soft-dark form-control duadigit"
+							data-parsley-required="true" data-parsley-errors-container=".err_jmlhprjek" required="" disabled
 							placeholder="jumlah project">
 						<span class="text-danger err_jmlhprjek"></span>
 					</div>
@@ -100,6 +99,17 @@
 		// Ketika perusahaan dipilih
 		$('#perusahaan').on('change', function() {
 			var companyCode = $(this).val();
+			$("#jumlah_project").val('')
+			var container = $('#projectFormsContainer');
+			container.empty();
+			if (companyCode == '') {
+				$("#jumlah_project").prop("disabled", true);
+				$("#jumlah_project").addClass("bg-soft-dark");
+			} else {
+				$("#jumlah_project").prop("disabled", false);
+				$("#jumlah_project").removeClass("bg-soft-dark");
+
+			}
 			// Mengosongkan dropdown dan reset nilai default sebelum AJAX
 			$('#department').empty().append('<option value="">Pilih</option>');
 			if (companyCode) {
@@ -108,7 +118,11 @@
 					url: '<?= base_url('C_global/getDepartmentByCompany/'); ?>' + companyCode,
 					method: 'GET',
 					dataType: 'JSON',
+					beforeSend: function() {
+						showLoader();
+					},
 					success: function(data) {
+						hideLoader();
 						data.forEach(function(department) {
 							$('#department').append('<option value="' + department
 								.code_department + '" data-alias="' + department
@@ -375,25 +389,26 @@
 	}
 
 	function select_account() {
+		var code_company = $('#perusahaan').val();
 		$(".select_account").select2({
-			placeholder: 'Cari kode akun atau nama akun',
-			minimumInputLength: 1,
+			placeholder: 'Cari kode atau nama akun',
 			allowClear: true,
 			ajax: {
-				url: "<?= base_url('C_company/search') ?>",
+				url: "<?= base_url('C_budget/Coa_expense') ?>",
 				dataType: "json",
 				delay: 250,
 				data: function(params) {
 					return {
-						getCompany: params.term
+						cari: params.term,
+						code_company: code_company,
 					};
 				},
 				processResults: function(data) {
 					var results = [];
 					$.each(data, function(index, item) {
 						results.push({
-							id: item.code_company,
-							text: item.code_company + ' - ' + item.name,
+							id: item.account_number,
+							text: item.account_number + ' - ' + item.name,
 						});
 					});
 					return {

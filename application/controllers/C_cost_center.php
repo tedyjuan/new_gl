@@ -52,7 +52,7 @@ class C_cost_center extends CI_Controller
 		$order_input    = $this->input->post('order');
 		$order_col      = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
 		$dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
-		$columns        = ['code_cost_center','group_team','manager','description','action'];
+		$columns        = ['code_company','code_cost_center','group_team','manager','action'];
 		$order_by       = $columns[$order_col] ?? 'code_cost_center';
 		$data           = $this->M_cost_center->get_paginated_cost_center($length, $start, $search, $order_by, $dir);
 		$total_records  = $this->M_cost_center->count_all_cost_center();
@@ -77,10 +77,10 @@ class C_cost_center extends CI_Controller
 				</div>
 			</div>';
 			$result[] = [
+				$row->code_company,
 				$row->code_cost_center,
 				$row->group_team,
 				$row->manager,
-				$row->description,
 				$aksi,
 			];
 		}
@@ -331,6 +331,18 @@ class C_cost_center extends CI_Controller
 				echo json_encode([
 					'hasil' => 'false',
 					'pesan' => 'Data tidak ditemukan'
+				]);
+				return;
+			}
+			$param = [
+				'code_cc' => $cost_center->code_cost_center,
+				'code_company' => $cost_center->code_company,
+			];
+			$cek_acount_center = $this->M_global->getWhere('account_centers', $param)->num_rows();
+			if ($cek_acount_center != 0) {
+				echo json_encode([
+					'hasil' => 'false',
+					'pesan' => 'Tidak bisa Menghapus Data, karena sedang digunakan di chart of accounts.',
 				]);
 				return;
 			}

@@ -28,10 +28,10 @@ class C_budget extends CI_Controller
 		$dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
 		$columns        = ['code_company', 'company_name', 'code_budget', 'name','action'];
 		$order_by       = $columns[$order_col] ?? 'name';
-		$data           = [];
 		// $data           = $this->M_budget->get_paginated_budget($length, $start, $search, $order_by, $dir);
 		// $total_records  = $this->M_budget->count_all_budget();
 		// $total_filtered = $this->M_budget->count_filtered_budget($search);
+		$data           = [];
 		$total_records  = 0;
 		$total_filtered = 0;
 		$url_edit       = 'C_budget/editform/';
@@ -78,18 +78,47 @@ class C_budget extends CI_Controller
 	}
 	public function simpandata()
 	{
-		// Membaca data JSON yang dikirim dari AJAX
 		$data = json_decode(file_get_contents("php://input"), true);
 
-		// Header: Mengambil data umum dari JSON
-		$header = [
-			'perusahaan' => $data['perusahaan'],
-			'department' => $data['department'],
-			'saldo_awal' => $data['saldo_awal'],
-			'perpanjang_angaran' => $data['perpanjang_angaran'],
-			'jumlah_project' => $data['jumlah_project']
+		$code_company = $data['perusahaan'];
+		$code_department = $data['department'];
+		$opening_balance = $data['saldo_awal'];
+		$extend_budget = $data['perpanjang_angaran'];
+		$project_amount = $data['jumlah_project'];
+		$p_dept = [
+			"code_department" => $code_department,
+			"code_company" => $code_company,
 		];
 
+		$data_department = $this->M_global->getWhere("departments", $p_dept)->row();
+		if($data_department == null){
+			$jsonmsg = [
+			'hasil' => 'false',
+			'pesan' => 'Data Departement tidak di temukan',
+			];
+			echo json_encode($jsonmsg);
+			exit;
+		}
+
+		$alias_dept        = $data_department->alias;
+		$code_budgeting    = $this->M_budget->getcode_budgeting($code_department, $alias_dept,  $code_company);
+		$parts             = explode('-', $code_budgeting); // pisahkan berdasarkan "-"
+		$counter_budgeting = (int)$parts[count($parts) - 1]; // ambil id terakhir untuk keperluan "counter_budgeting"
+
+		// Header: Mengambil data umum dari JSON
+		$budgeting_header = [
+			'uuid'               => $this->uuid->v4(),
+			'counter_budgeting'  => $counter_budgeting,
+			'code_budgeting'     => $code_budgeting,
+			'code_company'       => $code_company,
+			'code_department'    => $code_department,
+			'opening_balance'    => (int)str_replace('.', '', $opening_balance),
+			'extend_budget'      => (int)str_replace('.', '', $extend_budget),
+			'project_amount'     => (int)str_replace('.', '', $project_amount),
+			'years'              => date('Y'),
+			'date_budgeting'     => date('Y-m-d'),
+		];
+		$this->db->insert('budgeting_header', $budgeting_header);
 		// Projects: Mengelompokkan data per project
 		$projects = [];
 		foreach ($data['projects'] as $project) {
@@ -127,13 +156,12 @@ class C_budget extends CI_Controller
 
 		// Menyiapkan array final untuk dikirim ke view atau diproses lebih lanjut
 		$finalData = [
-			'header' => $header,
-			'projects' => $projects
+			'header' => $budgeting_header,
+			// 'projects' => $projects
 		];
-
+		 var_dump($finalData); die; 
 		// Debug output: Untuk melihat hasilnya
-		var_dump($finalData);
-		die;  // Untuk menghentikan eksekusi dan melihat output
+		
 	}
 
 	public function editform($uuid)
@@ -158,10 +186,10 @@ class C_budget extends CI_Controller
 	public function update()
 	{
 		// Ambil data dari POST request
-		$uuid = $this->input->post('uuid'); 
+		$uuid        = $this->input->post('uuid');
 		$code_budget = $this->input->post('kode_budget');
 		$nama_budget = $this->input->post('nama_budget');
-		$alias_post       = $this->input->post('alias');
+		$alias_post  = $this->input->post('alias');
 		// Cek apakah UUID Budget ada di database
 		$data =  $this->M_budget->get_where_budget(['a.uuid' => $uuid])->row();
 		if ($data != null) {
@@ -310,4 +338,12 @@ class C_budget extends CI_Controller
 			]);
 		}
 	}
+
+	 public function Coa_expense(){
+		$get_value = $this->input->get('cari');
+		$code_company = $this->input->get('code_company');
+		$cari = preg_replace("/[^a-zA-Z0-9]/", '', $get_value);
+		$hasil = $this->M_budget->get_coa_expense($cari, $code_company);
+		echo json_encode($hasil);
+	 }
 }

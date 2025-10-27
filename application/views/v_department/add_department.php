@@ -128,12 +128,17 @@
 				$(this).val(formattedValue).trigger("input");
 			}
 		});
+		$('#kode_department').on('blur', function() {
+			var currentValue = $(this).val();
+			if (currentValue === '00') {
+				$(this).val('01');
+			}
+		});
 		$('.kapital').on('input', function(e) {
 			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
 		});
 		$("#perusahaan").select2({
 			placeholder: 'Cari kode atau nama',
-			minimumInputLength: 1,
 			allowClear: true,
 			ajax: {
 				url: "<?= base_url('C_company/search') ?>",

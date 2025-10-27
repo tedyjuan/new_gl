@@ -95,7 +95,8 @@ class C_department extends CI_Controller
 		$alias           = $this->input->post('alias');
 		// Cek apakah kode Department sudah ada
 		$param_kode =[
-			'code_department'  => $code_department
+			'code_department'  => $code_department,
+			'code_company'  => $perusahaan,
 		];
 		$exisCode = $this->M_global->getWhere('departments', $param_kode)->num_rows();
 		if ($exisCode != null) {

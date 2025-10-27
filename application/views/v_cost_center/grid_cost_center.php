@@ -20,10 +20,10 @@
 		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%">
 			<thead>
 				<tr class="table-primary">
+					<th style="width: 15%">Code Company</th>
 					<th style="width: 15%">Cost Center</th>
 					<th>Group-Team</th>
 					<th>Manager</th>
-					<th>Deskripsi</th>
 					<th style="width: 5%">Action</th>
 				</tr>
 			</thead>
@@ -58,6 +58,4 @@
 	$(document).ready(function() {
 		initTable();
 	});
-
-	
 </script>
