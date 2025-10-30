@@ -26,7 +26,7 @@ class C_budget extends CI_Controller
 		$order_input    = $this->input->post('order');
 		$order_col      = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
 		$dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
-		$columns        = ['code_company', 'company_name', 'department_name', 'code_budgeting', 'action'];
+		$columns        = ['code_company', 'company_name', 'code_budgeting', 'code_department', 'action'];
 		$order_by       = $columns[$order_col] ?? 'code_budgeting';
 		$data           = $this->M_budget->get_paginated_budget($length, $start, $search, $order_by, $dir);
 		$total_records  = $this->M_budget->count_all_budget();
@@ -53,7 +53,7 @@ class C_budget extends CI_Controller
 			$result[] = [
 				$row->code_company . ' - ' . $row->company_name,
 				$row->code_budgeting,
-				$row->department_name,
+				$row->code_department,
 				$aksi,
 			];
 		}
@@ -128,6 +128,7 @@ class C_budget extends CI_Controller
 		}
 
 		foreach ($data['projects'] as $key => $project) {
+			 var_dump($project['counta']); 
 			if (isset($_FILES['projects']['name'][$key]['project_file']) && $_FILES['projects']['error'][$key]['project_file'] == 0) {
 				$this->load->library('upload');
 				// Akses data file yang diupload
@@ -219,42 +220,14 @@ class C_budget extends CI_Controller
 			$projectsData[] = [
 				'uuid'            => $this->uuid->v4(),
 				'code_budgeting'  => $code_budgeting,
-				'project_item'    => $key,
+				'project_item'    => ($key + 1),
 				'project_name'    => $project['project_name'],
 				'goal_project'    => $set_data,
 				'project_desc'    => $project['project_desc'],
 				'budget_proposal' => $project['usulan_anggaran'],
 				'filename'        => $nama_baru,
 			];
-			if (!empty($project['counta'])) {
-				foreach ($project['counta'] as $ca => $item_a) {
-					$counta = json_decode($item_a, true);
-					$countaData[] = [
-						'uuid'           => $this->uuid->v4(),
-						'code_budgeting' => $code_budgeting,
-						'project_item'   => $key,
-						'itemnumber'     => $ca,
-						'type_goal'      => 'REDUCE',
-						'desc'           => $counta['keterangan'],
-						'account_number' => $counta['account'],
-						'amount'         => (int)str_replace('.', '', $counta['jumlah']),
-					];
-				}
-			}
-			if (!empty($project['countb'])) {
-				foreach ($project['countb'] as $cb => $item_b) {
-					$countb = json_decode($item_b, true);
-					$countbData[] = [
-						'uuid'           => $this->uuid->v4(),
-						'code_budgeting' => $code_budgeting,
-						'project_item'   => $key,
-						'itemnumber'     => $cb,
-						'type_goal'      => 'IMPROVE',
-						'desc'           => $countb['keterangan'],
-						'amount'         => (int)str_replace('.', '', $countb['jumlah']),
-					];
-				}
-			}
+
 
 			
 		}

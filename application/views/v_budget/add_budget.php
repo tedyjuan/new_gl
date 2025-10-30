@@ -139,14 +139,15 @@
 		// Ketika jumlah project diinputkan
 		$('#jumlah_project').on('input', function() {
 			var jumlahProject = $(this).val();
-			var container = $('#projectFormsContainer');
+			if (jumlahProject <= 10) {
+				var container = $('#projectFormsContainer');
 
-			// Kosongkan container sebelumnya
-			container.empty();
+				// Kosongkan container sebelumnya
+				container.empty();
 
-			// Tambahkan form baru sebanyak jumlah yang dimasukkan
-			for (var i = 1; i <= jumlahProject; i++) {
-				var formProject = `
+				// Tambahkan form baru sebanyak jumlah yang dimasukkan
+				for (var i = 1; i <= jumlahProject; i++) {
+					var formProject = `
                 <div class="card mt-4 border border-secondary border-1" id="project_${i}">
                     <div class="card-body">
                         <div class="row">
@@ -245,11 +246,19 @@
                     </div>
                 </div>
             `;
-				container.append(formProject);
+					container.append(formProject);
+				}
+				$('.curency').mask("#.##0", {
+					reverse: true
+				});
+			} else {
+				var container = $('#projectFormsContainer');
+				container.empty();
+				swet_gagal("Maxsimal 10 Project");
+				$("#jumlah_project").val('')
+
 			}
-			$('.curency').mask("#.##0", {
-				reverse: true
-			});
+
 		});
 		select_account();
 	});

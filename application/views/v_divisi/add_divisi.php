@@ -139,7 +139,6 @@
 		});
 		$("#perusahaan").select2({
 			placeholder: 'Cari kode atau nama',
-			minimumInputLength: 1,
 			allowClear: true,
 			ajax: {
 				url: "<?= base_url('C_company/search') ?>",

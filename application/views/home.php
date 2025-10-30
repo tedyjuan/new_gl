@@ -5,13 +5,13 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<title>Dashboard | General Ladger</title>
-	<link rel="shortcut icon" href="<?php echo base_url('public/assets/favicon.ico?v=1.0'); ?>">
+	<link rel="shortcut icon" href="<?= base_url('public/assets/favicon.ico?v=1.0'); ?>">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="<?php echo base_url('public/assets/css/vendor.min.css?v=1.0'); ?>">
-	<link rel="stylesheet" href="<?php echo base_url('public/assets/css/theme.minc619.css?v=1.0'); ?>">
-	<link rel="stylesheet" href="<?php echo base_url('public/assets/vendor/datatable-bootstrap5/datatables-bootstrap5.min.css?v=1.0'); ?>">
-	<link rel="stylesheet" href="<?php echo base_url('public/assets/vendor/select2/css/select2.min.css?v=1.0'); ?>">
-	<link rel="stylesheet" href="<?php echo base_url('public/assets/vendor/sweetalert/sweetalert.css?v=1.0'); ?>">
+	<link rel="stylesheet" href="<?= base_url('public/assets/css/vendor.min.css?v=1.0'); ?>">
+	<link rel="stylesheet" href="<?= base_url('public/assets/css/theme.minc619.css?v=1.0'); ?>">
+	<link rel="stylesheet" href="<?= base_url('public/assets/vendor/datatable-bootstrap5/datatables-bootstrap5.min.css?v=1.0'); ?>">
+	<link rel="stylesheet" href="<?= base_url('public/assets/vendor/select2/css/select2.min.css?v=1.0'); ?>">
+	<link rel="stylesheet" href="<?= base_url('public/assets/vendor/sweetalert/sweetalert.css?v=1.0'); ?>">
 	<style>
 		.select2-container .select2-selection--single {
 			height: 3em !important;
@@ -61,22 +61,22 @@
 
 <body class="has-navbar-vertical-aside navbar-vertical-aside-show-xl footer-offset">
 	<div id="preloader" class="spinner overlay" style="display: none;">
-		<img class="img-spinner" src="<?php echo base_url('public/assets/svg/loading.svg'); ?>">
+		<img class="img-spinner" src="<?= base_url('public/assets/svg/loading.svg'); ?>">
 	</div>
-	<script src="<?php echo base_url('public/assets/js/theme.min.js?v=1.0'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/js/vendor.min.js?v=1.0'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/datatable-bootstrap5/datatables-jquery.min.js?v=1.0'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/datatable-bootstrap5/datatables-bootstrap5.min.js?v=1.0'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/flatpiker/flatpickr.js?v=1.0'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/select2/js/select2.js?v=1.0'); ?>"></script>
+	<script src="<?= base_url('public/assets/js/theme.min.js?v=1.0'); ?>"></script>
+	<script src="<?= base_url('public/assets/js/vendor.min.js?v=1.0'); ?>"></script>
+	<script src="<?= base_url('public/assets/vendor/datatable-bootstrap5/datatables-jquery.min.js?v=1.0'); ?>"></script>
+	<script src="<?= base_url('public/assets/vendor/datatable-bootstrap5/datatables-bootstrap5.min.js?v=1.0'); ?>"></script>
+	<script src="<?= base_url('public/assets/vendor/flatpiker/flatpickr.js?v=1.0'); ?>"></script>
+	<script src="<?= base_url('public/assets/vendor/select2/js/select2.js?v=1.0'); ?>"></script>
 
 	<!-- ========== HEADER ========== -->
 	<header id="header" class="navbar navbar-expand-lg navbar-fixed navbar-height navbar-container navbar-bordered bg-white">
 		<div class="navbar-nav-wrap">
 			<!-- Logo -->
 			<a class="navbar-brand" href="index.html" aria-label="Front">
-				<img class="navbar-brand-logo" src="<?php echo base_url('public/assets/svg/logos/logo.svg'); ?>" alt="Logo">
-				<img class="navbar-brand-logo-mini" src="<?php echo base_url('public/assets/svg/logos/logo-short.svg'); ?>" alt="Logo">
+				<img class="navbar-brand-logo" src="<?= base_url('public/assets/svg/logos/logo.svg'); ?>" alt="Logo">
+				<img class="navbar-brand-logo-mini" src="<?= base_url('public/assets/svg/logos/logo-short.svg'); ?>" alt="Logo">
 			</a>
 			<!-- End Logo -->
 			<div class="navbar-nav-wrap-content-start">
@@ -99,7 +99,7 @@
 						<div class="dropdown">
 							<a class="navbar-dropdown-account-wrapper" href="javascript:;" id="accountNavbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
 								<div class="avatar avatar-sm avatar-circle">
-									<img class="avatar-img" loading="lazy" src="<?php echo base_url('public/assets/img/160x160/img6.jpg'); ?>" alt="Image Description">
+									<img class="avatar-img" loading="lazy" src="<?= base_url('public/assets/img/160x160/img6.jpg'); ?>" alt="Image Description">
 									<span class="avatar-status avatar-sm-status avatar-status-success"></span>
 								</div>
 							</a>
@@ -107,11 +107,11 @@
 								<div class="dropdown-item-text">
 									<div class="d-flex align-items-center">
 										<div class="avatar avatar-sm avatar-circle">
-											<img class="avatar-img" loading="lazy" src="<?php echo base_url('public/assets/img/160x160/img6.jpg'); ?>" alt="Image Description">
+											<img class="avatar-img" loading="lazy" src="<?= base_url('public/assets/img/160x160/img6.jpg'); ?>" alt="Image Description">
 										</div>
 										<div class="flex-grow-1 ms-3">
-											<h5 class="mb-0"><?php echo $this->session->userdata('sess_name'); ?></h5>
-											<p class="card-text text-body"><?php echo $this->session->userdata('sess_username'); ?></p>
+											<h5 class="mb-0"><?= $this->session->userdata('sess_name'); ?></h5>
+											<p class="card-text text-body"><?= $this->session->userdata('sess_username'); ?></p>
 										</div>
 									</div>
 								</div>
@@ -121,7 +121,7 @@
 									<i class="bi bi-box-arrow-right me-2"></i> Sign out
 								</a>
 								<!-- Hidden logout form -->
-								<form id="logout-form" action="<?php echo site_url('auth/logout'); ?>" method="POST" style="display: none;"></form>
+								<form id="logout-form" action="<?= site_url('auth/logout'); ?>" method="POST" style="display: none;"></form>
 							</div>
 						</div>
 					</li>
@@ -139,8 +139,8 @@
 			<div class="navbar-vertical-footer-offset">
 				<!-- Logo -->
 				<a class="navbar-brand" href="index.html" aria-label="Front">
-					<img class="navbar-brand-logo" src="<?php echo base_url('public/assets/svg/logos/logo.svg'); ?>" alt="Logo">
-					<img class="navbar-brand-logo-mini" src="<?php echo base_url('public/assets/svg/logos/logo-short.svg'); ?>" alt="Logo">
+					<img class="navbar-brand-logo" src="<?= base_url('public/assets/svg/logos/logo.svg'); ?>" alt="Logo">
+					<img class="navbar-brand-logo-mini" src="<?= base_url('public/assets/svg/logos/logo-short.svg'); ?>" alt="Logo">
 				</a>
 				<button type="button" class="js-navbar-vertical-aside-toggle-invoker navbar-aside-toggler">
 					<i class="bi-arrow-bar-left navbar-toggler-short-align" data-bs-toggle="tooltip" data-bs-placement="right" title="Collapse"></i>
@@ -185,12 +185,12 @@
 
 								<?php if (count($subMenus) > 0) : ?>
 									<div class="nav-item">
-										<a class="nav-link dropdown-toggle sub_reset" id="<?php echo $head_nav; ?>" href="#menu_<?php echo $p['id']; ?>" data-bs-toggle="collapse" aria-expanded="false">
-											<i class="<?php echo $p['icon']; ?> nav-icon"></i>
-											<span class="nav-link-title"><?php echo $p['name']; ?></span>
+										<a class="nav-link dropdown-toggle sub_reset" id="<?= $head_nav; ?>" href="#menu_<?= $p['id']; ?>" data-bs-toggle="collapse" aria-expanded="false">
+											<i class="<?= $p['icon']; ?> nav-icon"></i>
+											<span class="nav-link-title"><?= $p['name']; ?></span>
 										</a>
 
-										<div id="menu_<?php echo $p['id']; ?>" class="nav-collapse collapse">
+										<div id="menu_<?= $p['id']; ?>" class="nav-collapse collapse">
 											<?php foreach ($subMenus as $s) : ?>
 												<?php
 
@@ -200,8 +200,8 @@
 												$dropdownC   = $slugPartsChild[2] ?? '';
 												$head_navC   = $slugPartsChild[3] ?? '';
 												?>
-												<a class="nav-link sub_reset" id="<?php echo $activeC; ?>" href="javascript:;" onclick="tocontroller('<?php echo $controllerC; ?>', '<?php echo $activeC; ?>', '<?php echo $dropdownC; ?>', '<?php echo $head_navC; ?>')">
-													<?php echo $s['name']; ?>
+												<a class="nav-link sub_reset" id="<?= $activeC; ?>" href="javascript:;" onclick="tocontroller('<?= $controllerC; ?>', '<?= $activeC; ?>', '<?= $dropdownC; ?>', '<?= $head_navC; ?>')">
+													<?= $s['name']; ?>
 												</a>
 											<?php endforeach; ?>
 										</div>
@@ -209,9 +209,9 @@
 
 								<?php else : ?>
 									<div class="nav-item">
-										<a class="nav-link sub_reset" id="<?php echo $active; ?>" href="javascript:;" onclick="tocontroller('<?php echo $controller; ?>', '<?php echo $active; ?>', '<?php echo $dropdown; ?>', '<?php echo $head_nav; ?>')">
-											<i class="<?php echo $p['icon']; ?> nav-icon"></i>
-											<span class="nav-link-title"><?php echo $p['name']; ?></span>
+										<a class="nav-link sub_reset" id="<?= $active; ?>" href="javascript:;" onclick="tocontroller('<?= $controller; ?>', '<?= $active; ?>', '<?= $dropdown; ?>', '<?= $head_nav; ?>')">
+											<i class="<?= $p['icon']; ?> nav-icon"></i>
+											<span class="nav-link-title"><?= $p['name']; ?></span>
 										</a>
 									</div>
 								<?php endif; ?>
@@ -266,11 +266,11 @@
 		<!-- End Footer -->
 	</main>
 
-	<script src="<?php echo base_url('public/assets/js/sweetalert.js?v=1.0'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/js/loadpages.js?v=1.0'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/parsleyjs/parsley.min.js?v=1.0'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/parsleyjs/id.js?v=1.0'); ?>"></script>
-	<script src="<?php echo base_url('public/assets/vendor/jquery-mask/jquery.mask.min.js?v=1.0'); ?>"></script>
+	<script src="<?= base_url('public/assets/js/sweetalert.js?v=1.0'); ?>"></script>
+	<script src="<?= base_url('public/assets/js/loadpages.js?v=1.0'); ?>"></script>
+	<script src="<?= base_url('public/assets/vendor/parsleyjs/parsley.min.js?v=1.0'); ?>"></script>
+	<script src="<?= base_url('public/assets/vendor/parsleyjs/id.js?v=1.0'); ?>"></script>
+	<script src="<?= base_url('public/assets/vendor/jquery-mask/jquery.mask.min.js?v=1.0'); ?>"></script>
 	<script>
 		<?php
 		$flashTypes = ['success', 'info', 'error', 'warning'];

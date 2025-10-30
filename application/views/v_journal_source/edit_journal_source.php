@@ -6,9 +6,9 @@
 				<h2 class="mb-0"><?= $judul ?></h2>
 				<div class="div ">
 					<button class="btn btn-sm btn-primary" onclick="loadform('<?= $load_grid ?>')"><i
-							class="bi bi-arrow-left-circle"></i> Kembali</button>
+							class="bi bi-arrow-left-circle"></i> Back</button>
 					<a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
-						onclick="loadform('<?= $load_back ?>')">
+						onclick="loadform('<?= $load_refresh ?>')">
 						<i class="bi bi-arrow-clockwise"></i> Refresh
 					</a>
 				</div>
@@ -21,8 +21,8 @@
 				<div class="col-6">
 					<div class="mb-3">
 						<label class="form-label" for="perusahaan">Perusahaan</label>
-						<select id="perusahaan" name="perusahaan" class="form-control-hover-light form-control select2"
-							data-parsley-required="true" data-parsley-errors-container=".err_name" required="">
+						<select id="perusahaan" name="perusahaan" class="bg-soft-dark form-control select2"
+							disabled data-parsley-required="true" data-parsley-errors-container=".err_name" required="">
 							<option value="">Pilih</option>
 						</select>
 						<span class="text-danger err_name"></span>
@@ -30,31 +30,31 @@
 				</div>
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="kode_segment">Kode Segment</label>
-						<input type="text" id="kode_segment" name="kode_segment" data-parsley-required="true"
-							data-parsley-errors-container=".err_kodesegment" required=""
-							class="form-control-hover-light form-control"
-							placeholder="input kode segment max:2 karakter">
-						<span class="text-danger err_kodesegment"></span>
+						<label class="form-label" for="kode_divisi">Kode Divisi</label>
+						<input type="text" id="kode_divisi" name="kode_divisi" data-parsley-required="true"
+							data-parsley-errors-container=".err_kodedivisi" required=""
+							value="<?= $data->code_divisi ?>" class="form-control-hover-light form-control"
+							placeholder="input kode divisi max:2 karakter">
+						<span class="text-danger err_kodedivisi"></span>
 					</div>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="nama_segment">Nama Segment</label>
-						<input type="text" id="nama_segment" name="nama_segment"
+						<label class="form-label" for="nama_divisi">Nama Divisi</label>
+						<input type="text" id="nama_divisi" name="nama_divisi" value="<?= $data->name ?>"
 							class="form-control-hover-light form-control kapital" data-parsley-required="true"
-							data-parsley-errors-container=".err_namasegment" required=""
-							placeholder="input nama segment">
-						<span class="text-danger err_namasegment"></span>
+							data-parsley-errors-container=".err_namadivisi" required=""
+							placeholder="input nama divisi">
+						<span class="text-danger err_namadivisi"></span>
 					</div>
 				</div>
 				<div class="col-6">
 					<div class="mb-3">
 						<label class="form-label" for="alias">Alias</label>
 						<input type="text" id="alias" name="alias" data-parsley-required="true"
-							data-parsley-errors-container=".err_sing_cc" required=""
+							data-parsley-errors-container=".err_sing_cc" required="" value="<?= $data->alias ?>"
 							class="form-control-hover-light form-control kapital"
 							placeholder="input singkatan cost center">
 						<span class="text-danger err_sing_cc"></span>
@@ -77,14 +77,15 @@
 	$('#btnsubmit').click(function(e) {
 		e.preventDefault();
 		let form = $('#forms_add');
+		var uuid = "<?= ($uuid) ?>";
 		form.parsley().validate();
 		if (form.parsley().isValid()) {
 			$.ajax({
-				url: "<?= base_url('C_segment/simpandata') ?>",
+				url: "<?= base_url('C_divisi/update') ?>",
 				type: 'POST',
 				method: 'POST',
 				dataType: 'JSON',
-				data: form.serialize(),
+				data: form.serialize() + '&uuid=' + uuid,
 				beforeSend: function() {
 					showLoader();
 				},
@@ -97,23 +98,13 @@
 						hideLoader();
 					}
 				},
-				error: function(xhr) {
-					console.log("ERROR:", xhr);
-					if (xhr.status === 422) {
-						let errors = xhr.responseJSON.errors;
-						$.each(errors, function(key, value) {
-							$(`.err_${key}`).html(value[0]);
-						});
-					} else {
-						swet_gagal("Terjadi kesalahan server (" + xhr.status + ")");
-					}
-				},
 			});
 		}
 	});
 
 	$(document).ready(function() {
-		$('#kode_segment').on('keyup', function() {
+		$("#perusahaan").empty().append(`<option class='form-control' value="<?= $data->code_company ?>"><?= $data->code_company ?> - <?= $data->nm_company ?></option>`).val("<?= $data->code_company ?>").trigger('change');
+		$('#kode_divisi').on('keyup', function() {
 			var currentValue = $(this).val();
 			currentValue = currentValue.replace(/[^0-9]/g, '');
 			if (currentValue === '') {
@@ -128,7 +119,7 @@
 				$(this).val(formattedValue).trigger("input");
 			}
 		});
-		$('#kode_segment').on('blur', function() {
+		$('#kode_divisi').on('blur', function() {
 			var currentValue = $(this).val();
 			if (currentValue === '00') {
 				$(this).val('01');
@@ -137,31 +128,6 @@
 		$('.kapital').on('input', function(e) {
 			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
 		});
-		$("#perusahaan").select2({
-			placeholder: 'Cari kode atau nama',
-			allowClear: true,
-			ajax: {
-				url: "<?= base_url('C_company/search') ?>",
-				dataType: "json",
-				delay: 250,
-				data: function(params) {
-					return {
-						getCompany: params.term
-					};
-				},
-				processResults: function(data) {
-					var results = [];
-					$.each(data, function(index, item) {
-						results.push({
-							id: item.code_company,
-							text: item.code_company + ' - ' + item.name,
-						});
-					});
-					return {
-						results: results
-					};
-				}
-			}
-		});
+
 	})
 </script>

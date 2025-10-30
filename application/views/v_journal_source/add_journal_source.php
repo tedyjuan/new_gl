@@ -30,29 +30,29 @@
 				</div>
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="kode_segment">Kode Segment</label>
-						<input type="text" id="kode_segment" name="kode_segment" data-parsley-required="true"
-							data-parsley-errors-container=".err_kodesegment" required=""
+						<label class="form-label" for="kode_divisi">Depo</label>
+						<input type="text" id="kode_divisi" name="kode_divisi" data-parsley-required="true"
+							data-parsley-errors-container=".err_kodedivisi" required=""
 							class="form-control-hover-light form-control"
-							placeholder="input kode segment max:2 karakter">
-						<span class="text-danger err_kodesegment"></span>
+							placeholder="input kode divisi max:2 karakter">
+						<span class="text-danger err_kodedivisi"></span>
 					</div>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="nama_segment">Nama Segment</label>
-						<input type="text" id="nama_segment" name="nama_segment"
+						<label class="form-label" for="nama_divisi">Kode</label>
+						<input type="text" id="nama_divisi" name="nama_divisi"
 							class="form-control-hover-light form-control kapital" data-parsley-required="true"
-							data-parsley-errors-container=".err_namasegment" required=""
-							placeholder="input nama segment">
-						<span class="text-danger err_namasegment"></span>
+							data-parsley-errors-container=".err_namadivisi" required=""
+							placeholder="input nama divisi">
+						<span class="text-danger err_namadivisi"></span>
 					</div>
 				</div>
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="alias">Alias</label>
+						<label class="form-label" for="alias">Deskripsi</label>
 						<input type="text" id="alias" name="alias" data-parsley-required="true"
 							data-parsley-errors-container=".err_sing_cc" required=""
 							class="form-control-hover-light form-control kapital"
@@ -80,7 +80,7 @@
 		form.parsley().validate();
 		if (form.parsley().isValid()) {
 			$.ajax({
-				url: "<?= base_url('C_segment/simpandata') ?>",
+				url: "<?= base_url('C_divisi/simpandata') ?>",
 				type: 'POST',
 				method: 'POST',
 				dataType: 'JSON',
@@ -113,7 +113,7 @@
 	});
 
 	$(document).ready(function() {
-		$('#kode_segment').on('keyup', function() {
+		$('#kode_divisi').on('keyup', function() {
 			var currentValue = $(this).val();
 			currentValue = currentValue.replace(/[^0-9]/g, '');
 			if (currentValue === '') {
@@ -128,7 +128,7 @@
 				$(this).val(formattedValue).trigger("input");
 			}
 		});
-		$('#kode_segment').on('blur', function() {
+		$('#kode_divisi').on('blur', function() {
 			var currentValue = $(this).val();
 			if (currentValue === '00') {
 				$(this).val('01');

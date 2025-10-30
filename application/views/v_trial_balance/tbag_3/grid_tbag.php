@@ -130,7 +130,6 @@
 
 	$("#perusahaan").select2({
 		placeholder: 'Cari kode atau nama',
-		minimumInputLength: 1,
 		allowClear: true,
 		dropdownParent: $('#modaltbg3'),
 		ajax: {

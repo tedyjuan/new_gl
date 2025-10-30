@@ -9,9 +9,14 @@ class M_budget extends CI_Model
 	}
 	public function get_paginated_budget($limit, $start, $search, $order_by, $order_dir)
 	{
-		$this->db->select('a.*, b.name AS company_name');
+		$this->db->select('
+			a.*, 
+			b.name AS company_name,
+			c.name AS department_name
+			');
 		$this->db->from('budgeting_headers as a');
 		$this->db->join('companies as b', 'b.code_company = a.code_company', 'left');
+		$this->db->join('departments as c', 'c.code_department = a.code_department', 'left');
 		// pencarian
 		if (!empty($search)) {
 			$this->db->group_start()
