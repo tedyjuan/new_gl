@@ -1,5 +1,5 @@
 <!-- Card -->
-<form id="forms_add" method="post" enctype="multipart/form-data">
+<form id="forms_add">
 	<div class="card">
 		<div class="card-header">
 			<div class="row align-items-center mb-2">
@@ -163,13 +163,13 @@
                                 </div>
                             </div>
                             <div class="col-6">
-								<div class="mb-3">
-									<label class="form-label" for="project_file_${i}">Unggah Proposal</label>
-									<input type="file" id="project_file_${i}" name="project_file[${i}][]"
-										class="form-control form-control-hover-light" placeholder="Unggah Proposal"
+                                <div class="mb-3">
+                                    <label class="form-label" for="project_file_${i}">Unggah Proposal </label>
+                                    <input type="file" accept=".pdf,.docx,.xlsx" id="project_file_${i}" name="project_file_${i}[]"
+                                        class="form-control form-control-hover-light" placeholder="Unggah Proposal"
 										data-parsley-required="true" data-parsley-errors-container=".err_namafile${i}" required="">
-									<span class="text-danger err_namafile${i}"></span>
-								</div>
+                                    <span class="text-danger err_namafile${i}"></span>
+                                </div>
                             </div>
                         </div>
                         <div class="row">
@@ -419,6 +419,7 @@
 		});
 	}
 	// Menambahkan validasi custom menggunakan Parsley.js (definisikan sekali saja)
+
 	$('#btnsubmit').click(function(e) {
 		e.preventDefault();
 
@@ -445,54 +446,60 @@
 
 		// Jika form valid, lanjutkan ke proses AJAX
 		if (form.parsley().isValid() && isValid) {
-			let formData = new FormData();
+
+			// Membuat objek JSON untuk data yang akan dikirim
+			let formData = {};
 
 			// Mengumpulkan data dari setiap elemen form secara manual
-			formData.append('perusahaan', $("select[name='perusahaan']").val());
-			formData.append('department', $("select[name='department']").val());
-			formData.append('saldo_awal', $("input[name='saldo_awal']").val());
-			formData.append('perpanjang_angaran', $("input[name='perpanjang_angaran']").val());
-			formData.append('jumlah_project', $("input[name='jumlah_project']").val());
+			formData.perusahaan = $("select[name='perusahaan']").val();
+			formData.department = $("select[name='department']").val();
+			formData.saldo_awal = $("input[name='saldo_awal']").val();
+			formData.perpanjang_angaran = $("input[name='perpanjang_angaran']").val();
+			formData.jumlah_project = $("input[name='jumlah_project']").val();
 
 			// Loop untuk mengumpulkan project data (nama proyek, anggaran, tujuan, dll.)
-			for (let i = 1; i <= $("input[name='jumlah_project']").val(); i++) {
-				formData.append('projects[' + i + '][project_name]', $(`input[name='project_name_${i}[]']`).val());
-				formData.append('projects[' + i + '][usulan_anggaran]', $(`input[name='usulan_anggaran_${i}[]']`).val());
-				formData.append('projects[' + i + '][project_desc]', $(`textarea[name='project_desc_${i}']`).val());
+			formData.projects = [];
 
-				// Menambahkan file
-				let fileInput = $(`input[name='project_file[${i}][]']`)[0];
-				if (fileInput.files.length > 0) {
-					formData.append('projects[' + i + '][project_file]', fileInput.files[0]);
-				}
+			for (let i = 1; i <= formData.jumlah_project; i++) {
+				let project = {};
+				project.project_file_ = $(`input[name='project_file_${i}[]']`).val();
+				project.project_name = $(`input[name='project_name_${i}[]']`).val();
+				project.usulan_anggaran = $(`input[name='usulan_anggaran_${i}[]']`).val();
+				project.project_desc = $(`textarea[name='project_desc_${i}']`).val();
+				// Mengumpulkan data yang berkaitan dengan counta dan b
+				project.counta = [];
 
-				// Mengumpulkan data tujuan proyek (counta dan countb)
 				$(`select[name='account_counta_${i}[]']`).each(function(index) {
 					let counta = {
 						account: $(this).val(),
 						keterangan: $(`input[name='keterangan_counta_${i}[]']`).eq(index).val(),
 						jumlah: $(`input[name='jumlah_a_counta_${i}[]']`).eq(index).val()
 					};
-					formData.append('projects[' + i + '][counta][]', JSON.stringify(counta));
+					project.counta.push(counta);
 				});
 
+				project.countb = [];
 				$(`input[name='keterangan_b_countb_${i}[]']`).each(function(index) {
 					let countb = {
 						keterangan: $(this).val(),
 						jumlah: $(`input[name='jumlah_b_countb_${i}[]']`).eq(index).val(),
 					};
-					formData.append('projects[' + i + '][countb][]', JSON.stringify(countb));
+					project.countb.push(countb);
 				});
+
+				formData.projects.push(project);
 			}
 
-			// Kirim data dalam format FormData menggunakan AJAX
+			// Kirim data dalam format JSON dengan AJAX
 			$.ajax({
 				url: "<?= base_url('C_budget/simpandata') ?>",
 				type: 'POST',
-				data: formData,
-				processData: false, // Jangan memproses data (karena file)
-				contentType: false, // Jangan set content-type (FormData otomatis menentukannya)
 				dataType: 'JSON',
+				contentType: 'application/json',
+				data: JSON.stringify(formData), // Mengirimkan data dalam format JSON
+				// beforeSend: function() {
+				// 	showLoader();
+				// },
 				success: function(data) {
 					if (data.hasil == 'true') {
 						swet_sukses(data.pesan);

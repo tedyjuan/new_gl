@@ -21,9 +21,8 @@
 			<thead>
 				<tr class="table-primary">
 					<th>Company</th>
-					<th>Kode Budget</th>
-					<th>Nama Budget</th>
-					<th>Nama Alias</th>
+					<th>Code Budget</th>
+					<th>Department</th>
 					<th style="width: 5%">Action</th>
 				</tr>
 			</thead>
@@ -58,6 +57,4 @@
 	$(document).ready(function() {
 		initTable();
 	});
-
-	
 </script>

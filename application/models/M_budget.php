@@ -9,15 +9,14 @@ class M_budget extends CI_Model
 	}
 	public function get_paginated_budget($limit, $start, $search, $order_by, $order_dir)
 	{
-		$this->db->select('budgetons.*, companies.name AS company_name');
-		$this->db->from('budgetons');
-		$this->db->join('companies', 'companies.code_company = budgetons.code_company', 'left');
+		$this->db->select('a.*, b.name AS company_name');
+		$this->db->from('budgeting_headers as a');
+		$this->db->join('companies as b', 'b.code_company = a.code_company', 'left');
 		// pencarian
 		if (!empty($search)) {
 			$this->db->group_start()
-				->like('budgetons.name', $search)
-				->or_like('budgetons.code_budget', $search)
-				->or_like('companies.name', $search)
+				->like('a.code_budgeting', $search)
+				->or_like('a.code_company', $search)
 				->group_end();
 		}
 
@@ -32,20 +31,20 @@ class M_budget extends CI_Model
 	// Fungsi untuk menghitung total data
 	public function count_all_budget()
 	{
-		return $this->db->count_all('budgetons');
+		return $this->db->count_all('budgeting_headers');
 	}
 	// Fungsi untuk menghitung jumlah data yang difilter berdasarkan pencarian
 	public function count_filtered_budget($search)
 	{
-		$this->db->like('name', $search);
-		$this->db->or_like('code_budget', $search); 
-		$query = $this->db->get('budgetons');
+		$this->db->like('code_budgeting', $search);
+		$this->db->or_like('code_company', $search); 
+		$query = $this->db->get('budgeting_headers');
 		return $query->num_rows();
 	}
 	public function get_where_budget($param)
 	{
 		$this->db->select('a.*, b.name AS nm_company');
-		$this->db->from('budgetons as a');
+		$this->db->from('budgeting_headers as a');
 		$this->db->join('companies as b', 'b.code_company = a.code_company', 'left');
 		$this->db->where($param);
 		return $this->db->get();
@@ -67,7 +66,7 @@ class M_budget extends CI_Model
 	{
 		$year = date("Y");
 		$this->db->select_max('counter_budgeting', 'max_serial');
-		$this->db->from('budgeting_header');
+		$this->db->from('budgeting_headers');
 		$this->db->where('code_company', $code_company);
 		$this->db->where('code_department', $code_department);
 		$this->db->where('years', $year);
