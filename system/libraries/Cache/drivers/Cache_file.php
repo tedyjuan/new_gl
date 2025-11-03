@@ -158,7 +158,7 @@ class CI_Cache_file extends CI_Driver {
 	 * Decrement a raw value
 	 *
 	 * @param	string	$id	Cache ID
-	 * @param	int	$offset	Step/value to reduce by
+	 * @param	int	$offset	Step/value to opex by
 	 * @return	New value on success, FALSE on failure
 	 */
 	public function decrement($id, $offset = 1)

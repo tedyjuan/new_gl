@@ -86,7 +86,9 @@
 			position: fixed;
 			bottom: 0;
 			width: 77%;
+			z-index: 100;
 		}
+
 		.form-check-input {
 			transform: scale(1.3);
 		}
@@ -101,12 +103,12 @@
 						<input type="text" readonly id="f_saldo" name="f_saldo" class="form-control" placeholder="0">
 					</div>
 					<div class="col-lg-3 col-md-6 col-12">
-						<label class="form-label" for="f_reduce">Total Biaya</label>
-						<input type="text" readonly id="f_reduce" name="f_reduce" class="form-control" placeholder="0">
+						<label class="form-label" for="f_opex">Total Biaya</label>
+						<input type="text" readonly id="f_opex" name="f_opex" class="form-control" placeholder="0">
 					</div>
 					<div class="col-lg-3 col-md-6 col-12">
-						<label class="form-label" for="f_improve">Total Produktivitas</label>
-						<input type="text" readonly id="f_improve" name="f_improve" class="form-control" placeholder="0">
+						<label class="form-label" for="f_capex">Total Produktivitas</label>
+						<input type="text" readonly id="f_capex" name="f_capex" class="form-control" placeholder="0">
 					</div>
 					<div class="col-lg-3 col-md-6 col-12">
 						<label class="form-label" for="f_selisih">Selisih</label>
@@ -120,7 +122,6 @@
 
 <script>
 	$(document).ready(function() {
-		$("#footer_default").hide();
 		$('.curency').mask("#.##0", {
 			reverse: true
 		});
@@ -166,14 +167,14 @@
 <script>
 	$(document).ready(function() {
 		// .bi-arrow-bar-right navbar-toggler-full-align
-		$('.bi-arrow-bar-right navbar-toggler-full-align').on('click', function() {
-			// Menampilkan alert
-			alert('tutup');
-		});
-		$('.bi-arrow-bar-left.navbar-toggler-short-align').on('click', function() {
-			// Menampilkan alert
-			alert('buka');
-		});
+		// $('.bi-arrow-bar-right navbar-toggler-full-align').on('click', function() {
+		// 	// Menampilkan alert
+		// 	alert('tutup');
+		// });
+		// $('.bi-arrow-bar-left.navbar-toggler-short-align').on('click', function() {
+		// 	// Menampilkan alert
+		// 	alert('buka');
+		// });
 		// Ketika jumlah project diinputkan
 		$('#jumlah_project').on('input', function() {
 			var jumlahProject = $(this).val();
@@ -361,7 +362,7 @@
 									<td>
 										<input id="jumlah_a_${id}${counter}" onkeyup="hitung_footer()" name="jumlah_a_${id}[]"  type="text" 
 										data-parsley-required="true" data-parsley-errors-container=".err_jum${id}${counter}" required=""
-										class="form-control curency reduce" placeholder="Jumlah">
+										class="form-control curency opex" placeholder="Jumlah">
                                     	<span class="text-danger err_jum${id}${counter}"></span>
 									</td>
 									<td class="text-center"><i id="row_${id}${counter}" data-hapusrow="${id}" class="bi bi-trash text-danger fs-1" onclick="hapus_a(this)"></i> </td>
@@ -391,7 +392,7 @@
 						</td>
 						<td>
 							<input id="jumlah_b_${id}${counter}" name="jumlah_b_${id}[]" type="text" onkeyup="hitung_footer()"
-							class="form-control curency improve" placeholder="jumlah"
+							class="form-control curency capex" placeholder="jumlah"
 							data-parsley-required="true" data-parsley-errors-container=".err_jmlh${id}${counter}" required="">
 							<span class="text-danger err_jmlh${id}${counter}"></span>
 						</td>
@@ -581,36 +582,36 @@
 
 
 	function hitung_footer() {
-		var total_reduce = 0;
-		var total_improve = 0;
+		var total_opex = 0;
+		var total_capex = 0;
 		var value_i = 0;
 		var value_r = 0;
 		var value_s = 0;
-		$('.reduce').each(function() {
+		$('.opex').each(function() {
 			var value_r = $(this).val().trim();
 			if (value_r === '' || value_r === null || value_r === undefined) {
 				value_r = 0;
 			}
-			total_reduce += parseCurrency(value_r);
-			$("#f_reduce").val(formatCurrency(total_reduce));
+			total_opex += parseCurrency(value_r);
+			$("#f_opex").val(formatCurrency(total_opex));
 		});
 
-		$('.improve').each(function() {
+		$('.capex').each(function() {
 			var value_i = $(this).val().trim();
 			if (value_i === '' || value_i === null || value_i === undefined) {
 				value_i = 0;
 			}
-			total_improve += parseCurrency(value_i);
-			$("#f_improve").val(formatCurrency(total_improve));
+			total_capex += parseCurrency(value_i);
+			$("#f_capex").val(formatCurrency(total_capex));
 		});
 
 		var saldoawal = $("#saldo_awal").val().replace(/\./g, ''); // Menghapus tanda titik untuk saldo awal
 		value_s = saldoawal === '' ? 0 : parseCurrency(saldoawal); // Menggunakan parseCurrency untuk membersihkan dan mengkonversi
 		$("#f_saldo").val(formatCurrency(value_s));
 
-		var jumlah = value_s - (total_reduce + total_improve); // Menghitung selisih
+		var jumlah = value_s - (total_opex + total_capex); // Menghitung selisih
 		$("#f_selisih").val(formatCurrency(jumlah));
-		if (value_s == 0 && total_reduce == 0 && total_improve == 0) {
+		if (value_s == 0 && total_opex == 0 && total_capex == 0) {
 			$("#f_selisih").removeClass('is-invalid');
 			$("#f_selisih").removeClass('is-valid');
 			$("#btnsubmit").removeClass('btn-primary').addClass('btn-danger');

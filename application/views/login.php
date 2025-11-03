@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<title>Login | General Ledger</title>
-	<link rel="shortcut icon" href="<?= base_url('public/') ?>favicon.ico">
+	<link rel="shortcut icon" href="<?= base_url('public/') ?>assets/favicon.ico">
 	<link rel="stylesheet" href="<?= base_url('public/') ?>assets/css/vendor.min.css">
 	<link rel="stylesheet" href="<?= base_url('public/') ?>assets/css/theme.minc619.css?v=1.0">
 </head>

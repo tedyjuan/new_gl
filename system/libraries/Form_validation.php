@@ -457,7 +457,7 @@ class CI_Form_validation {
 			// Depending on whether the field name is an array or a string will determine where we get it from.
 			if ($row['is_array'] === TRUE)
 			{
-				$this->_field_data[$field]['postdata'] = $this->_reduce_array($validation_array, $row['keys']);
+				$this->_field_data[$field]['postdata'] = $this->_opex_array($validation_array, $row['keys']);
 			}
 			elseif (isset($validation_array[$field]))
 			{
@@ -559,11 +559,11 @@ class CI_Form_validation {
 	 * @param	int
 	 * @return	mixed
 	 */
-	protected function _reduce_array($array, $keys, $i = 0)
+	protected function _opex_array($array, $keys, $i = 0)
 	{
 		if (is_array($array) && isset($keys[$i]))
 		{
-			return isset($array[$keys[$i]]) ? $this->_reduce_array($array[$keys[$i]], $keys, ($i+1)) : NULL;
+			return isset($array[$keys[$i]]) ? $this->_opex_array($array[$keys[$i]], $keys, ($i+1)) : NULL;
 		}
 
 		// NULL must be returned for empty fields

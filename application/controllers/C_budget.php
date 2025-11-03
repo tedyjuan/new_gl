@@ -234,9 +234,9 @@ class C_budget extends CI_Controller
 			if (!empty($project['counta']) && !empty($project['countb'])) {
 				$set_data = 'ALL';
 			} elseif (!empty($project['counta'])) {
-				$set_data = 'REDUCE';
+				$set_data = 'OPEX';
 			} elseif (!empty($project['countb'])) {
-				$set_data = 'IMPROVE';
+				$set_data = 'CAPEX';
 			} else {
 				$jsonmsg = [
 					'hasil' => 'false',
@@ -250,6 +250,7 @@ class C_budget extends CI_Controller
 			$projectsData[] = [
 				'uuid'            => $this->uuid->v4(),
 				'code_budgeting'  => $code_budgeting,
+				'code_company'    => $code_company,
 				'project_item'    => $key,
 				'project_name'    => $project['project_name'],
 				'goal_project'    => $set_data,
@@ -263,9 +264,10 @@ class C_budget extends CI_Controller
 					$countaData[] = [
 						'uuid'           => $this->uuid->v4(),
 						'code_budgeting' => $code_budgeting,
+						'code_company'   => $code_company,
 						'project_item'   => $key,
 						'itemnumber'     => $ca,
-						'type_goal'      => 'REDUCE',
+						'type_goal'      => 'OPEX',
 						'desc'           => $counta['keterangan'],
 						'account_number' => $counta['account'],
 						'amount'         => (int)str_replace('.', '', $counta['jumlah']),
@@ -278,9 +280,10 @@ class C_budget extends CI_Controller
 					$countbData[] = [
 						'uuid'           => $this->uuid->v4(),
 						'code_budgeting' => $code_budgeting,
+						'code_company'   => $code_company,
 						'project_item'   => $key,
 						'itemnumber'     => $cb,
-						'type_goal'      => 'IMPROVE',
+						'type_goal'      => 'CAPEX',
 						'desc'           => $countb['keterangan'],
 						'amount'         => (int)str_replace('.', '', $countb['jumlah']),
 					];
@@ -515,6 +518,7 @@ class C_budget extends CI_Controller
 			$code         = $cekdata->code_budgeting;
 			$code_company = $cekdata->code_company;
 			$project      = $this->M_budget->get_project($code, $code_company);
+			$summary      = $this->M_budget->get_detail_summary($code, $code_company);
 			$data_project = [];
 			if(!empty($project)){
 				foreach ($project as $row){
@@ -526,17 +530,17 @@ class C_budget extends CI_Controller
 						'project_desc'    => $row['project_desc'],
 						'budget_proposal' => $row['budget_proposal'],
 						'filename'        => $row['filename'],
-						'item_reduce'     => $this->M_budget->get_project_items($code, $row['project_item'], "REDUCE", $code_company),
-						'item_improve'    => $this->M_budget->get_project_items($code, $row['project_item'], "IMPROVE", $code_company),
+						'item_opex'     => $this->M_budget->get_project_items($code, $row['project_item'], "OPEX", $code_company),
+						'item_capex'    => $this->M_budget->get_project_items($code, $row['project_item'], "CAPEX", $code_company),
 					];
 				}
 			}
-			//  var_dump($data_project[0]['item_reduce']); die; 
-			$data['judul']          = "Detail Budget";
-			$data['load_back']      = "C_budget/detailform/" . $uuid;
-			$data['load_grid']      = 'C_budget';
-			$data['data']           = $cekdata;
-			$data['data_project']   = $data_project;
+			$data['judul']        = "Detail Budget ID:". $code;
+			$data['load_back']    = "C_budget/detailform/" . $uuid;
+			$data['load_grid']    = 'C_budget';
+			$data['data']         = $cekdata;
+			$data['summary']      = $summary;
+			$data['data_project'] = $data_project;
 			$data['perusahaanList'] = $this->M_global->getWhereOrder('companies')->result();
 			$this->load->view("v_budget/detail_budget", $data);
 		} else {

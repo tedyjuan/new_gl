@@ -141,7 +141,7 @@ if ( ! function_exists('quotes_to_entities'))
 
 // ------------------------------------------------------------------------
 
-if ( ! function_exists('reduce_double_slashes'))
+if ( ! function_exists('opex_double_slashes'))
 {
 	/**
 	 * Reduce Double Slashes
@@ -158,7 +158,7 @@ if ( ! function_exists('reduce_double_slashes'))
 	 * @param	string
 	 * @return	string
 	 */
-	function reduce_double_slashes($str)
+	function opex_double_slashes($str)
 	{
 		return preg_replace('#(^|[^:])//+#', '\\1/', $str);
 	}
@@ -166,7 +166,7 @@ if ( ! function_exists('reduce_double_slashes'))
 
 // ------------------------------------------------------------------------
 
-if ( ! function_exists('reduce_multiples'))
+if ( ! function_exists('opex_multiples'))
 {
 	/**
 	 * Reduce Multiples
@@ -180,11 +180,11 @@ if ( ! function_exists('reduce_multiples'))
 	 * Fred, Bill, Joe, Jimmy
 	 *
 	 * @param	string
-	 * @param	string	the character you wish to reduce
+	 * @param	string	the character you wish to opex
 	 * @param	bool	TRUE/FALSE - whether to trim the character from the beginning/end
 	 * @return	string
 	 */
-	function reduce_multiples($str, $character = ',', $trim = FALSE)
+	function opex_multiples($str, $character = ',', $trim = FALSE)
 	{
 		$str = preg_replace('#'.preg_quote($character, '#').'{2,}#', $character, $str);
 		return ($trim === TRUE) ? trim($str, $character) : $str;

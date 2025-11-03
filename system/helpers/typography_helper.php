@@ -74,14 +74,14 @@ if ( ! function_exists('auto_typography'))
 	 * Auto Typography Wrapper Function
 	 *
 	 * @param	string	$str
-	 * @param	bool	$reduce_linebreaks = FALSE	whether to reduce multiple instances of double newlines to two
+	 * @param	bool	$opex_linebreaks = FALSE	whether to opex multiple instances of double newlines to two
 	 * @return	string
 	 */
-	function auto_typography($str, $reduce_linebreaks = FALSE)
+	function auto_typography($str, $opex_linebreaks = FALSE)
 	{
 		$CI =& get_instance();
 		$CI->load->library('typography');
-		return $CI->typography->auto_typography($str, $reduce_linebreaks);
+		return $CI->typography->auto_typography($str, $opex_linebreaks);
 	}
 }
 

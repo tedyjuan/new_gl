@@ -96,12 +96,12 @@
 				<input type="text" readonly id="f_saldo" name="f_saldo" class="form-control bg-soft-secondary curency">
 			</div>
 			<div class="col-lg-3 col-md-6 col-12">
-				<label class="form-label" for="f_reduce">Total Biaya</label>
-				<input type="text" readonly id="f_reduce" name="f_reduce" class="form-control bg-soft-secondary curency">
+				<label class="form-label" for="f_opex">Total Biaya</label>
+				<input type="text" readonly id="f_opex" name="f_opex" class="form-control bg-soft-secondary curency">
 			</div>
 			<div class="col-lg-3 col-md-6 col-12">
-				<label class="form-label" for="f_improve">Total Produktivitas</label>
-				<input type="text" readonly id="f_improve" name="f_improve" class="form-control bg-soft-secondary curency">
+				<label class="form-label" for="f_capex">Total Produktivitas</label>
+				<input type="text" readonly id="f_capex" name="f_capex" class="form-control bg-soft-secondary curency">
 			</div>
 			<div class="col-lg-3 col-md-6 col-12">
 				<label class="form-label" for="f_selisih">Selisih</label>
@@ -346,7 +346,7 @@
 									<td>
 										<input id="jumlah_a_${id}${counter}" onkeyup="hitung_footer()" name="jumlah_a_${id}[]"  type="text" 
 										data-parsley-required="true" data-parsley-errors-container=".err_jum${id}${counter}" required=""
-										class="form-control curency reduce" placeholder="jumlah_a_${id}[]">
+										class="form-control curency opex" placeholder="jumlah_a_${id}[]">
                                     	<span class="text-danger err_jum${id}${counter}"></span>
 									</td>
 									<td class="text-center"><i id="row_${id}${counter}" data-hapusrow="${id}" class="bi bi-trash text-danger fs-1" onclick="hapus_a(this)"></i> </td>
@@ -376,7 +376,7 @@
 						</td>
 						<td>
 							<input id="jumlah_b_${id}${counter}" name="jumlah_b_${id}[]" type="text" onkeyup="hitung_footer()"
-							class="form-control curency improve" placeholder="jumlah${id}${counter}"
+							class="form-control curency capex" placeholder="jumlah${id}${counter}"
 							data-parsley-required="true" data-parsley-errors-container=".err_jmlh${id}${counter}" required="">
 							<span class="text-danger err_jmlh${id}${counter}"></span>
 						</td>
@@ -549,30 +549,30 @@
 	});
 
 	function hitung_footer() {
-		var total_reduce = 0;
-		var total_improve = 0;
-		$('.reduce').each(function() {
+		var total_opex = 0;
+		var total_capex = 0;
+		$('.opex').each(function() {
 			var value = $(this).val().trim();
 			if (value === '' || value === null || value === undefined) {
 				value = '0';
 			}
-			total_reduce += parseInt(value.replace(/\./g, ''));
-			$("#f_reduce").val("Rp " + total_reduce)
+			total_opex += parseInt(value.replace(/\./g, ''));
+			$("#f_opex").val("Rp " + total_opex)
 		});
-		$('.improve').each(function() {
+		$('.capex').each(function() {
 			var value = $(this).val().trim();
 			if (value === '' || value === null || value === undefined) {
 				value = '0';
 			}
-			total_improve += parseInt(value.replace(/\./g, ''));
-			$("#f_improve").val("Rp " + total_improve)
+			total_capex += parseInt(value.replace(/\./g, ''));
+			$("#f_capex").val("Rp " + total_capex)
 		});
 		var saldoawal = $("#saldo_awal").val();
 		$("#f_saldo").val("Rp " + saldoawal)
 		$('.curency').mask("#.##0", {
 			reverse: true
 		});
-		var jumlah = saldoawal - (total_reduce + total_improve)
+		var jumlah = saldoawal - (total_opex + total_capex)
 		if (jumlah == 0) {
 
 		}

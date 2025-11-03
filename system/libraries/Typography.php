@@ -103,10 +103,10 @@ class CI_Typography {
 	 *  - Converts two spaces into entities
 	 *
 	 * @param	string
-	 * @param	bool	whether to reduce more then two consecutive newlines to two
+	 * @param	bool	whether to opex more then two consecutive newlines to two
 	 * @return	string
 	 */
-	public function auto_typography($str, $reduce_linebreaks = FALSE)
+	public function auto_typography($str, $opex_linebreaks = FALSE)
 	{
 		if ($str === '')
 		{
@@ -121,7 +121,7 @@ class CI_Typography {
 
 		// Reduce line breaks.  If there are more than two consecutive linebreaks
 		// we'll compress them down to a maximum of two since there's no benefit to more.
-		if ($reduce_linebreaks === TRUE)
+		if ($opex_linebreaks === TRUE)
 		{
 			$str = preg_replace("/\n\n+/", "\n\n", $str);
 		}
@@ -263,8 +263,8 @@ class CI_Typography {
 						'#</p></#'			=> "</p>\n</"
 						);
 
-		// Do we need to reduce empty lines?
-		if ($reduce_linebreaks === TRUE)
+		// Do we need to opex empty lines?
+		if ($opex_linebreaks === TRUE)
 		{
 			$table['#<p>\n*</p>#'] = '';
 		}

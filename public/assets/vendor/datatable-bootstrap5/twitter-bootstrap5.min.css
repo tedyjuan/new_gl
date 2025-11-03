@@ -40,7 +40,7 @@
     box-sizing: border-box
 }
 
-@media (prefers-reduced-motion:no-preference) {
+@media (prefers-opexd-motion:no-preference) {
      :root {
         scroll-behavior: smooth
     }
@@ -2018,7 +2018,7 @@ progress {
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .form-control {
         transition: none
     }
@@ -2076,7 +2076,7 @@ progress {
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .form-control::file-selector-button {
         transition: none
     }
@@ -2103,7 +2103,7 @@ progress {
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .form-control::-webkit-file-upload-button {
         -webkit-transition: none;
         transition: none
@@ -2351,7 +2351,7 @@ textarea.form-control-lg {
     transition: background-position .15s ease-in-out
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .form-switch .form-check-input {
         transition: none
     }
@@ -2423,7 +2423,7 @@ textarea.form-control-lg {
     appearance: none
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .form-range::-webkit-slider-thumb {
         -webkit-transition: none;
         transition: none
@@ -2456,7 +2456,7 @@ textarea.form-control-lg {
     appearance: none
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .form-range::-moz-range-thumb {
         -moz-transition: none;
         transition: none
@@ -2511,7 +2511,7 @@ textarea.form-control-lg {
     transition: opacity .1s ease-in-out, transform .1s ease-in-out
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .form-floating>label {
         transition: none
     }
@@ -2889,7 +2889,7 @@ textarea.form-control.is-invalid {
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .btn {
         transition: none
     }
@@ -3625,7 +3625,7 @@ fieldset:disabled .btn {
     transition: opacity .15s linear
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .fade {
         transition: none
     }
@@ -3645,7 +3645,7 @@ fieldset:disabled .btn {
     transition: height .35s ease
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .collapsing {
         transition: none
     }
@@ -3778,7 +3778,7 @@ fieldset:disabled .btn {
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .nav-link {
         transition: none
     }
@@ -3940,7 +3940,7 @@ fieldset:disabled .btn {
     transition: box-shadow .15s ease-in-out
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .navbar-toggler {
         transition: none
     }
@@ -4414,7 +4414,7 @@ fieldset:disabled .btn {
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out, border-radius .15s ease
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .accordion-button {
         transition: none
     }
@@ -4443,7 +4443,7 @@ fieldset:disabled .btn {
     transition: transform .2s ease-in-out
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .accordion-button::after {
         transition: none
     }
@@ -4563,7 +4563,7 @@ fieldset:disabled .btn {
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .page-link {
         transition: none
     }
@@ -4809,7 +4809,7 @@ fieldset:disabled .btn {
     transition: width .6s ease
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .progress-bar {
         transition: none
     }
@@ -4825,7 +4825,7 @@ fieldset:disabled .btn {
     animation: 1s linear infinite progress-bar-stripes
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .progress-bar-animated {
         -webkit-animation: none;
         animation: none
@@ -5329,7 +5329,7 @@ fieldset:disabled .btn {
     transform: translate(0, -50px)
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .modal.fade .modal-dialog {
         transition: none
     }
@@ -5915,7 +5915,7 @@ fieldset:disabled .btn {
     transition: transform .6s ease-in-out
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .carousel-item {
         transition: none
     }
@@ -5957,7 +5957,7 @@ fieldset:disabled .btn {
     transition: opacity 0s .6s
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .carousel-fade .active.carousel-item-end,
     .carousel-fade .active.carousel-item-start {
         transition: none
@@ -5983,7 +5983,7 @@ fieldset:disabled .btn {
     transition: opacity .15s ease
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .carousel-control-next,
     .carousel-control-prev {
         transition: none
@@ -6060,7 +6060,7 @@ fieldset:disabled .btn {
     transition: opacity .6s ease
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .carousel-indicators [data-bs-target] {
         transition: none
     }
@@ -6161,7 +6161,7 @@ fieldset:disabled .btn {
     height: 1rem
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .spinner-border,
     .spinner-grow {
         -webkit-animation-duration: 1.5s;
@@ -6183,7 +6183,7 @@ fieldset:disabled .btn {
     transition: transform .3s ease-in-out
 }
 
-@media (prefers-reduced-motion:reduce) {
+@media (prefers-opexd-motion:opex) {
     .offcanvas {
         transition: none
     }

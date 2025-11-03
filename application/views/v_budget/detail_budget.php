@@ -81,22 +81,20 @@
 						</div>
 					</div>
 					<div class="col-6">
-						<div class="mb-3">
-							<label class="form-label" for="perpanjang_angaran">Tujuan Proyek</label>
+						<div class="s">
+							<label class="form-label" for="perpanjang_angaran">Tujuan Proyek </label>
 						</div>
 						<div class="form-check form-check-inline">
-							<!-- Cek apakah goal_project adalah 'all', 'REDUCE', atau 'IMPROVE' -->
-							<input disabled type="checkbox" id="p_angaran_<?= $no; ?>" class="form-check-input indeterminate-checkbox"
-								<?php if ($row['goal_project'] == 'ALL' || $row['goal_project'] == 'REDUCE') echo 'checked'; ?>>
-							<label class="form-check-label" for="p_angaran_<?= $no; ?>">Mengurangi Biaya</label>
+							<input type="checkbox" disabled id="p_angaran_<?= $no; ?>" class="form-check-input indeterminate-checkbox"
+								<?php if ($row['goal_project'] == 'ALL' || $row['goal_project'] == 'OPEX') echo 'checked'; ?>>
+							<label>Mengurangi Biaya (OPEX)</label>
 						</div>
 						<div class="form-check form-check-inline">
-							<input disabled type="checkbox" id="meningkatkan_produktifitas<?= $no; ?>" class="form-check-input indeterminate-checkbox"
-								<?php if ($row['goal_project'] == 'ALL' || $row['goal_project'] == 'IMPROVE') echo 'checked'; ?>>
-							<label class="form-check-label" for="meningkatkan_produktifitas<?= $no; ?>">Meningkatkan Produktivitas</label>
+							<input type="checkbox" disabled id="meningkatkan_produktifitas<?= $no; ?>" class="form-check-input indeterminate-checkbox"
+								<?php if ($row['goal_project'] == 'ALL' || $row['goal_project'] == 'CAPEX') echo 'checked'; ?>>
+							<label>Meningkatkan Produktivitas (CAPEX)</label>
 						</div>
 					</div>
-
 				</div>
 				<div class="row">
 					<div class="col-12">
@@ -105,7 +103,7 @@
 					</div>
 				</div>
 				<!-- Tabel Mengurangi Biaya -->
-				<?php if (!empty($row['item_reduce'])) { ?>
+				<?php if (!empty($row['item_opex'])) { ?>
 					<div class="container mt-5" id="tblMengurangiBiayaContainer_<?= $no; ?>">
 						<h2>Mengurangi Biaya</h2>
 						<input class="counta_<?= $no; ?>" type="hidden" value="0">
@@ -118,9 +116,9 @@
 								</tr>
 							</thead>
 							<tbody>
-								<?php foreach ($row['item_reduce'] as $ia) { ?>
+								<?php foreach ($row['item_opex'] as $ia) { ?>
 									<tr>
-										<td style="width: 35%;"><?= $ia['account_number'].' - '.  $ia['name']?></td>
+										<td style="width: 35%;"><?= $ia['account_number'] . ' - ' .  $ia['name'] ?></td>
 										<td><?= $ia['desc']; ?></td>
 										<td class="curency" style="width: 20%;"><?= $ia['amount']; ?></td>
 									</tr>
@@ -129,7 +127,7 @@
 						</table>
 					</div>
 				<?php  } ?>
-				<?php if (!empty($row['item_improve'])) { ?>
+				<?php if (!empty($row['item_capex'])) { ?>
 					<!-- Tabel Meningkatkan Produktivitas -->
 					<div class="container mt-5" id="tblMeningkatkanProduktivitasContainer_<?= $no; ?>">
 						<h2>Meningkatkan Produktivitas</h2>
@@ -142,7 +140,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								<?php foreach ($row['item_improve'] as $ib) { ?>
+								<?php foreach ($row['item_capex'] as $ib) { ?>
 									<tr>
 										<td><?= $ib['desc']; ?></td>
 										<td class="curency" style="width: 20%;"><?= $ib['amount']; ?></td>
@@ -156,9 +154,48 @@
 		</div>
 		<?php $no++; ?>
 	<?php } ?>
+	<style>
+		.foot {
+			position: fixed;
+			bottom: 0;
+			width: 77%;
+			z-index: 100;
+		}
+
+		.form-check-input {
+			transform: scale(1.3);
+		}
+	</style>
+	<div style="margin-bottom: 5%;"></div>
+	<div class="foot" id="foter_new">
+		<div class="card">
+			<div class="card-header">
+				<div class="row">
+					<div class="col-lg-3 col-md-6 col-12">
+						<label class="form-label">Saldo Awal </label>
+						<input type="text" value="<?= $summary['opening_balance'];?>" readonly id="f_saldo" name="f_saldo" class="form-control curency" placeholder="0">
+					</div>
+					<div class="col-lg-3 col-md-6 col-12">
+						<label class="form-label" for="f_opex">Total Biaya</label>
+						<input type="text" value="<?= $summary['opex'];?>" readonly id="f_opex" name="f_opex" class="form-control curency" placeholder="0">
+					</div>
+					<div class="col-lg-3 col-md-6 col-12">
+						<label class="form-label" for="f_capex">Total Produktivitas</label>
+						<input type="text" value="<?= $summary['capex'];?>" readonly id="f_capex" name="f_capex" class="form-control curency" placeholder="0">
+					</div>
+					<div class="col-lg-3 col-md-6 col-12">
+						<label class="form-label" for="f_selisih">Selisih</label>
+						<input type="text" value="<?= $summary['difference'];?>" readonly id="f_selisih" name="f_selisih" class="form-control curency" placeholder="0">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </form>
 <script>
-	$('.curency').mask("#.##0", {
-		reverse: true
+	$(document).ready(function() {
+		$('.curency').mask("#.##0", {
+			reverse: true
+		});
 	});
 </script>

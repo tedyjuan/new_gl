@@ -129,5 +129,29 @@ class M_budget extends CI_Model
 		$query = $this->db->query($sql, $param);
 		return $query->result_array();
 	}
+	public function get_detail_summary($code_budgeting, $code_company)
+	{
+		$sql = "SELECT 
+					a.`opening_balance`,
+					SUM(CASE WHEN c.`type_goal` = 'OPEX' THEN COALESCE(c.`amount`, 0) ELSE 0 END) AS opex,
+					SUM(CASE WHEN c.`type_goal` = 'CAPEX' THEN COALESCE(c.`amount`, 0) ELSE 0 END) AS capex,
+					a.`opening_balance` - (
+						SUM(CASE WHEN c.`type_goal` = 'OPEX' THEN COALESCE(c.`amount`, 0) ELSE 0 END) + 
+						SUM(CASE WHEN c.`type_goal` = 'CAPEX' THEN COALESCE(c.`amount`, 0) ELSE 0 END)
+					) AS difference
+				FROM `budgeting_headers` a
+				INNER JOIN `budgeting_projects` b ON b.`code_budgeting` = a.`code_budgeting` AND a.`code_company` = b.`code_company`
+				INNER JOIN `budgeting_project_items` c ON c.`code_budgeting` = c.`code_budgeting`
+					AND a.`code_company` = b.`code_company`
+					AND c.`project_item` = b.`project_item`
+				WHERE a.`code_budgeting` = ?
+				AND a.`code_company` = ?
+				GROUP BY a.`opening_balance`
+				ORDER BY a.`opening_balance`;
+				";
+		$param = [$code_budgeting, $code_company];
+		$query = $this->db->query($sql, $param);
+		return $query->row_array();
+	}
 	
 }

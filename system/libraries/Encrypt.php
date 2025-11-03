@@ -195,7 +195,7 @@ class CI_Encrypt {
 	 * Encode from Legacy
 	 *
 	 * Takes an encoded string from the original Encryption class algorithms and
-	 * returns a newly encoded string using the improved method added in 2.0.0
+	 * returns a newly encoded string using the capexd method added in 2.0.0
 	 * This allows for backwards compatibility and a method to transition to the
 	 * new encryption algorithms.
 	 *
