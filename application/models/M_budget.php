@@ -24,11 +24,9 @@ class M_budget extends CI_Model
 				->or_like('a.code_company', $search)
 				->group_end();
 		}
-
 		// limit & order
 		$this->db->limit($limit, $start);
 		$this->db->order_by($order_by, $order_dir);
-
 		$query = $this->db->get();
 		return $query->result();
 	}

@@ -19,19 +19,35 @@ class C_budget extends CI_Controller
 	}
 	public function griddata()
 	{
-		$start          = $this->input->post('start') ?? 0;
-		$length         = $this->input->post('length') ?? 10;
-		$search_input   = $this->input->post('search');
-		$search         = isset($search_input['value']) ? $search_input['value'] : '';
+		$start        = $this->input->post('start') ?? 0;
+		$length       = $this->input->post('length') ?? 10;
+		$search_input = $this->input->post('search');
+		$draw         = intval($this->input->post('draw')) ?? 1;
+		$search       = isset($search_input['value']) ? $search_input['value'] : '';
+
+		// Dapatkan parameter order yang dikirim oleh DataTable
 		$order_input    = $this->input->post('order');
 		$order_col      = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
-		$dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
-		$columns        = ['code_company', 'company_name', 'department_name', 'code_budgeting', 'action'];
-		$order_by       = $columns[$order_col] ?? 'code_budgeting';
+		if (isset($order_input[0]['dir'])) {
+			if ($draw % 2 == 0) {
+				$dir = 'asc'; // Jika draw genap
+			} else {
+				$dir = 'desc'; // Jika draw ganjil
+			}
+		} else {
+			$dir = 'desc'; 
+		}
+		// Kolom yang dapat diurutkan
+		if($draw == 1){
+			$columns        = ['a.code_budgeting'];
+		}else{
+			$columns        = ['a.code_company', 'a.code_budgeting', 'c.name'];
+		}
+		// Tentukan kolom mana yang akan diurutkan berdasarkan order yang diterima
+		$order_by       = $columns[$order_col] ?? 'id';
 		$data           = $this->M_budget->get_paginated_budget($length, $start, $search, $order_by, $dir);
 		$total_records  = $this->M_budget->count_all_budget();
 		$total_filtered = $this->M_budget->count_filtered_budget($search);
-		$url_edit       = 'C_budget/editform';
 		$url_detail       = 'C_budget/detailform';
 		$url_delete     = 'C_budget/hapusdata';
 		$load_grid      = 'C_budget/griddata';
@@ -51,18 +67,31 @@ class C_budget extends CI_Controller
 					</button>
 				</div>
 			</div>';
+			if($row->status_budgeting == 'OPEN'){
+				$class = 'bg-soft-primary text-primary';
+			}else if($row->status_budgeting == 'REVIEW'){
+				$class = 'bg-soft-warning text-warning';
+			}else if($row->status_budgeting == 'APPROVED'){
+				$class = 'bg-soft-success text-success';
+			}else if($row->status_budgeting == 'REJECT'){
+				$class = 'bg-soft-danger text-danger';
+			}else if($row->status_budgeting == 'CLOSED'){
+				$class = 'bg-soft-secondary text-secondary';
+			}
+			$ststus = '<span class="badge '.$class.'">'. strtolower($row->status_budgeting).'</span>';
 			$result[] = [
 				$row->code_company . ' - ' . $row->company_name,
 				$row->code_budgeting,
 				$row->department_name,
+				$ststus,
 				$aksi,
 			];
 		}
 		echo json_encode([
-			"draw" => intval($this->input->post('draw')) ?? 1,
+			"draw" => $draw,
 			"recordsTotal" => $total_records,
 			"recordsFiltered" => $total_filtered,
-			"data" => $result
+			"data" => $result,
 		]);
 	}
 	function add()
@@ -103,16 +132,17 @@ class C_budget extends CI_Controller
 		$parts = explode('-', $code_budgeting);
 		$counter_budgeting = (int)$parts[count($parts) - 1];
 		$budgeting_header = [
-			'uuid'               => $this->uuid->v4(),
-			'counter_budgeting'  => $counter_budgeting,
-			'code_budgeting'     => $code_budgeting,
-			'code_company'       => $code_company,
-			'code_department'    => $code_department,
-			'opening_balance'    => (int)str_replace('.', '', $opening_balance),
-			'extend_budget'      => (int)str_replace('.', '', $extend_budget),
-			'project_amount'     => (int)str_replace('.', '', $project_amount),
-			'years'              => date('Y'),
-			'date_budgeting'     => date('Y-m-d'),
+			'uuid'              => $this->uuid->v4(),
+			'counter_budgeting' => $counter_budgeting,
+			'code_budgeting'    => $code_budgeting,
+			'code_company'      => $code_company,
+			'code_department'   => $code_department,
+			'opening_balance'   => (int)str_replace('.', '', $opening_balance),
+			'extend_budget'     => (int)str_replace('.', '', $extend_budget),
+			'project_amount'    => (int)str_replace('.', '', $project_amount),
+			'years'             => date('Y'),
+			'date_budgeting'    => date('Y-m-d'),
+			'status_budgeting'  => "OPEN",
 		];
 		$this->db->trans_start();
 		$this->db->insert('budgeting_headers', $budgeting_header);
@@ -314,26 +344,6 @@ class C_budget extends CI_Controller
 		}
 	}
 
-
-	public function editform($uuid)
-	{
-		$data =  $this->M_budget->get_where_budget(['a.uuid' => $uuid])->row();
-		if ($data != null) {
-			$judul = "Form Edit Budget";
-			$load_grid = "C_budget";
-			$load_refresh = "C_budget/editform/" . $uuid;
-			$this->load->view('v_budget/edit_budget', [
-				'judul' => $judul,
-				'load_grid' => $load_grid,
-				'load_refresh' => $load_refresh,
-				'data' => $data,
-				'uuid' => $uuid
-			]);
-		} else {
-			$this->load->view('error');
-		}
-	}
-	// Fungsi untuk update data Budget
 	public function update()
 	{
 		// Ambil data dari POST request
@@ -497,7 +507,6 @@ class C_budget extends CI_Controller
 		$hasil = $this->M_budget->get_coa_expense($cari, $code_company);
 		echo json_encode($hasil);
 	}
-
 
 	public function detailform($uuid)
 	{

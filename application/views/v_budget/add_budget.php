@@ -1,4 +1,3 @@
-<!-- Card -->
 <form id="forms_add" method="post" enctype="multipart/form-data">
 	<div class="card">
 		<div class="card-header">
@@ -88,6 +87,9 @@
 			bottom: 0;
 			width: 77%;
 		}
+		.form-check-input {
+			transform: scale(1.3);
+		}
 	</style>
 	<div style="margin-bottom: 5%;"></div>
 	<div class="foot" id="foter_new">
@@ -96,7 +98,6 @@
 				<div class="row">
 					<div class="col-lg-3 col-md-6 col-12">
 						<label class="form-label">Saldo Awal </label>
-						<label class="form-label" for="f_saldo">Total Biaya</label>
 						<input type="text" readonly id="f_saldo" name="f_saldo" class="form-control" placeholder="0">
 					</div>
 					<div class="col-lg-3 col-md-6 col-12">
@@ -221,16 +222,16 @@
                                 </div>
                             </div>
 							<div class="col-6">
-								<div class="mb-3">
+								<div class="">
 									<label class="form-label" for="perpanjang_angaran">Tujuan Proyek </label>
 								</div>
 								<div class="form-check form-check-inline">
 									<input type="checkbox" id="p_angaran_${i}" name="tujuan${i}[]" class="form-check-input indeterminate-checkbox" data-parsley-checkbox-required="true" onchange="form_angaran(this)">
-									<label class="form-check-label" for="p_angaran_${i}">Mengurangi Biaya</label>
+									<label class="form-check-label" for="p_angaran_${i}">Mengurangi Biaya (OPEX)</label>
 								</div>
 								<div class="form-check form-check-inline">
 									<input type="checkbox" id="meningkatkan_produktifitas${i}" name="tujuan${i}[]" class="form-check-input indeterminate-checkbox" data-parsley-checkbox-required="true" onchange="form_prod_aktif(this)">
-									<label class="form-check-label" for="meningkatkan_produktifitas${i}">Meningkatkan Produktivitas</label>
+									<label class="form-check-label" for="meningkatkan_produktifitas${i}">Meningkatkan Produktivitas (CAPEX)</label>
 								</div>
 							</div>
 						</div>

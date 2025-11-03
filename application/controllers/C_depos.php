@@ -11,7 +11,7 @@ class C_depos extends CI_Controller
 	}
 	function index()
 	{
-		$data['judul']      = 'List Data Depos';
+		$data['judul']      = 'List Data Depo';
 		$data['load_grid']  = 'C_depos';
 		$data['load_add']   = 'C_depos/add';
 		$data['url_delete'] = 'C_depos/delete';
@@ -79,7 +79,7 @@ class C_depos extends CI_Controller
 
 	function add()
 	{
-		$data['judul']     = "Form Tambah Perusahaan";
+		$data['judul']     = "Form Tambah Depos";
 		$data['load_back'] = 'C_depos/add';
 		$data['load_grid'] = 'C_depos';
 		$this->load->view("v_depos/add_depos", $data);
@@ -177,7 +177,7 @@ class C_depos extends CI_Controller
 			}else{
 				$data['disabled'] = 'ON';
 			}
-			$data['judul'] = "Form Edit Perusahaan";
+			$data['judul'] = "Form Edit Depo";
 			$data['load_grid'] = "C_depos";
 			$data['uuid'] = $uuid;
 			$data['data'] = $cekdata;

@@ -23,6 +23,7 @@
 					<th>Company</th>
 					<th>Code Budget</th>
 					<th>Department</th>
+					<th>Status</th>
 					<th style="width: 5%">Action</th>
 				</tr>
 			</thead>
