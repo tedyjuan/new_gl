@@ -42,7 +42,7 @@
 			processing: true,
 			serverSide: true, // Mengaktifkan server-side processing
 			ajax: {
-				url: "<?= base_url('C_Budget/griddata'); ?>", // URL ke controller
+				url: "<?= base_url('C_budget/griddata'); ?>", // URL ke controller
 				type: "POST", // Gunakan GET untuk request
 			},
 			columnDefs: [{
