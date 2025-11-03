@@ -10,6 +10,7 @@
 								class="bi bi-arrow-left-circle"></i> Kembali</button>
 						<button type="button" class="btn btn-sm btn-outline-primary" onclick="loadform('<?= $load_back ?>')">
 							<i class="bi bi-arrow-clockwise"></i> Refresh</button>
+
 					</div>
 				</div>
 			</div>
@@ -43,16 +44,16 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-lg-6 col-sm-12  col-6">
+				<div class="col-6">
 					<div class="mb-3">
 						<label class="form-label" for="saldo_awal">Saldo Awal</label>
-						<input type="text" id="saldo_awal" name="saldo_awal" onkeyup="hitung_footer()"
+						<input type="text" id="saldo_awal" name="saldo_awal"
 							class="form-control-hover-light form-control curency" data-parsley-required="true"
 							data-parsley-errors-container=".err_saldo_awal" required="" placeholder="input saldo awal">
 						<span class="text-danger err_saldo_awal"></span>
 					</div>
 				</div>
-				<div class="col-lg-3 col-sm-12 col-6">
+				<div class="col-3">
 					<div class="mb-3">
 						<label class="form-label" for="perpanjang_angaran">Perpanjangan Anggaran </label>
 						<input type="text" id="perpanjang_angaran" name="perpanjang_angaran"
@@ -61,7 +62,7 @@
 						<span class="text-danger err_sing_cc"></span>
 					</div>
 				</div>
-				<div class="col-lg-3 col-12">
+				<div class="col-3">
 					<div class="mb-3">
 						<label class="form-label" for="jumlah_project">Jumlah Project </label>
 						<input type="number" id="jumlah_project" name="jumlah_project" class="form-control-hover-light bg-soft-dark form-control duadigit"
@@ -75,46 +76,22 @@
 	</div>
 	<div id="projectFormsContainer"></div>
 	<div class="card">
-		<div >
-			<div class="row mt-5">
-				<button style="width: 100%;" type="button" disabled id="btnsubmit" class="btn btn-sm btn-danger"> Simpan</button>
+		<div class="card-header">
+			<div class="col-md-12 d-flex justify-content-end">
+				<div></div>
+				<div>
+					<button type="button" id="btnsubmit" class="btn btn-sm btn-primary"><i class="bi bi-send"></i>
+						Simpan</button>
+					<button type="reset" class="btn btn-sm btn-outline-danger"><i class="bi bi-eraser-fill"></i>
+						Reset</button>
+				</div>
 			</div>
 		</div>
 	</div>
-	<style>
-		.foot {
-			position: fixed;
-			bottom: 0;
-			width: 77%;
-		}
-	</style>
-	<div style="margin-bottom: 5%;"> </div>
-	<div class="foot" id="foter_new">
-		<div class="row mb-4">
-			<div class="col-lg-3 col-md-6 col-12">
-				<label class="form-label" for="f_saldo">Saldo Awal </label>
-				<input type="text" readonly id="f_saldo" name="f_saldo" class="form-control bg-soft-secondary curency">
-			</div>
-			<div class="col-lg-3 col-md-6 col-12">
-				<label class="form-label" for="f_reduce">Total Biaya</label>
-				<input type="text" readonly id="f_reduce" name="f_reduce" class="form-control bg-soft-secondary curency">
-			</div>
-			<div class="col-lg-3 col-md-6 col-12">
-				<label class="form-label" for="f_improve">Total Produktivitas</label>
-				<input type="text" readonly id="f_improve" name="f_improve" class="form-control bg-soft-secondary curency">
-			</div>
-			<div class="col-lg-3 col-md-6 col-12">
-				<label class="form-label" for="f_selisih">Selisih</label>
-				<input type="text" readonly id="f_selisih" name="f_selisih" class="form-control bg-soft-secondary curency">
-			</div>
-		</div>
-	</div>
-
 </form>
 
 <script>
 	$(document).ready(function() {
-		$("#footer_default").hide();
 		$('.curency').mask("#.##0", {
 			reverse: true
 		});
@@ -344,9 +321,9 @@
                                     	<span class="text-danger err_ket${id}${counter}"></span>
 									</td>
 									<td>
-										<input id="jumlah_a_${id}${counter}" onkeyup="hitung_footer()" name="jumlah_a_${id}[]"  type="text" 
+										<input id="jumlah_a_${id}${counter}" name="jumlah_a_${id}[]"  type="text" 
 										data-parsley-required="true" data-parsley-errors-container=".err_jum${id}${counter}" required=""
-										class="form-control curency reduce" placeholder="jumlah_a_${id}[]">
+										class="form-control curency" placeholder="jumlah_a_${id}[]">
                                     	<span class="text-danger err_jum${id}${counter}"></span>
 									</td>
 									<td class="text-center"><i id="row_${id}${counter}" data-hapusrow="${id}" class="bi bi-trash text-danger fs-1" onclick="hapus_a(this)"></i> </td>
@@ -375,8 +352,8 @@
                             <span class="text-danger err_kete${id}${counter}"></span>
 						</td>
 						<td>
-							<input id="jumlah_b_${id}${counter}" name="jumlah_b_${id}[]" type="text" onkeyup="hitung_footer()"
-							class="form-control curency improve" placeholder="jumlah${id}${counter}"
+							<input id="jumlah_b_${id}${counter}" name="jumlah_b_${id}[]" type="text" 
+							class="form-control curency" placeholder="jumlah${id}${counter}"
 							data-parsley-required="true" data-parsley-errors-container=".err_jmlh${id}${counter}" required="">
 							<span class="text-danger err_jmlh${id}${counter}"></span>
 						</td>
@@ -547,34 +524,4 @@
 			});
 		}
 	});
-
-	function hitung_footer() {
-		var total_reduce = 0;
-		var total_improve = 0;
-		$('.reduce').each(function() {
-			var value = $(this).val().trim();
-			if (value === '' || value === null || value === undefined) {
-				value = '0';
-			}
-			total_reduce += parseInt(value.replace(/\./g, ''));
-			$("#f_reduce").val("Rp " + total_reduce)
-		});
-		$('.improve').each(function() {
-			var value = $(this).val().trim();
-			if (value === '' || value === null || value === undefined) {
-				value = '0';
-			}
-			total_improve += parseInt(value.replace(/\./g, ''));
-			$("#f_improve").val("Rp " + total_improve)
-		});
-		var saldoawal = $("#saldo_awal").val();
-		$("#f_saldo").val("Rp " + saldoawal)
-		$('.curency').mask("#.##0", {
-			reverse: true
-		});
-		var jumlah = saldoawal - (total_reduce + total_improve)
-		if (jumlah == 0) {
-
-		}
-	}
 </script>

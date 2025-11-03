@@ -31,8 +31,9 @@ class C_budget extends CI_Controller
 		$data           = $this->M_budget->get_paginated_budget($length, $start, $search, $order_by, $dir);
 		$total_records  = $this->M_budget->count_all_budget();
 		$total_filtered = $this->M_budget->count_filtered_budget($search);
-		$url_edit       = 'C_budget/editform/';
-		$url_delete     = 'C_budget/hapusdata/';
+		$url_edit       = 'C_budget/editform';
+		$url_detail       = 'C_budget/detailform';
+		$url_delete     = 'C_budget/hapusdata';
 		$load_grid      = 'C_budget/griddata';
 		$result = [];
 		foreach ($data as $row) {
@@ -41,8 +42,8 @@ class C_budget extends CI_Controller
 					More <i class="bi-chevron-down ms-1"></i>
 				</button>
 				<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->code_budgeting . '">
-					<button class="dropdown-item editbtn" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
-						<i class="bi bi-pen"></i> Edit
+					<button class="dropdown-item editbtn" onclick="editform(\'' . $url_detail . '\', \'' . $row->uuid . '\')">
+						<i class="bi bi-eye"></i> Detail
 					</button>
 					<div class="dropdown-divider"></div>
 					<button class="dropdown-item text-danger" onclick="hapus(\'' . $row->uuid . '\', \'' . $url_delete . '\', \'' . $load_grid . '\')">
@@ -223,7 +224,7 @@ class C_budget extends CI_Controller
 				'project_name'    => $project['project_name'],
 				'goal_project'    => $set_data,
 				'project_desc'    => $project['project_desc'],
-				'budget_proposal' => $project['usulan_anggaran'],
+				'budget_proposal' => (int)str_replace('.', '', $project['usulan_anggaran']),
 				'filename'        => $nama_baru,
 			];
 			if (!empty($project['counta'])) {
@@ -495,5 +496,42 @@ class C_budget extends CI_Controller
 		$cari = preg_replace("/[^a-zA-Z0-9]/", '', $get_value);
 		$hasil = $this->M_budget->get_coa_expense($cari, $code_company);
 		echo json_encode($hasil);
+	}
+
+
+	public function detailform($uuid)
+	{
+		$cekdata =  $this->M_budget->get_where_budget(['a.uuid' => $uuid])->row();
+		if ($cekdata != null) {
+			$code         = $cekdata->code_budgeting;
+			$code_company = $cekdata->code_company;
+			$project      = $this->M_budget->get_project($code, $code_company);
+			$data_project = [];
+			if(!empty($project)){
+				foreach ($project as $row){
+					$data_project[] = [
+						'code_budgeting'  => $row['code_budgeting'],
+						'project_item'    => $row['project_item'],
+						'project_name'    => $row['project_name'],
+						'goal_project'    => $row['goal_project'],
+						'project_desc'    => $row['project_desc'],
+						'budget_proposal' => $row['budget_proposal'],
+						'filename'        => $row['filename'],
+						'item_reduce'     => $this->M_budget->get_project_items($code, $row['project_item'], "REDUCE", $code_company),
+						'item_improve'    => $this->M_budget->get_project_items($code, $row['project_item'], "IMPROVE", $code_company),
+					];
+				}
+			}
+			//  var_dump($data_project[0]['item_reduce']); die; 
+			$data['judul']          = "Detail Budget";
+			$data['load_back']      = "C_budget/detailform/" . $uuid;
+			$data['load_grid']      = 'C_budget';
+			$data['data']           = $cekdata;
+			$data['data_project']   = $data_project;
+			$data['perusahaanList'] = $this->M_global->getWhereOrder('companies')->result();
+			$this->load->view("v_budget/detail_budget", $data);
+		} else {
+			$this->load->view('error');
+		}
 	}
 }

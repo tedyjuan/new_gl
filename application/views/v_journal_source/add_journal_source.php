@@ -30,33 +30,33 @@
 				</div>
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="kode_divisi">Depo</label>
-						<input type="text" id="kode_divisi" name="kode_divisi" data-parsley-required="true"
-							data-parsley-errors-container=".err_kodedivisi" required=""
-							class="form-control-hover-light form-control"
-							placeholder="input kode divisi max:2 karakter">
-						<span class="text-danger err_kodedivisi"></span>
+						<label class="form-label" for="depo">Depo</label>
+						<select id="depo" name="depo" class="form-control-hover-light form-control select2"
+							data-parsley-required="true" data-parsley-errors-container=".err_depo" required="">
+							<option value="">Pilih</option>
+						</select>
+						<span class="text-danger err_depo"></span>
 					</div>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="nama_divisi">Kode</label>
-						<input type="text" id="nama_divisi" name="nama_divisi"
+						<label class="form-label" for="kode_journal_source">Kode</label>
+						<input type="text" id="kode_journal_source" name="kode_journal_source" data-parsley-minlength="2"
 							class="form-control-hover-light form-control kapital" data-parsley-required="true"
-							data-parsley-errors-container=".err_namadivisi" required=""
-							placeholder="input nama divisi">
-						<span class="text-danger err_namadivisi"></span>
+							data-parsley-errors-container=".err_journal_source" required=""
+							placeholder="input kode journal source">
+						<span class="text-danger err_journal_source"></span>
 					</div>
 				</div>
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="alias">Deskripsi</label>
-						<input type="text" id="alias" name="alias" data-parsley-required="true"
+						<label class="form-label" for="des">Deskripsi</label>
+						<input type="text" id="des" name="des" data-parsley-required="true"
 							data-parsley-errors-container=".err_sing_cc" required=""
 							class="form-control-hover-light form-control kapital"
-							placeholder="input singkatan cost center">
+							placeholder="input deskripsi">
 						<span class="text-danger err_sing_cc"></span>
 					</div>
 				</div>
@@ -80,7 +80,7 @@
 		form.parsley().validate();
 		if (form.parsley().isValid()) {
 			$.ajax({
-				url: "<?= base_url('C_divisi/simpandata') ?>",
+				url: "<?= base_url('C_journal_source/simpandata') ?>",
 				type: 'POST',
 				method: 'POST',
 				dataType: 'JSON',
@@ -113,27 +113,16 @@
 	});
 
 	$(document).ready(function() {
-		$('#kode_divisi').on('keyup', function() {
-			var currentValue = $(this).val();
-			currentValue = currentValue.replace(/[^0-9]/g, '');
-			if (currentValue === '') {
-				var incrementedValue = 0;
-			} else {
-				var incrementedValue = parseInt(currentValue);
-			}
-			var formattedValue = String(incrementedValue).padStart(2, '0');
-			if (formattedValue.length > 2) {
-				$(this).val(formattedValue.slice(0, 2));
-			} else {
-				$(this).val(formattedValue).trigger("input");
+		$('#kode_journal_source').mask('###', {
+			translation: {
+				'#': {
+					pattern: /[A-Za-z0-9]/, // Mengizinkan angka 0-9 dan huruf A-Z
+					optional: true
+				}
 			}
 		});
-		$('#kode_divisi').on('blur', function() {
-			var currentValue = $(this).val();
-			if (currentValue === '00') {
-				$(this).val('01');
-			}
-		});
+
+
 		$('.kapital').on('input', function(e) {
 			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
 		});
@@ -161,6 +150,33 @@
 						results: results
 					};
 				}
+			}
+		});
+		$('#perusahaan').on('change', function() {
+			var companyCode = $(this).val();
+			// Mengosongkan dropdown dan reset nilai default sebelum AJAX
+			$('#depo').empty().append('<option value="">Pilih</option>');
+			if (companyCode) {
+				// Memuat Depo
+				$.ajax({
+					url: '<?= base_url('C_global/getDepoByCompany/'); ?>' + companyCode,
+					method: 'GET',
+					dataType: 'JSON',
+					beforeSend: function() {
+						showLoader();
+					},
+					success: function(data) {
+						hideLoader();
+						data.forEach(function(depo) {
+							$('#depo').append('<option value="' + depo.code_depo +
+								'" data-alias="' + depo.alias +
+								'" data-area="' + depo.code_area + '">' + depo.code_depo + '-' + depo.name + '</option>');
+						});
+					}
+				});
+
+				$("#depo").select2()
+
 			}
 		});
 	})

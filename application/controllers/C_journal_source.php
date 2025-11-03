@@ -19,23 +19,27 @@ class C_journal_source extends CI_Controller
 	}
 	public function griddata()
 	{
-		// $start          = $this->input->post('start') ?? 0;
-		// $length         = $this->input->post('length') ?? 10;
-		// $search_input   = $this->input->post('search');
-		// $search         = isset($search_input['value']) ? $search_input['value'] : '';
-		// $order_input    = $this->input->post('order');
-		// $order_col      = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
-		// $dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
-		// $columns        = ['code_company', 'company_name', 'code_journal_source', 'name','action'];
-		// $order_by       = $columns[$order_col] ?? 'name';
-		// $data           = $this->M_journal_source->get_paginated_journal_source($length, $start, $search, $order_by, $dir);
-		// $total_records  = $this->M_journal_source->count_all_journal_source();
-		// $total_filtered = $this->M_journal_source->count_filtered_journal_source($search);
-		$data           = [];
-		$total_records  = 0;
-		$total_filtered = 0;
-		$url_edit   = 'C_journal_source/editform/';
-		$url_delete = 'C_journal_source/hapusdata/';
+		$start          = $this->input->post('start') ?? 0;
+		$length         = $this->input->post('length') ?? 10;
+		$search_input   = $this->input->post('search');
+		$search         = isset($search_input['value']) ? $search_input['value'] : '';
+		$order_input    = $this->input->post('order');
+		$order_col      = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
+		$dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
+		$columns        = [
+					'code_company',
+					'company_name',
+					'code_journal_source',
+					'code_depo',
+					'depo_name',
+					'description',
+					'action'];
+		$order_by       = $columns[$order_col] ?? 'code_company';
+		$data           = $this->M_journal_source->get_paginated_journal_source($length, $start, $search, $order_by, $dir);
+		$total_records  = $this->M_journal_source->count_all_journal_source();
+		$total_filtered = $this->M_journal_source->count_filtered_journal_source($search);
+		$url_detail   = 'C_journal_source/detailform';
+		$url_delete = 'C_journal_source/hapusdata';
 		$load_grid  = 'C_journal_source/griddata';
 		$result = [];
 		foreach ($data as $row) {
@@ -44,7 +48,7 @@ class C_journal_source extends CI_Controller
 					More <i class="bi-chevron-down ms-1"></i>
 				</button>
 				<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->code_journal_source . '">
-					<button class="dropdown-item editbtn" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
+					<button class="dropdown-item" onclick="detail(\'' . $url_detail . '\', \'' . $row->uuid . '\')">
 						<i class="bi bi-pen"></i> Edit
 					</button>
 					<div class="dropdown-divider"></div>
@@ -54,10 +58,10 @@ class C_journal_source extends CI_Controller
 				</div>
 			</div>';
 			$result[] = [
-				$row->code_company . ' - ' . $row->company_name,
+				$row->code_company,
+				$row->code_depo . ' - ' . $row->depo_name,
 				$row->code_journal_source,
-				$row->name,
-				$row->alias,
+				$row->description,
 				$aksi,
 			];
 		}
@@ -77,13 +81,11 @@ class C_journal_source extends CI_Controller
 	}
 	public function simpandata()
 	{
-		// Validasi input
 		$this->form_validation->set_rules('perusahaan', 'Perusahaan', 'required');
-		$this->form_validation->set_rules('kode_journal_source', 'Code Divisi', 'required');
-		$this->form_validation->set_rules('nama_journal_source', 'Nama Divisi', 'required');
-		$this->form_validation->set_rules('alias', 'Nama Alias', 'required');
+		$this->form_validation->set_rules('depo', 'Code Depo', 'required');
+		$this->form_validation->set_rules('kode_journal_source', 'kode journal source', 'required');
+		$this->form_validation->set_rules('des', 'Deskripsi', 'required');
 		if ($this->form_validation->run() == FALSE) {
-			// Jika validasi gagal
 			$jsonmsg = [
 				'hasil' => 'false',
 				'pesan' => validation_errors(),
@@ -91,59 +93,32 @@ class C_journal_source extends CI_Controller
 			echo json_encode($jsonmsg);
 			return;
 		}
-		// Ambil data dari request
-		$perusahaan  = $this->input->post('perusahaan');
-		$code_journal_source = $this->input->post('kode_journal_source');
-		$nama_journal_source = $this->input->post('nama_journal_source');
-		$alias       = $this->input->post('alias');
-		// Cek apakah kode Divisi sudah ada
+		$perusahaan = $this->input->post('perusahaan');
+		$depo       = $this->input->post('depo');
+		$code_js    = $this->input->post('kode_journal_source');
+		$des        = $this->input->post('des');
 		$param_kode =[
-			'code_journal_source'  => $code_journal_source
+			'code_journal_source' => $code_js,
+			'code_depo'           => $depo,
+			'code_company'        => $perusahaan
 		];
-		$exisCode = $this->M_global->getWhere('divisions', $param_kode)->num_rows();
+		$exisCode = $this->M_global->getWhere('journal_sources', $param_kode)->num_rows();
 		if ($exisCode != null) {
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Kode Divisi sudah digunakan',
+				'pesan' => 'Kode journal sources sudah digunakan',
 			];
 			echo json_encode($jsonmsg);
 			exit;
 		}
-		$param_alias = ['alias'  => $alias];
-		$exisalias = $this->M_global->getWhere('divisions', $param_alias)->num_rows();
-		if ($exisalias != null) {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Alias sudah digunakan',
-			];
-			echo json_encode($jsonmsg);
-			exit;
-		}
-		$param_nama = [
-			'name'         => $nama_journal_source,
-			'code_company' => $perusahaan,
-		];
-		$exisName = $this->M_global->getWhere('divisions', $param_nama)->num_rows();
-		if ($exisName != null) {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Kode Divisi sudah digunakan',
-			];
-			echo json_encode($jsonmsg);
-			exit;
-		} 
-		// Data untuk insert ke database
 		$datainsert = [
-			'uuid'         => $this->uuid->v4(),
-			'code_journal_source'  => $code_journal_source,
-			'code_company' => $perusahaan,
-			'name'         => $nama_journal_source,
-			'alias'        => $alias,
-			'created_at'   => date('Y-m-d H:i:s'),
-			'updated_at'   => date('Y-m-d H:i:s')
+			'uuid'                => $this->uuid->v4(),
+			'code_journal_source' => $code_js,
+			'code_depo'           => $depo,
+			'code_company'        => $perusahaan,
+			'description'         => $des,
 		];
-		// Melakukan insert data
-		$this->db->insert('divisions', $datainsert);
+		$this->db->insert('journal_sources', $datainsert);
 		if ($this->db->affected_rows() > 0) {
 			$jsonmsg = [
 				'hasil' => 'true',
@@ -159,86 +134,53 @@ class C_journal_source extends CI_Controller
 	}
 	public function editform($uuid)
 	{
-		$data =  $this->M_journal_source->get_where_journal_source(['a.uuid' => $uuid])->row();
-		if ($data != null) {
-			$judul = "Form Edit Divisi";
-			$load_grid = "C_journal_source";
-			$load_refresh = "C_journal_source/editform/" . $uuid;
-			$this->load->view('v_journal_source/edit_journal_source', [
-				'judul' => $judul,
-				'load_grid' => $load_grid,
-				'load_refresh' => $load_refresh,
-				'data' => $data,
-				'uuid' => $uuid
-			]);
+		$cekdata =  $this->M_journal_source->get_where_journal_source(['a.uuid' => $uuid])->row();
+		if ($cekdata != null) {
+			$code_company = $cekdata->code_company;
+			$data['judul'] = "Form Edit Journal Source";
+			$data['load_grid'] = "C_journal_source";
+			$data['uuid'] = $uuid;
+			$data['data'] = $cekdata;
+			$data['load_refresh'] = "C_journal_source/editform/" . $uuid;
+			$data['depoList'] = $this->M_global->getWhere("depos", ['code_company' => $code_company])->result();
+			$this->load->view('v_journal_source/edit_journal_source', $data);
 		} else {
 			$this->load->view('error');
 		}
 	}
-	// Fungsi untuk update data Divisi
 	public function update()
 	{
 		// Ambil data dari POST request
-		$uuid = $this->input->post('uuid'); 
-		$code_journal_source = $this->input->post('kode_journal_source');
-		$nama_journal_source = $this->input->post('nama_journal_source');
-		$alias_post       = $this->input->post('alias');
+		$uuid                = $this->input->post('uuid');
+		$depo       = $this->input->post('depo');
+		$code_js    = $this->input->post('kode_journal_source');
+		$des        = $this->input->post('des');
 		// Cek apakah UUID Divisi ada di database
 		$data =  $this->M_journal_source->get_where_journal_source(['a.uuid' => $uuid])->row();
 		if ($data != null) {
-			$code_company = $data->code_company;
-			$cek_cost_center =  $this->M_global->getWhere('cost_centers', ['code_journal_source' => $data->code_journal_source])->num_rows();
-			if ($cek_cost_center != 0) {
-				$jsonmsg = [
-					'hasil' => 'false',
-					'pesan' => 'Tidak bisa mengubah Data Divisi karena sedang digunakan di cost centers.',
+			if($data->code_journal_source != $code_js){
+				$param_kode = [
+					'a.code_journal_source' => $code_js,
+					'a.code_depo'           => $depo,
 				];
-				echo json_encode($jsonmsg);
-				exit;
-			}
-			if($data->code_journal_source != $code_journal_source){
-				$cekkode =  $this->M_journal_source->get_where_journal_source(['a.code_journal_source' => $code_journal_source, "a.code_company" => $code_company ])->num_rows();
-				if ($cekkode != 0) {
+				$cekkode =  $this->M_journal_source->get_where_journal_source($param_kode)->num_rows();
+				if ($cekkode !== 0) {
 					$jsonmsg = [
 						'hasil' => 'false',
-						'pesan' => 'Kode Depo sudah terdaftar',
-					];
-					echo json_encode($jsonmsg);
-					exit;
-				}
-			}
-			if($data->name != $nama_journal_source){
-				$param_nama = ['a.name' => $nama_journal_source, "a.code_company" => $code_company];
-				$ceknama =  $this->M_journal_source->get_where_journal_source($param_nama)->num_rows();
-				if ($ceknama !== 0) {
-					$jsonmsg = [
-						'hasil' => 'false',
-						'pesan' => 'Nama sudah terdaftar',
-					];
-					echo json_encode($jsonmsg);
-					exit;
-				}
-			}
-			if($data->alias !== $alias_post){
-				$cekalias =  $this->M_journal_source->get_where_journal_source(['a.alias' => $alias_post])->num_rows();
-				if ($cekalias !== 0) {
-					$jsonmsg = [
-						'hasil' => 'false',
-						'pesan' => 'Alias sudah terdaftar',
+						'pesan' => 'Kode sudah terdaftar',
 					];
 					echo json_encode($jsonmsg);
 					exit;
 				}
 			}
 			$dataupdate = [
-				'uuid'         => $this->uuid->v4(),
-				'code_journal_source'  => $code_journal_source,
-				'name'         => $nama_journal_source,
-				'alias'        => $alias_post,
+				'code_journal_source' => $code_js,
+				'code_depo'           => $depo,
+				'description'         => $des,
 				'updated_at'   => date('Y-m-d H:i:s')
 			];
 			// Melakukan update data
-			$update = $this->M_global->update($dataupdate, 'divisions', ['uuid' => $uuid]);
+			$update = $this->M_global->update($dataupdate, 'journal_sources', ['uuid' => $uuid]);
 			if ($update) {
 				// Jika update berhasil
 				$jsonmsg = [
@@ -267,7 +209,6 @@ class C_journal_source extends CI_Controller
 	public function hapusdata()
 	{
 		$uuid = $this->input->post('uuid');
-		// Validasi input
 		if (empty($uuid)) {
 			echo json_encode([
 				'hasil' => 'false',
@@ -276,30 +217,18 @@ class C_journal_source extends CI_Controller
 			return;
 		}
 		$param_kode = ['a.uuid' => $uuid];
-		$divisi = $this->M_journal_source->get_where_journal_source($param_kode)->row();
-		// Jika data tidak ditemukan
-		if (!$divisi) {
-			$this->db->trans_rollback();
+		$journal_source = $this->M_journal_source->get_where_journal_source($param_kode)->row();
+		if (!$journal_source) {
 			echo json_encode([
 				'hasil' => 'false',
 				'pesan' => 'Data tidak ditemukan'
 			]);
 			return;
 		}
-		$cek_cc = $this->M_global->getWhere('cost_centers', ['code_journal_source' => $divisi->code_journal_source])->num_rows();
-		if ($cek_cc != 0) {
-			echo json_encode([
-				'hasil' => 'false',
-				'pesan' => 'Tidak bisa Menghapus Data, karena sedang digunakan di cost centers.',
-			]);
-			return;
-		}
+		
 		$this->db->trans_begin();
 		try {
-			// Ambil data divisi berdasarkan UUID
-			
-			// Lakukan penghapusan data di tabel divisions
-			$this->db->where('uuid', $uuid)->delete('divisions');
+			$this->db->where('uuid', $uuid)->delete('journal_sources');
 			if ($this->db->affected_rows() <= 0) {
 				$this->db->trans_rollback();
 				echo json_encode([
@@ -331,4 +260,5 @@ class C_journal_source extends CI_Controller
 			]);
 		}
 	}
+
 }

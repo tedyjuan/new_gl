@@ -234,7 +234,7 @@
 		</div>
 		<!-- End Content -->
 		<!-- Footer -->
-		<div class="footer">
+		<div class="footer" id="footer_default">
 			<div class="row justify-content-between align-items-center">
 				<div class="col">
 					<strong>ASIATRI</strong> &copy; <?= date('Y'); ?>

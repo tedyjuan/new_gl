@@ -20,7 +20,7 @@
 		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%">
 			<thead>
 				<tr class="table-primary">
-					<th>Company</th>
+					<th style="width: 15%;">Kode Company</th>
 					<th>Nama Depo</th>
 					<th>Kode</th>
 					<th>Deskripsi</th>
@@ -42,7 +42,7 @@
 			processing: true,
 			serverSide: true, // Mengaktifkan server-side processing
 			ajax: {
-				url: "<?= base_url('C_divisi/griddata'); ?>", // URL ke controller
+				url: "<?= base_url('C_journal_source/griddata'); ?>", // URL ke controller
 				type: "POST", // Gunakan GET untuk request
 			},
 			columnDefs: [{

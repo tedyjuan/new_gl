@@ -48,9 +48,14 @@ class M_budget extends CI_Model
 	}
 	public function get_where_budget($param)
 	{
-		$this->db->select('a.*, b.name AS nm_company');
+		$this->db->select('
+			a.*, 
+			b.name AS company_name,
+			c.name AS department_name
+			');
 		$this->db->from('budgeting_headers as a');
 		$this->db->join('companies as b', 'b.code_company = a.code_company', 'left');
+		$this->db->join('departments as c', 'c.code_department = a.code_department', 'left');
 		$this->db->where($param);
 		return $this->db->get();
 	}
@@ -67,6 +72,7 @@ class M_budget extends CI_Model
 		$query = $this->db->query($sql, $param);
 		return $query->result_array();
 	}
+	
 	public function getcode_budgeting($code_department, $alias, $code_company)
 	{
 		$year = date("Y");
@@ -86,4 +92,44 @@ class M_budget extends CI_Model
 		}
 		return "BGT/{$year}/{$alias}-{$auto_num}";
 	}
+	public function get_project($code, $code_company)
+	{
+		$sql = "SELECT 
+			a.code_budgeting,
+			a.`project_item`,
+			a.`project_name`,
+			a.`goal_project`,
+			a.`project_desc`,
+			a.`budget_proposal`,
+			a.`filename`
+			FROM `budgeting_projects` a
+			INNER JOIN `budgeting_headers` b ON b.`code_budgeting` = a.`code_budgeting`
+			WHERE a.`code_budgeting` = ?
+			AND b.`code_company` = ?
+			ORDER BY a.`project_item`";
+		$param = [$code, $code_company];
+		$query = $this->db->query($sql, $param);
+		return $query->result_array();
+	}
+	public function get_project_items($code, $item, $type, $code_company)
+	{
+		$sql = "SELECT
+				a.`itemnumber`,
+				a.`desc`,
+				a.`account_number`,
+				a.`amount`,
+				c.`name`
+				FROM `budgeting_project_items` a
+				INNER JOIN `budgeting_headers` b ON b.`code_budgeting` = a.`code_budgeting`
+				LEFT JOIN `chart_of_accounts` c ON c.`account_number` = a.`account_number`
+				WHERE a.`code_budgeting` = ?
+				AND a.`project_item` = ?
+				AND a.`type_goal` = ?
+				AND b.`code_company` = ?
+				ORDER BY a.`project_item`";
+		$param = [$code, $item, $type, $code_company];
+		$query = $this->db->query($sql, $param);
+		return $query->result_array();
+	}
+	
 }
