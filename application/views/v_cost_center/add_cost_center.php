@@ -147,7 +147,7 @@
 					}
 				},
 				error: function(xhr) {
-					console.log("ERROR:", xhr);
+					
 					if (xhr.status === 422) {
 						let errors = xhr.responseJSON.errors;
 						$.each(errors, function(key, value) {

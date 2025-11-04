@@ -73,8 +73,8 @@
 	<!-- ========== HEADER ========== -->
 	<header id="header" class="navbar navbar-expand-lg navbar-fixed navbar-height navbar-container navbar-bordered bg-white">
 		<div class="navbar-nav-wrap">
-			<!-- Logo -->
-			<a class="navbar-brand" href="index.html" aria-label="Front">
+			<!-- Logo-->
+			<a class="navbar-brand" href="<?= base_url(); ?>" aria-label="Front">
 				<img class="navbar-brand-logo" src="<?= base_url('public/assets/svg/logos/logo.svg'); ?>" alt="Logo">
 				<img class="navbar-brand-logo-mini" src="<?= base_url('public/assets/svg/logos/logo-short.svg'); ?>" alt="Logo">
 			</a>
@@ -137,8 +137,8 @@
 	<aside class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered bg-white">
 		<div class="navbar-vertical-container">
 			<div class="navbar-vertical-footer-offset">
-				<!-- Logo -->
-				<a class="navbar-brand" href="index.html" aria-label="Front">
+				<!-- Logo tes-->
+				<a class="navbar-brand" href="<?= base_url(); ?>" aria-label="Front">
 					<img class="navbar-brand-logo" src="<?= base_url('public/assets/svg/logos/logo.svg'); ?>" alt="Logo">
 					<img class="navbar-brand-logo-mini" src="<?= base_url('public/assets/svg/logos/logo-short.svg'); ?>" alt="Logo">
 				</a>
@@ -288,7 +288,6 @@
 				new HSSideNav('.js-navbar-vertical-aside').init()
 			}
 		})()
-
 	</script>
 
 

@@ -1,4 +1,9 @@
 <!-- Card -->
+<style>
+	.form-check-input {
+		transform: scale(1.3);
+	}
+</style>
 <form id="forms_add" method="post" enctype="multipart/form-data">
 	<div class="card">
 		<div class="card-header">
@@ -154,38 +159,27 @@
 		</div>
 		<?php $no++; ?>
 	<?php } ?>
-	<style>
-		.foot {
-			position: fixed;
-			bottom: 0;
-			width: 77%;
-			z-index: 100;
-		}
 
-		.form-check-input {
-			transform: scale(1.3);
-		}
-	</style>
-	<div style="margin-bottom: 5%;"></div>
+	<div style="margin-bottom: 2%;"></div>
 	<div class="foot" id="foter_new">
 		<div class="card">
 			<div class="card-header">
 				<div class="row">
 					<div class="col-lg-3 col-md-6 col-12">
 						<label class="form-label">Saldo Awal </label>
-						<input type="text" value="<?= $summary['opening_balance'];?>" readonly id="f_saldo" name="f_saldo" class="form-control curency" placeholder="0">
+						<input type="text" value="<?= $summary['opening_balance']; ?>" readonly id="f_saldo" name="f_saldo" class="form-control curency" placeholder="0">
 					</div>
 					<div class="col-lg-3 col-md-6 col-12">
 						<label class="form-label" for="f_opex">Total Biaya</label>
-						<input type="text" value="<?= $summary['opex'];?>" readonly id="f_opex" name="f_opex" class="form-control curency" placeholder="0">
+						<input type="text" value="<?= $summary['opex']; ?>" readonly id="f_opex" name="f_opex" class="form-control curency" placeholder="0">
 					</div>
 					<div class="col-lg-3 col-md-6 col-12">
 						<label class="form-label" for="f_capex">Total Produktivitas</label>
-						<input type="text" value="<?= $summary['capex'];?>" readonly id="f_capex" name="f_capex" class="form-control curency" placeholder="0">
+						<input type="text" value="<?= $summary['capex']; ?>" readonly id="f_capex" name="f_capex" class="form-control curency" placeholder="0">
 					</div>
 					<div class="col-lg-3 col-md-6 col-12">
 						<label class="form-label" for="f_selisih">Selisih</label>
-						<input type="text" value="<?= $summary['difference'];?>" readonly id="f_selisih" name="f_selisih" class="form-control curency" placeholder="0">
+						<input type="text" value="<?= $summary['difference']; ?>" readonly id="f_selisih" name="f_selisih" class="form-control curency" placeholder="0">
 					</div>
 				</div>
 			</div>

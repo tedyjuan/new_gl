@@ -1,3 +1,8 @@
+<style>
+	.form-check-input {
+		transform: scale(1.3);
+	}
+</style>
 <form id="forms_add" method="post" enctype="multipart/form-data">
 	<div class="card">
 		<div class="card-header">
@@ -81,19 +86,8 @@
 		</div>
 	</div>
 	<div id="projectFormsContainer"></div>
-	<style>
-		.foot {
-			position: fixed;
-			bottom: 0;
-			width: 77%;
-			z-index: 100;
-		}
 
-		.form-check-input {
-			transform: scale(1.3);
-		}
-	</style>
-	<div style="margin-bottom: 5%;"></div>
+	<div style="margin-bottom: 2%;"></div>
 	<div class="foot" id="foter_new">
 		<div class="card">
 			<div class="card-header">
@@ -166,15 +160,7 @@
 </script>
 <script>
 	$(document).ready(function() {
-		// .bi-arrow-bar-right navbar-toggler-full-align
-		// $('.bi-arrow-bar-right navbar-toggler-full-align').on('click', function() {
-		// 	// Menampilkan alert
-		// 	alert('tutup');
-		// });
-		// $('.bi-arrow-bar-left.navbar-toggler-short-align').on('click', function() {
-		// 	// Menampilkan alert
-		// 	alert('buka');
-		// });
+
 		// Ketika jumlah project diinputkan
 		$('#jumlah_project').on('input', function() {
 			var jumlahProject = $(this).val();

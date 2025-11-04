@@ -85,7 +85,7 @@
                     }
                 },
                 error: function(xhr) {
-                    console.log("ERROR:", xhr);
+                    
                     if (xhr.status === 422) {
                         // Error validasi Laravel
                         let errors = xhr.responseJSON.errors;
