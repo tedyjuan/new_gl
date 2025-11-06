@@ -84,7 +84,7 @@
 		<a href="<?= base_url();?>" class="btn">Back to Home</a>
 
 		<div class="support">
-			<p>If you need assistance, feel free to <a href="mailto:support@yourdomain.com">contact support</a>.</p>
+			<p>If you need assistance, feel free to <a href="<?= base_url();?>">contact support</a>.</p>
 		</div>
 	</div>
 </body>
