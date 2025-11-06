@@ -11,7 +11,7 @@ class C_depos extends CI_Controller
 	}
 	function index()
 	{
-		$data['judul']      = 'List Data Depo';
+		$data['judul']      = 'Branch Data';
 		$data['load_grid']  = 'C_depos';
 		$data['load_add']   = 'C_depos/add';
 		$data['url_delete'] = 'C_depos/delete';

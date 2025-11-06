@@ -228,7 +228,6 @@ class C_divisi extends CI_Controller
 				}
 			}
 			$dataupdate = [
-				'uuid'         => $this->uuid->v4(),
 				'code_divisi'  => $code_divisi,
 				'name'         => $nama_divisi,
 				'alias'        => $alias_post,

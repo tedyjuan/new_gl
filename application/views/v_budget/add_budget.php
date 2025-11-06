@@ -405,9 +405,6 @@
 		$("#hapuscounta_" + number).remove();
 	}
 
-
-
-
 	function hapus_b(e) {
 		var id = e.id;
 		var rowIdentifier = $(e).data('hapusrow');
@@ -527,6 +524,9 @@
 				processData: false, // Jangan memproses data (karena file)
 				contentType: false, // Jangan set content-type (FormData otomatis menentukannya)
 				dataType: 'JSON',
+				beforeSend: function() {
+					showLoader();
+				},
 				success: function(data) {
 					if (data.hasil == 'true') {
 						swet_sukses(data.pesan);

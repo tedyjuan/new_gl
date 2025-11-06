@@ -11,7 +11,7 @@ class C_budget extends CI_Controller
 	}
 	function index()
 	{
-		$data['judul']      = 'List Data Budget';
+		$data['judul']      = 'Budget Data';
 		$data['load_grid']  = 'C_budget';
 		$data['load_add']   = 'C_budget/add';
 		$data['url_delete'] = 'C_budget/delete';
@@ -68,15 +68,15 @@ class C_budget extends CI_Controller
 				</div>
 			</div>';
 			if($row->status_budgeting == 'OPEN'){
-				$class = 'bg-soft-primary text-primary';
+				$class = 'bg-primary';
 			}else if($row->status_budgeting == 'REVIEW'){
-				$class = 'bg-soft-warning text-warning';
+				$class = 'bg-warning ';
 			}else if($row->status_budgeting == 'APPROVED'){
-				$class = 'bg-soft-success text-success';
+				$class = 'bg-success ';
 			}else if($row->status_budgeting == 'REJECT'){
-				$class = 'bg-soft-danger text-danger';
+				$class = 'bg-danger';
 			}else if($row->status_budgeting == 'CLOSED'){
-				$class = 'bg-soft-secondary text-secondary';
+				$class = 'bg-secondary';
 			}
 			$ststus = '<span class="badge '.$class.'">'. strtolower($row->status_budgeting).'</span>';
 			$result[] = [
@@ -519,6 +519,11 @@ class C_budget extends CI_Controller
 			$code_company = $cekdata->code_company;
 			$project      = $this->M_budget->get_project($code, $code_company);
 			$summary      = $this->M_budget->get_detail_summary($code, $code_company);
+			$param = [
+				"code_budgeting" => $code,
+				"code_company" => $code_company,
+			];
+			$data['verify']      = $this->M_global->getWhere("budgeting_verify", $param)->row_array();
 			$data_project = [];
 			if(!empty($project)){
 				foreach ($project as $row){
@@ -535,16 +540,171 @@ class C_budget extends CI_Controller
 					];
 				}
 			}
-			$data['judul']        = "Detail Budget ID:". $code;
-			$data['load_back']    = "C_budget/detailform/" . $uuid;
-			$data['load_grid']    = 'C_budget';
-			$data['data']         = $cekdata;
-			$data['summary']      = $summary;
-			$data['data_project'] = $data_project;
-			$data['perusahaanList'] = $this->M_global->getWhereOrder('companies')->result();
+			$data['judul']          = "Detail Budget (". $code.")";
+			$data['load_back']      = "C_budget/detailform/" . $uuid;
+			$data['load_grid']      = 'C_budget';
+			$data['code']           = $code;
+			$data['uuid']           = $uuid;
+			$data['data']           = $cekdata;
+			$data['summary']        = $summary;
+			$data['data_project']   = $data_project;
 			$this->load->view("v_budget/detail_budget", $data);
 		} else {
 			$this->load->view('error');
+		}
+	}
+
+	// ===============  menu verify / histori ==========
+	public function verify()
+	{
+		$this->form_validation->set_rules('status_budgeting', 'Perusahaan', 'required');
+		$this->form_validation->set_rules('deskripsi_verify', 'Code Divisi', 'required');
+		if ($this->form_validation->run() == FALSE) {
+			$jsonmsg = [
+				'hasil' => 'false',
+				'pesan' => validation_errors(),
+			];
+			echo json_encode($jsonmsg);
+			return;
+		}
+		$uuid             = $this->input->post('uuid');
+		$status_budgeting = $this->input->post('status_budgeting');
+		$deskripsi_verify = $this->input->post('deskripsi_verify');
+		$data = $this->M_global->getWhere('budgeting_headers', ['uuid' => $uuid])->row_array();
+		if ($data == null) {
+			$jsonmsg = [
+				'hasil' => 'false',
+				'pesan' => 'ID Budgeting tidak di temukan',
+			];
+			echo json_encode($jsonmsg);
+			exit;
+		}
+		$code_budgeting = $data['code_budgeting'];
+		$code_company   = $data['code_company'];
+		$param = [
+			"code_budgeting" => $code_budgeting,
+			"code_company"   => $code_company,
+		];
+		$cek_veryfy = $this->M_global->getWhere('budgeting_verify', $param)->num_rows();
+		if($cek_veryfy == 0){
+			$datainsert = [
+				'uuid'               => $this->uuid->v4(),
+				'code_budgeting'     => $code_budgeting,
+				'code_company'       => $code_company,
+				'status_budgeting'   => $status_budgeting,
+				'verification_date'  => date('Y-m-d H:i:s'),
+				'verification_notes' => $deskripsi_verify,
+				'user_created'       => $this->session->userdata('sess_username'),
+			];
+			// Melakukan insert data
+			$save = $this->M_global->insert($datainsert, 'budgeting_verify');
+			$dataupdate = [
+				'status_budgeting'  => $status_budgeting,
+			];
+			// Melakukan update data
+			$update = $this->M_global->update($dataupdate, 'budgeting_headers', $param);
+			if ($update == "TRUE" &&  $save == "TRUE") {
+				$jsonmsg = [
+					'hasil' => 'true',
+					'pesan' => 'Data Berhasil Disimpan',
+				];
+			} else {
+				$jsonmsg = [
+					'hasil' => 'false',
+					'pesan' => 'Gagal Menyimpan Data',
+				];
+			}
+			echo json_encode($jsonmsg);
+		}else{
+			$jsonmsg = [
+			'hasil' => 'false',
+			'pesan' => 'Verify Sudah Di lakukan',
+			];
+			echo json_encode($jsonmsg);
+		}
+	}
+	function index_verify()
+	{
+		$data['judul']      = 'Budget Verification History';
+		$data['load_grid']  = 'C_budget';
+		$data['load_add']   = 'C_budget/add';
+		$data['url_delete'] = 'C_budget/delete';
+		$this->load->view("v_budget/grid_budget_verify", $data);
+	}
+
+	public function griddata_verify()
+	{
+		$start        = $this->input->post('start') ?? 0;
+		$length       = $this->input->post('length') ?? 10;
+		$search_input = $this->input->post('search');
+		$draw         = intval($this->input->post('draw')) ?? 1;
+		$search       = isset($search_input['value']) ? $search_input['value'] : '';
+
+		// Dapatkan parameter order yang dikirim oleh DataTable
+		$order_input    = $this->input->post('order');
+		$order_col      = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
+		if (isset($order_input[0]['dir'])) {
+			if ($draw % 2 == 0) {
+				$dir = 'asc'; // Jika draw genap
+			} else {
+				$dir = 'desc'; // Jika draw ganjil
+			}
+		} else {
+			$dir = 'desc';
+		}
+		// Kolom yang dapat diurutkan
+		if ($draw == 1) {
+			$columns        = ['a.code_budgeting'];
+		} else {
+			$columns        = ['a.code_company', 'a.code_budgeting'];
+		}
+		// Tentukan kolom mana yang akan diurutkan berdasarkan order yang diterima
+		$order_by       = $columns[$order_col] ?? 'id';
+		$data           = $this->M_budget->get_paginated_budget_verify($length, $start, $search, $order_by, $dir);
+		$total_records  = $this->M_budget->count_all_budget_verify();
+		$total_filtered = $this->M_budget->count_filtered_budget_verify($search);
+		$url_detail       = 'C_budget/detailform';
+		$result = [];
+		foreach ($data as $row) {
+			$aksi = '<div class="dropdown">
+				<button type="button" class="btn btn-white btn-sm" id="aksi-dropdown-' . $row->code_budgeting . '" data-bs-toggle="dropdown" aria-expanded="false">
+					More <i class="bi-chevron-down ms-1"></i>
+				</button>
+				<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->code_budgeting . '">
+					<button class="dropdown-item editbtn" onclick="editform(\'' . $url_detail . '\', \'' . $row->uuid_header . '\')">
+						<i class="bi bi-eye"></i> Detail
+					</button>
+				</div>
+			</div>';
+			if ($row->status_budgeting == 'APPROVED') {
+				$class = 'bg-success';
+			} else if ($row->status_budgeting == 'REJECT') {
+				$class = 'bg-danger';
+			}
+			$ststus = '<span class="badge ' . $class . '">' . strtolower($row->status_budgeting) . '</span>';
+			$result[] = [
+				$row->code_company . ' - ' . $row->company_name,
+				$row->code_budgeting,
+				$ststus,
+				$aksi,
+			];
+		}
+		echo json_encode([
+			"draw"            => $draw,
+			"recordsTotal"    => $total_records,
+			"recordsFiltered" => $total_filtered,
+			"data"            => $result,
+		]);
+	}
+
+	public function download($filename)
+	{
+		$this->load->helper('download');
+		$file_path = FCPATH . 'uploads/' . $filename;
+		if (file_exists($file_path)) {
+			force_download($file_path, NULL);
+		} else {
+			show_404();
 		}
 	}
 }

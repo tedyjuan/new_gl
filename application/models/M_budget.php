@@ -6,6 +6,7 @@ class M_budget extends CI_Model
 	{
 		parent::__construct();
 		date_default_timezone_set('Asia/Jakarta');
+		$this->username = $this->session->userdata('sess_username');
 	}
 	public function get_paginated_budget($limit, $start, $search, $order_by, $order_dir)
 	{
@@ -49,7 +50,8 @@ class M_budget extends CI_Model
 		$this->db->select('
 			a.*, 
 			b.name AS company_name,
-			c.name AS department_name
+			c.name AS department_name,
+			c.alias AS department_alias,
 			');
 		$this->db->from('budgeting_headers as a');
 		$this->db->join('companies as b', 'b.code_company = a.code_company', 'left');
@@ -153,5 +155,42 @@ class M_budget extends CI_Model
 		$query = $this->db->query($sql, $param);
 		return $query->row_array();
 	}
-	
+	// ================ verify budgeting ==============
+	public function get_paginated_budget_verify($limit, $start, $search, $order_by, $order_dir)
+	{
+		$this->db->select('
+			a.*,
+			b.`uuid` AS uuid_header,
+			c.name AS company_name');
+		$this->db->from('budgeting_verify as a');
+		$this->db->join('budgeting_headers as b', 'b.code_budgeting = a.code_budgeting and b.code_company = a.code_company', 'inner');
+		$this->db->join('companies as c', 'c.code_company = a.code_company', 'inner');
+		// pencarian
+		if (!empty($search)) {
+			$this->db->group_start()
+				->like('a.code_budgeting', $search)
+				->or_like('a.code_company', $search)
+				->group_end();
+		}
+		$this->db->where('a.user_created', $this->username);
+		// limit & order
+		$this->db->limit($limit, $start);
+		$this->db->order_by($order_by, $order_dir);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	// Fungsi untuk menghitung total data
+	public function count_all_budget_verify()
+	{
+		return $this->db->count_all('budgeting_verify');
+	}
+	// Fungsi untuk menghitung jumlah data yang difilter berdasarkan pencarian
+	public function count_filtered_budget_verify($search)
+	{
+		$this->db->like('code_budgeting', $search);
+		$this->db->or_like('code_company', $search);
+		$query = $this->db->get('budgeting_verify');
+		return $query->num_rows();
+	}
 }
