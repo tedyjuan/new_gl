@@ -81,7 +81,7 @@
 		<h1>404</h1>
 		<h2>Oops! Page Not Found</h2>
 		<p>Sorry, the page you're looking for doesn't exist or has been moved.</p>
-		<a href="/" class="btn">Back to Home</a>
+		<a href="<?= base_url();?>" class="btn">Back to Home</a>
 
 		<div class="support">
 			<p>If you need assistance, feel free to <a href="mailto:support@yourdomain.com">contact support</a>.</p>
