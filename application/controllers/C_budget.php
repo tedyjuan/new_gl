@@ -704,7 +704,7 @@ class C_budget extends CI_Controller
 		if (file_exists($file_path)) {
 			force_download($file_path, NULL);
 		} else {
-			show_404();
+			$this->load->view("error_landingpage");
 		}
 	}
 }
