@@ -232,7 +232,7 @@
 							</div>
 						</div>
 						<!-- Tabel Mengurangi Biaya -->
-						<div class="container mt-5" id="tblMengurangiBiayaContainer_${i}" style="display: none;">
+						<div class="mt-5" id="tblMengurangiBiayaContainer_${i}" style="display: none;">
 							<h2>Mengurangi Biaya</h2>
 							<input class="counta_${i}" type="hidden" value="0">
 							<table class="table table-bordered table-thead-bordered table-sm" id="tblMengurangiBiaya_${i}" style="width: 100%;">
@@ -251,7 +251,7 @@
 							</div>
 						</div>
 						<!-- Tabel Meningkatkan Produktivitas -->
-						<div class="container mt-5" id="tblMeningkatkanProduktivitasContainer_${i}" style="display: none;">
+						<div class="mt-5" id="tblMeningkatkanProduktivitasContainer_${i}" style="display: none;">
 							<h2>Meningkatkan Produktivitas</h2>
 							<input class="countb_${i}" type="hidden" value="0">
 							<table class="table table-bordered table-thead-bordered table-sm" id="tblMeningkatkanProduktivitas_${i}" style="width: 100%;">
