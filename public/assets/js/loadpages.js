@@ -29,7 +29,7 @@ function loadform(controller) {
 
 		if (status === "error") {
 			$("#contentdata").html(
-				`<div class="alert alert-danger">Gagal memuat konten.</div>`
+				`<div class="alert alert-danger">Failed to load content.</div>`
 			);
 			return;
 		}
@@ -138,13 +138,13 @@ function swet_gagal(pesan) {
 function hapus(uuid, url_hapus, load_grid) {
 	Swal.fire({
 		icon: "question",
-		title: "Apakah Anda Yakin!",
-		text: "Data Ini Akan Di Hapus Secara Permanen",
+		title: "Are you sure!",
+		text: "This data will be permanently deleted",
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
 		cancelButtonColor: "#d33",
-		cancelButtonText: "Batal",
-		confirmButtonText: "Ya !",
+		cancelButtonText: "Cancel",
+		confirmButtonText: "Yes !",
 		reverseButtons: true,
 	}).then((result) => {
 		if (result.value) {
@@ -178,7 +178,7 @@ function hapus(uuid, url_hapus, load_grid) {
 			Swal.fire({
 				icon: "info",
 				title: "Information",
-				html: "Batal Dihapus",
+				html: "Deletion Canceled",
 			});
 		}
 	});
@@ -197,6 +197,23 @@ function clearPageCache() {
 	Swal.fire({
 		icon: "info",
 		title: "Information",
-		html: "Cache berhasil dibersihkan!",
+		html: "Cache has been successfully cleared!",
+	});
+}
+function duit() {
+	$(".format_duit").on("input", function () {
+		var value = $(this).val();
+		// Cek apakah minus ada di awal, jika ada simpan
+		var isNegative = value.indexOf("-") === 0;
+		// Hapus tanda minus sementara untuk pemrosesan
+		value = value.replace("-", "").replace(/\D/g, ""); // Hapus non-digit
+		// Format input dengan pemisah ribuan
+		var formattedValue = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1."); // Pemisah ribuan
+		// Tambahkan tanda minus jika sebelumnya ada minus di awal
+		if (isNegative) {
+			formattedValue = "-" + formattedValue;
+		}
+		// Set nilai terformat kembali ke input
+		$(this).val(formattedValue);
 	});
 }

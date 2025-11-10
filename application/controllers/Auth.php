@@ -26,17 +26,21 @@ class Auth extends CI_Controller
 			$this->session->set_flashdata('error', validation_errors());
 			return redirect(base_url('Auth'));
 		}
-		$username = trim($this->input->post('username', TRUE));
-		$password = $this->input->post('password', TRUE);
-		$user = $this->M_global->getWhere('users', ['username' => $username])->row_array();
+		$post_username = trim($this->input->post('username', TRUE));
+		$username      = str_replace(["'", '"'], '', $post_username);
+		$password      = $this->input->post('password', TRUE);
+		// $return = password_hash($password, PASSWORD_DEFAULT); //membuat pasword
+		//  var_dump($return); die; 
+		$user     = $this->M_global->getWhere('users', ['username' => $username])->row_array();
 		if (empty($user)) {
 			$this->session->set_flashdata('error', "Login failed! Username not found.");
 			return redirect(base_url('Auth'));
 		}
-		if (md5($password) !== $user['password_hash']) {
+		if (!password_verify($password, $user['password_hash'])) {
 			$this->session->set_flashdata('error', "Login failed! Incorrect password.");
 			return redirect(base_url('Auth'));
 		}
+
 		$roleData = $this->M_global->getWhere('roles', ['id' => $user['role_id']])->row_array();
 		if (empty($roleData)) {
 			$this->session->set_flashdata('error', "Role not found. Please contact the administrator.");
