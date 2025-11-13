@@ -79,7 +79,7 @@ class C_depos extends CI_Controller
 
 	function add()
 	{
-		$data['judul']     = "Form Tambah Depos";
+		$data['judul']     = "Add Branch";
 		$data['load_back'] = 'C_depos/add';
 		$data['load_grid'] = 'C_depos';
 		$this->load->view("v_depos/add_depos", $data);
@@ -177,7 +177,7 @@ class C_depos extends CI_Controller
 			}else{
 				$data['disabled'] = 'ON';
 			}
-			$data['judul'] = "Form Edit Depo";
+			$data['judul'] = "Edit Branch";
 			$data['load_grid'] = "C_depos";
 			$data['uuid'] = $uuid;
 			$data['data'] = $cekdata;

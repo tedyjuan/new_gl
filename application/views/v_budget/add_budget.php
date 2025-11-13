@@ -11,7 +11,7 @@
 					<h2 class="mb-0"><?= $judul ?></h2>
 					<div class="div ">
 						<button type="button" class="btn btn-sm btn-primary" onclick="loadform('<?= $load_grid ?>')"><i
-								class="bi bi-arrow-left-circle"></i> Kembali</button>
+								class="bi bi-arrow-left-circle"></i> Back</button>
 						<button type="button" class="btn btn-sm btn-outline-primary" onclick="loadform('<?= $load_back ?>')">
 							<i class="bi bi-arrow-clockwise"></i> Refresh</button>
 					</div>
@@ -78,7 +78,7 @@
 			<div class="col-md-12 d-flex justify-content-end">
 				<div></div>
 				<div>
-					<button type="button" id="btnsubmit" class="btn btn-sm btn-danger" disabled><i class="bi bi-send"></i>Simpan</button>
+					<button type="button" id="btnsubmit" class="btn btn-sm btn-danger" disabled><i class="bi bi-send"></i> Save</button>
 					<button type="reset" class="btn btn-sm btn-outline-danger"><i class="bi bi-eraser-fill"></i>
 						Reset</button>
 				</div>

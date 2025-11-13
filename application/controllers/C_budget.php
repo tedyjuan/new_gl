@@ -126,14 +126,10 @@ class C_budget extends CI_Controller
 			exit;
 		}
 		// Mulai transaksi
-		
-		$alias_dept = $data_department->alias;
-		$code_budgeting = $this->M_budget->getcode_budgeting($code_department, $alias_dept, $code_company);
-		$parts = explode('-', $code_budgeting);
-		$counter_budgeting = (int)$parts[count($parts) - 1];
+	
+		$code_budgeting = $this->M_global->generate_code("BGT");
 		$budgeting_header = [
 			'uuid'              => $this->uuid->v4(),
-			'counter_budgeting' => $counter_budgeting,
 			'code_budgeting'    => $code_budgeting,
 			'code_company'      => $code_company,
 			'code_department'   => $code_department,

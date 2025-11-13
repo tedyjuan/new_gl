@@ -129,7 +129,7 @@
 	});
 
 	$("#perusahaan").select2({
-		placeholder: 'Cari kode atau nama',
+		placeholder: 'search code or name',
 		allowClear: true,
 		dropdownParent: $('#modaltbg3'),
 		ajax: {

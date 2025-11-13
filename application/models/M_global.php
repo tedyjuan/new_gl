@@ -75,4 +75,79 @@ class M_global extends CI_Model
 	{
 		return $this->db->count_all($tabel);
 	}
+
+	public function generate_code($prefix)
+	{
+		$current_year = date('Y');
+
+		// Mulai transaksi biar aman (no bentrok antar user)
+		$this->db->trans_start();
+
+		// Lock row supaya tidak race condition
+		$query = $this->db->query("SELECT * FROM counters WHERE prefix = ? FOR UPDATE", [$prefix]);
+		$row = $query->row();
+
+		if (!$row) {
+			// Jika belum ada, buat baru
+			$this->db->insert('counters', [
+				'prefix' => $prefix,
+				'last_number' => 0,
+				'years' => $current_year
+			]);
+			$row = (object)[
+				'last_number' => 0,
+				'years' => $current_year
+			];
+		}
+
+		// Jika tahun berganti, reset otomatis
+		if ($row->years != $current_year) {
+			$row->years = $current_year;
+			$row->last_number = 0;
+		}
+
+		// Tambahkan counter
+		$new_number = $row->last_number + 1;
+
+		// Update counter ke DB
+		$this->db->where('prefix', $prefix);
+		$this->db->update('counters', [
+			'last_number' => $new_number,
+			'years' => $row->years,
+			'updated_at' => date('Y-m-d H:i:s')
+		]);
+
+		$this->db->trans_complete();
+
+		if ($this->db->trans_status() === FALSE) {
+			return false;
+		}
+
+		// Format kode akhir: PC2025-000001
+		return sprintf('%s%d-%06d', $prefix, $row->years, $new_number);
+	}
+	public function preview_code($prefix)
+	{
+		$current_year = date('Y');
+		$row = $this->db->get_where('counters', ['prefix' => $prefix])->row();
+		if ($row == null) {
+			// Jika belum ada, anggap baru (last_number = 0)
+			$next_number = 1;
+			$years = $current_year;
+		} else {
+			// Jika tahun beda, auto reset preview ke 1
+			if ($row->years != $current_year) {
+				$next_number = 1;
+				$years = $current_year;
+			} else {
+				$next_number = $row->last_number + 1;
+				$years = $row->years;
+			}
+		}
+
+		// Format: PC2025-000001
+		$next_code = sprintf('%s%d-%06d', $prefix, $years, $next_number);
+
+		return $next_code;
+	}
 }

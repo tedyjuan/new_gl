@@ -6,7 +6,7 @@
 				<h2 class="mb-0"><?= $judul; ?></h2>
 				<div class="div">
 					<button class="btn btn-sm btn-primary" onclick="loadform('<?= $load_add ?>')">
-						<i class="bi bi-plus-circle"></i> Tambah data
+						<i class="bi bi-plus-circle"></i> Add data
 					</button>
 					<a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
 						onclick="loadform('<?= $load_grid ?>')">
@@ -20,10 +20,10 @@
 		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%">
 			<thead>
 				<tr class="table-primary">
-					<th>Company</th>
-					<th>Kode Divisi</th>
-					<th>Nama Divisi</th>
-					<th>Nama Alias</th>
+					<th>No Voucher</th>
+					<th>Date</th>
+					<th>Proveniance</th>
+					<th>Flow</th>
 					<th style="width: 5%">Action</th>
 				</tr>
 			</thead>
@@ -58,6 +58,4 @@
 	$(document).ready(function() {
 		initTable();
 	});
-
-	
 </script>

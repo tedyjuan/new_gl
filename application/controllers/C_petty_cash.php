@@ -8,11 +8,12 @@ class C_petty_cash extends CI_Controller
 		is_logged_in();
 		$this->load->model('M_petty_cash');
 		$this->load->model('M_global');
+	
 	}
 	
 	function index()
 	{
-		$data['judul']      = 'List Data Divisi';
+		$data['judul']      = 'List Petty Cash';
 		$data['load_grid']  = 'C_petty_cash';
 		$data['load_add']   = 'C_petty_cash/add';
 		$data['url_delete'] = 'C_petty_cash/delete';
@@ -20,31 +21,30 @@ class C_petty_cash extends CI_Controller
 	}
 	public function griddata()
 	{
-		// $start          = $this->input->post('start') ?? 0;
-		// $length         = $this->input->post('length') ?? 10;
-		// $search_input   = $this->input->post('search');
-		// $search         = isset($search_input['value']) ? $search_input['value'] : '';
-		// $order_input    = $this->input->post('order');
-		// $order_col      = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
-		// $dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
-		// $columns        = ['code_company', 'company_name', 'code_petty_cash', 'name','action'];
-		// $order_by       = $columns[$order_col] ?? 'name';
-		$data           = [];
-		// $data           = $this->M_petty_cash->get_paginated_petty_cash($length, $start, $search, $order_by, $dir);
-		// $total_records  = $this->M_petty_cash->count_all_petty_cash();
-		// $total_filtered = $this->M_petty_cash->count_filtered_petty_cash($search);
-		$url_edit   = 'C_petty_cash/editform/';
-		$url_delete = 'C_petty_cash/hapusdata/';
+		$start          = $this->input->post('start') ?? 0;
+		$length         = $this->input->post('length') ?? 10;
+		$search_input   = $this->input->post('search');
+		$search         = isset($search_input['value']) ? $search_input['value'] : '';
+		$order_input    = $this->input->post('order');
+		$order_col      = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
+		$dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
+		$columns        = ['voucher_no', 'trans_date', 'proveniance', 'flow'];
+		$order_by       = $columns[$order_col] ?? 'name';
+		$data           = $this->M_petty_cash->get_paginated_petty_cash($length, $start, $search, $order_by, $dir);
+		$total_records  = $this->M_petty_cash->count_all_petty_cash();
+		$total_filtered = $this->M_petty_cash->count_filtered_petty_cash($search);
+		$url_detail   = 'C_petty_cash/detailform';
+		$url_delete = 'C_petty_cash/hapusdata';
 		$load_grid  = 'C_petty_cash/griddata';
 		$result = [];
 		foreach ($data as $row) {
 			$aksi = '<div class="dropdown">
-				<button type="button" class="btn btn-white btn-sm" id="aksi-dropdown-' . $row->code_petty_cash . '" data-bs-toggle="dropdown" aria-expanded="false">
+				<button type="button" class="btn btn-white btn-sm" id="aksi-dropdown-' . $row->voucher_no . '" data-bs-toggle="dropdown" aria-expanded="false">
 					More <i class="bi-chevron-down ms-1"></i>
 				</button>
-				<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->code_petty_cash . '">
-					<button class="dropdown-item editbtn" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
-						<i class="bi bi-pen"></i> Edit
+				<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->voucher_no . '">
+					<button class="dropdown-item editbtn" onclick="editform(\'' . $url_detail . '\', \'' . $row->uuid . '\')">
+						<i class="bi bi-eye"></i> Detail
 					</button>
 					<div class="dropdown-divider"></div>
 					<button class="dropdown-item text-danger" onclick="hapus(\'' . $row->uuid . '\', \'' . $url_delete . '\', \'' . $load_grid . '\')">
@@ -53,129 +53,142 @@ class C_petty_cash extends CI_Controller
 				</div>
 			</div>';
 			$result[] = [
-				$row->code_company . ' - ' . $row->company_name,
-				$row->code_petty_cash,
-				$row->name,
-				$row->alias,
+				$row->voucher_no,
+				$row->trans_date,
+				$row->proveniance,
+				$row->flow,
 				$aksi,
 			];
 		}
 		echo json_encode([
-			"draw" => intval($this->input->post('draw')) ?? 1,
-			"recordsTotal" => 0,
-			"recordsFiltered" => 0,
-			"data" => []
+			"draw"            => intval($this->input->post('draw')) ?? 1,
+			"recordsTotal"    => $total_records,
+			"recordsFiltered" => $total_filtered,
+			"data"            => $result
 		]);
-		// echo json_encode([
-		// 	"draw" => intval($this->input->post('draw')) ?? 1,
-		// 	"recordsTotal" => $total_records,
-		// 	"recordsFiltered" => $total_filtered,
-		// 	"data" => $result
-		// ]);
 	}
 	function add()
 	{
 		$data['judul']     = "Add Petty Cash";
 		$data['load_back'] = 'C_petty_cash/add';
 		$data['load_grid'] = 'C_petty_cash';
+		$data['counter'] = $this->M_global->preview_code('PC');
 		$this->load->view("v_petty_cash/add_petty_cash", $data);
 	}
 	public function simpandata()
 	{
-		// Validasi input
-		$this->form_validation->set_rules('perusahaan', 'Perusahaan', 'required');
-		$this->form_validation->set_rules('kode_petty_cash', 'Code Divisi', 'required');
-		$this->form_validation->set_rules('nama_petty_cash', 'Nama Divisi', 'required');
-		$this->form_validation->set_rules('alias', 'Nama Alias', 'required');
-		if ($this->form_validation->run() == FALSE) {
-			// Jika validasi gagal
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => validation_errors(),
-			];
-			echo json_encode($jsonmsg);
-			return;
-		}
-		// Ambil data dari request
-		$perusahaan  = $this->input->post('perusahaan');
-		$code_petty_cash = $this->input->post('kode_petty_cash');
-		$nama_petty_cash = $this->input->post('nama_petty_cash');
-		$alias       = $this->input->post('alias');
-		// Cek apakah kode Divisi sudah ada
-		$param_kode =[
-			'code_petty_cash'  => $code_petty_cash
+		// Ambil data JSON dari request body
+		$data        = json_decode($this->input->raw_input_stream, true);
+		$lineItems   = isset($data['lineItems']) ? $data['lineItems'] : [];
+		$bankDetails = isset($data['bankDetails']) ? $data['bankDetails'] : [];
+		$voucherNo = $this->M_global->generate_code("PC");
+		// ====== Siapkan data header ======
+		$header = [
+			'uuid'        => $this->uuid->v4(),
+			'voucher_no'  => $voucherNo,
+			'trans_date'  => $data['date'],
+			'proveniance' => $data['proveniance'],
+			'flow'        => $data['flow'],
+			'created_at'  => date('Y-m-d H:i:s'),
+			'user_at'     => $this->session->userdata('sess_username'),
 		];
-		$exisCode = $this->M_global->getWhere('divisions', $param_kode)->num_rows();
-		if ($exisCode != null) {
+
+		// ====== Siapkan data line items ======
+		$data_item = [];
+		if (!empty($lineItems)) {
+			foreach ($lineItems as $key => $item) {
+				$data_item[] = [
+					'uuid'        => $this->uuid->v4(),
+					'voucher_no'  => $voucherNo,
+					'account_no'  => $item['accountNo'],
+					'description' => $item['description'],
+					'debit'       => $item['debit'],
+					'credit'      => $item['credit'],
+					'item_number' => $key + 1,
+				];
+			}
+		}
+
+		// ====== Siapkan data bank details ======
+		$data_bank = [];
+		if (!empty($bankDetails)) {
+			foreach ($bankDetails as $keys => $item_bank) {
+				$data_bank[] = [
+					'uuid'        => $this->uuid->v4(),
+					'voucher_no'  => $voucherNo,
+					'account_no'  => $item_bank['accountNo'],
+					'bank_name'   => $item_bank['bankName'],
+					'trans_date'  => $item_bank['dueDate'],
+					'item_number' => $keys + 1,
+				];
+			}
+		}
+
+		// ==============================================================
+		// MULAI TRANSAKSI
+		// ==============================================================
+		$this->db->trans_begin();
+
+		try {
+			// Insert header
+			$this->db->insert('petty_cash_headers', $header);
+
+			// Insert batch line items jika ada
+			if (!empty($data_item)) {
+				$this->db->insert_batch('petty_cash_itemprices', $data_item);
+			}
+
+			// Insert batch bank details jika ada
+			if (!empty($data_bank)) {
+				$this->db->insert_batch('petty_cash_banks', $data_bank);
+			}
+
+			// ==============================================================
+			// CEK STATUS TRANSAKSI
+			// ==============================================================
+			if ($this->db->trans_status() === FALSE) {
+				// Rollback jika ada error
+				$this->db->trans_rollback();
+				$jsonmsg = [
+					'hasil' => 'false',
+					'pesan' => 'Gagal menyimpan data. Transaksi dibatalkan.' ,
+					];
+				echo json_encode($jsonmsg);
+			} else {
+				// Commit jika semua sukses
+				$this->db->trans_commit();
+				$jsonmsg = [
+					'hasil' => 'true',
+					'pesan' =>  'Data berhasil disimpan.',
+				];
+				echo json_encode($jsonmsg);
+			}
+		} catch (Exception $e) {
+			// Tangani error tak terduga
+			$this->db->trans_rollback();
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Kode Divisi sudah digunakan',
+				'pesan' => 'Terjadi kesalahan: ' . $e->getMessage(),
 			];
 			echo json_encode($jsonmsg);
-			exit;
 		}
-		$param_alias = ['alias'  => $alias];
-		$exisalias = $this->M_global->getWhere('divisions', $param_alias)->num_rows();
-		if ($exisalias != null) {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Alias sudah digunakan',
-			];
-			echo json_encode($jsonmsg);
-			exit;
-		}
-		$param_nama = [
-			'name'         => $nama_petty_cash,
-			'code_company' => $perusahaan,
-		];
-		$exisName = $this->M_global->getWhere('divisions', $param_nama)->num_rows();
-		if ($exisName != null) {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Kode Divisi sudah digunakan',
-			];
-			echo json_encode($jsonmsg);
-			exit;
-		} 
-		// Data untuk insert ke database
-		$datainsert = [
-			'uuid'         => $this->uuid->v4(),
-			'code_petty_cash'  => $code_petty_cash,
-			'code_company' => $perusahaan,
-			'name'         => $nama_petty_cash,
-			'alias'        => $alias,
-			'created_at'   => date('Y-m-d H:i:s'),
-			'updated_at'   => date('Y-m-d H:i:s')
-		];
-		// Melakukan insert data
-		$this->db->insert('divisions', $datainsert);
-		if ($this->db->affected_rows() > 0) {
-			$jsonmsg = [
-				'hasil' => 'true',
-				'pesan' => 'Data Berhasil Disimpan',
-			];
-		} else {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Gagal Menyimpan Data',
-			];
-		}
-		echo json_encode($jsonmsg);
+
 	}
-	public function editform($uuid)
+
+	public function detailform($uuid)
 	{
-		$data =  $this->M_petty_cash->get_where_petty_cash(['a.uuid' => $uuid])->row();
-		if ($data != null) {
-			$judul = "Form Edit Divisi";
-			$load_grid = "C_petty_cash";
-			$load_refresh = "C_petty_cash/editform/" . $uuid;
-			$this->load->view('v_petty_cash/edit_petty_cash', [
-				'judul' => $judul,
-				'load_grid' => $load_grid,
-				'load_refresh' => $load_refresh,
-				'data' => $data,
-				'uuid' => $uuid
-			]);
+		$cekdata =  $this->M_petty_cash->get_where_petty_cash(['a.uuid' => $uuid])->row();
+		if ($cekdata != null) {
+			$param                = ['voucher_no' => $cekdata->voucher_no];
+			$data['list_bank']    = $this->M_petty_cash->get_item_akun_bank($cekdata->voucher_no);
+			$data['list_item']    = $this->M_petty_cash->get_item_debitcredit($cekdata->voucher_no);
+			$data['amount']       = $this->M_petty_cash->get_amount($cekdata->voucher_no);
+			$data['judul']        = "Detail Petty Cash";
+			$data['load_grid']    = 'C_petty_cash';
+			$data['load_refresh'] = "C_petty_cash/detailform/" . $uuid;
+			$data['uuid']         = $uuid;
+			$data['data']         = $cekdata;
+			$this->load->view("v_petty_cash/detail_petty_cash", $data);
 		} else {
 			$this->load->view('error');
 		}

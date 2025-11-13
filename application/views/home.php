@@ -281,8 +281,7 @@
 				$message = $this->session->flashdata($type);
 				echo "Swal.fire({ icon: '$type', title: '" . addslashes($message) . "' });";
 			}
-		}
-		?>
+		} ?>
 
 		const BASE_URL = "<?= rtrim(base_url(), '/'); ?>";
 		(function() {

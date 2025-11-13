@@ -6,7 +6,7 @@
                 <h2 class="mb-0"><?= $judul ?></h2>
                 <div class="div ">
                     <button class="btn btn-sm btn-primary" onclick="loadform('<?= $load_grid ?>')"><i
-                            class="bi bi-arrow-left-circle"></i> Kembali</button>
+                            class="bi bi-arrow-left-circle"></i> Back</button>
                     <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
                         onclick="loadform('<?= $load_back ?>')">
                         <i class="bi bi-arrow-clockwise"></i> Refresh

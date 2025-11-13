@@ -17,7 +17,7 @@
 						</button>
 					<?php } ?>
 					<button type="button" class="btn btn-sm btn-primary" onclick="loadform('<?= $load_grid ?>')"><i
-							class="bi bi-arrow-left-circle"></i> Kembali
+							class="bi bi-arrow-left-circle"></i> Back
 					</button>
 					<button type="button" class="btn btn-sm btn-outline-primary" onclick="loadform('<?= $load_back ?>')">
 						<i class="bi bi-arrow-clockwise"></i> Refresh</button>
