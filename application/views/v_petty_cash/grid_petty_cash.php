@@ -24,6 +24,7 @@
 					<th>Date</th>
 					<th>Proveniance</th>
 					<th>Flow</th>
+					<th>Status</th>
 					<th style="width: 5%">Action</th>
 				</tr>
 			</thead>

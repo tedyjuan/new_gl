@@ -13,6 +13,7 @@
 	<link rel="stylesheet" href="<?= base_url('public/assets/vendor/select2/css/select2.min.css?v=1.0'); ?>">
 	<link rel="stylesheet" href="<?= base_url('public/assets/vendor/sweetalert/sweetalert.css?v=1.0'); ?>">
 	<link rel="stylesheet" href="<?= base_url('public/assets/vendor/flatpiker/flatpickr.min.css?v=1.0'); ?>">
+
 	<style>
 		.select2-container .select2-selection--single {
 			height: 3em !important;
@@ -272,7 +273,7 @@
 	<script src="<?= base_url('public/assets/vendor/parsleyjs/parsley.min.js?v=1.0'); ?>"></script>
 	<script src="<?= base_url('public/assets/vendor/jquery-mask/jquery.mask.min.js?v=1.0'); ?>"></script>
 	<script src="<?= base_url('public/assets/vendor/flatpiker/flatpickr_new.js'); ?>"></script>
-	
+
 	<script>
 		<?php
 		$flashTypes = ['success', 'info', 'error', 'warning'];

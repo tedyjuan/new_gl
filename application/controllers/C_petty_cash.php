@@ -28,7 +28,7 @@ class C_petty_cash extends CI_Controller
 		$order_input    = $this->input->post('order');
 		$order_col      = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
 		$dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
-		$columns        = ['voucher_no', 'trans_date', 'proveniance', 'flow'];
+		$columns        = ['voucher_no', 'trans_date', 'proveniance', 'flow', 'status'];
 		$order_by       = $columns[$order_col] ?? 'name';
 		$data           = $this->M_petty_cash->get_paginated_petty_cash($length, $start, $search, $order_by, $dir);
 		$total_records  = $this->M_petty_cash->count_all_petty_cash();
@@ -48,15 +48,22 @@ class C_petty_cash extends CI_Controller
 					</button>
 					<div class="dropdown-divider"></div>
 					<button class="dropdown-item text-danger" onclick="hapus(\'' . $row->uuid . '\', \'' . $url_delete . '\', \'' . $load_grid . '\')">
-						<i class="bi bi-trash3"></i> Delete
+						<i class="bi bi-trash3"></i> Void
 					</button>
 				</div>
 			</div>';
+			if ($row->status == 'APPLIED') {
+				$class = 'bg-success';
+			} else if ($row->status == 'VOID') {
+				$class = 'bg-danger';
+			}
+			$ststus = '<span class="badge ' . $class . '">' . strtolower($row->status) . '</span>';
 			$result[] = [
 				$row->voucher_no,
 				$row->trans_date,
 				$row->proveniance,
 				$row->flow,
+				$ststus,
 				$aksi,
 			];
 		}

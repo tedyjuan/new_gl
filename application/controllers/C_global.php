@@ -57,4 +57,34 @@ class C_global extends CI_Controller
 		// Mengembalikan data dalam format JSON
 		echo json_encode($segmentList);
 	}
+	public function getCostCenterByDepo()
+	{
+		$param = [
+			'code_company' => $this->input->post('company'),
+			'code_depo' => $this->input->post('branch'),
+		];
+		$segmentList = $this->M_global->getWhere('cost_centers', $param)->result();
+		echo json_encode($segmentList);
+	}
+	public function getAccountCenter()
+	{
+		$company     = $this->input->post('company');
+		$cost_center = $this->input->post('cost_center');
+		$this->db->select('
+			a.code_coa,
+			b.name,
+			a.code_company
+		');
+		$this->db->from('account_centers a');
+		$this->db->join(
+			'chart_of_accounts b',
+			'b.code_company = a.code_company AND b.account_number = a.code_coa',
+			'inner'
+		);
+		$this->db->where('a.code_cc', $cost_center);
+		$this->db->where('a.code_company', $company);
+
+		$query = $this->db->get()->result();
+		echo json_encode($query);
+	}
 }
