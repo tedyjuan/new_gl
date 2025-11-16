@@ -203,6 +203,15 @@ function clearPageCache() {
 function duit() {
 	$(".format_duit").on("input", function () {
 		var value = $(this).val();
+		var firstInput = value.charAt(0);
+		var second = value.charAt(1);
+		if (firstInput == 0) {
+			$(this).val("");
+			return;
+		}
+		if (firstInput === "-" && second === "0") {
+			value = "-" + value.substring(2);
+		}
 		// Cek apakah minus ada di awal, jika ada simpan
 		var isNegative = value.indexOf("-") === 0;
 		// Hapus tanda minus sementara untuk pemrosesan
@@ -216,4 +225,10 @@ function duit() {
 		// Set nilai terformat kembali ke input
 		$(this).val(formattedValue);
 	});
+}
+function formatRupiah(angka) {
+	if (angka == null || angka === "") return "0";
+	return new Intl.NumberFormat("id-ID", {
+		minimumFractionDigits: 0,
+	}).format(angka);
 }

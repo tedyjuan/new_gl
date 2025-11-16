@@ -7,47 +7,36 @@ class M_account_balance extends CI_Model
 		parent::__construct();
 		date_default_timezone_set('Asia/Jakarta');
 	}
-	public function get_paginated_divisi($limit, $start, $search, $order_by, $order_dir)
+	
+	public function get_coa($coa, $cc, $year, $branch)
 	{
-		$this->db->select('divisions.*, companies.name AS company_name');
-		$this->db->from('divisions');
-		$this->db->join('companies', 'companies.code_company = divisions.code_company', 'left');
-		// pencarian
-		if (!empty($search)) {
-			$this->db->group_start()
-				->like('divisions.name', $search)
-				->or_like('divisions.code_divisi', $search)
-				->or_like('companies.name', $search)
-				->group_end();
-		}
-
-		// limit & order
-		$this->db->limit($limit, $start);
-		$this->db->order_by($order_by, $order_dir);
-
+		$this->db->select('period, debit, credit');
+		$this->db->from('posting_balances a');
+		$this->db->where('a.year', $year);
+		$this->db->where('a.code_depo', $branch);
+		$this->db->where('a.code_cost_center', $cc);
+		$this->db->where('a.code_coa', $coa);
+		$this->db->order_by('a.period', 'ASC');
 		$query = $this->db->get();
 		return $query->result();
 	}
+	public function get_opening_ending_balance($coa, $cc, $year, $branch)
+	{
+		$this->db->select('
+        MIN(IFNULL(opening_balance, 0)) AS opening_balance,
+        (
+            MIN(IFNULL(opening_balance, 0)) 
+            + SUM(IFNULL(debit, 0)) 
+            - SUM(IFNULL(credit, 0))
+        ) AS ending_balance
+    	', false); // false = tidak di-escape
 
-	// Fungsi untuk menghitung total data
-	public function count_all_divisi()
-	{
-		return $this->db->count_all('divisions');
-	}
-	// Fungsi untuk menghitung jumlah data yang difilter berdasarkan pencarian
-	public function count_filtered_divisi($search)
-	{
-		$this->db->like('name', $search);
-		$this->db->or_like('code_divisi', $search); 
-		$query = $this->db->get('divisions');
-		return $query->num_rows();
-	}
-	public function get_where_divisi($param)
-	{
-		$this->db->select('a.*, b.name AS nm_company');
-		$this->db->from('divisions as a');
-		$this->db->join('companies as b', 'b.code_company = a.code_company', 'left');
-		$this->db->where($param);
-		return $this->db->get();
+		$this->db->from('posting_balances');
+		$this->db->where('year', $year);
+		$this->db->where('code_depo', $branch);
+		$this->db->where('code_cost_center', $cc);
+		$this->db->where('code_coa', $coa);
+
+		return $this->db->get()->row();
 	}
 }

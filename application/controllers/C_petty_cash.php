@@ -166,7 +166,7 @@ class C_petty_cash extends CI_Controller
 				$this->db->trans_commit();
 				$jsonmsg = [
 					'hasil' => 'true',
-					'pesan' =>  'Data berhasil disimpan.',
+					'pesan' =>  'Data saved successfully.',
 				];
 				echo json_encode($jsonmsg);
 			}

@@ -337,7 +337,7 @@ class C_budget extends CI_Controller
 		} else {
 			$jsonmsg = [
 				'hasil' => 'true',
-				'pesan' => 'Data berhasil disimpan.',
+				'pesan' => 'Data saved successfully.',
 			];
 			echo json_encode($jsonmsg);
 		}
