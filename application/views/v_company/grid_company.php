@@ -5,9 +5,9 @@
 			<div class="col-md-12 d-flex justify-content-between">
 				<h2 class="mb-0"><?= $judul; ?></h2>
 				<div class="div">
-					<button class="btn btn-sm btn-primary" onclick="loadform('<?= $load_add ?>')">
+					<!-- <button class="btn btn-sm btn-primary" onclick="loadform('<?= $load_add ?>')">
 						<i class="bi bi-plus-circle"></i> Add data
-					</button>
+					</button> -->
 					<a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
 						onclick="loadform('<?= $load_grid ?>')">
 						<i class="bi bi-arrow-clockwise"></i> Refresh

@@ -6,7 +6,7 @@
 				<h2 class="mb-0"><?= $judul; ?></h2>
 				<div class="div">
 					<button class="btn btn-sm btn-primary" onclick="loadform('<?= $load_add ?>')">
-						<i class="bi bi-plus-circle"></i> Add data
+						<i class="bi bi-plus-circle"></i> Add Journal
 					</button>
 					<a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
 						onclick="loadform('<?= $load_grid ?>')">

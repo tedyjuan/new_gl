@@ -119,6 +119,9 @@
 								</div>
 								<div class="dropdown-divider"></div>
 
+								<a class="dropdown-item" href="javascript:;">
+									<i class="bi bi-building"></i> <?= $this->session->userdata('sess_company'); ?> : <?= $this->session->userdata('sess_company_name'); ?>
+								</a>
 								<a class="dropdown-item" href="javascript:;" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
 									<i class="bi bi-box-arrow-right me-2"></i> Sign out
 								</a>

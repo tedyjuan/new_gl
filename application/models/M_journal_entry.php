@@ -50,4 +50,17 @@ class M_journal_entry extends CI_Model
 		$this->db->where($param);
 		return $this->db->get();
 	}
+
+
+	 public function get_cc($cari)
+	{
+		$sql = "SELECT 
+			a.code_cost_center,
+			a.group_team
+			FROM cost_centers a 
+			WHERE (a.code_cost_center LIKE ? OR a.group_team LIKE ?)
+			AND a.code_company = ?";
+		$param = ["%$cari%", "%$cari%", $this->session->userdata('sess_company')];
+		return $this->db->query($sql, $param)->result();
+	}
 }

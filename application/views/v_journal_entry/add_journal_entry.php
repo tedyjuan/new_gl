@@ -19,142 +19,408 @@
 		<form id="forms_add">
 			<div class="row">
 				<div class="col-6">
-					<div class="mb-3">
-						<label class="form-label" for="perusahaan">Perusahaan</label>
-						<select id="perusahaan" name="perusahaan" class="form-control-hover-light form-control select2"
-							data-parsley-required="true" data-parsley-errors-container=".err_name" required="">
-							<option value="">Pilih</option>
-						</select>
-						<span class="text-danger err_name"></span>
+					<div class="row mb-1">
+						<label for="branch" class="col-sm-4 col-form-label">Branch</label>
+						<div class="col-sm-8 input-group-sm">
+							<select onchange="active_account(this)" style="width:100%" id="branch" name="branch" class="form-control-hover-light form-control select2"
+								data-parsley-required="true" data-parsley-errors-container=".err_branch" required="">
+								<option value=""></option>
+								<?php foreach ($depos as $row) : ?>
+									<option value="<?= $row->code_depo ?>"><?= $row->code_depo ?> - <?= $row->name ?></option>
+								<?php endforeach; ?>
+							</select>
+							<span class="text-danger err_branch"></span>
+						</div>
+					</div>
+					<div class="row mb-1">
+						<label for="batch_type" class="col-sm-4 col-form-label">Batch Type</label>
+						<div class="col-sm-8 input-group-sm">
+							<select id="batch_type" name="batch_type" style="width:100%" class="form-control-hover-light form-control select2"
+								data-parsley-required="true" data-parsley-errors-container=".err_batch_type" required="">
+								<option value=""></option>
+								<?php foreach ($journal_sources as $row) : ?>
+									<option value="<?= $row->code_journal_source ?>"><?= $row->code_journal_source ?> - <?= $row->description ?></option>
+								<?php endforeach; ?>
+							</select>
+							<span class="text-danger err_batch_type"></span>
+						</div>
+					</div>
+					<div class="row mb-1">
+						<label for="batch_date" class="col-sm-4 col-form-label">Batch Date</label>
+						<div class="col-sm-8 input-group-sm">
+							<input type="text" id="batch_date" name="batch_date" data-parsley-required="true"
+								data-parsley-errors-container=".err_batch_date" required=""
+								class="form-control-hover-light form-control flatpicker" placeholder="input batch date">
+							<span class="text-danger err_batch_date"></span>
+						</div>
 					</div>
 				</div>
 				<div class="col-6">
-					<div class="mb-3">
-						<label class="form-label" for="kode_divisi">Kode Divisi</label>
-						<input type="text" id="kode_divisi" name="kode_divisi" data-parsley-required="true"
-							data-parsley-errors-container=".err_kodedivisi" required=""
-							class="form-control-hover-light form-control"
-							placeholder="input kode divisi max:2 karakter">
-						<span class="text-danger err_kodedivisi"></span>
+					<div class="row mb-1">
+						<label for="voucher_number" class="col-sm-4 col-form-label">Voucher Number</label>
+						<div class="col-sm-8 input-group-sm">
+							<input type="text" id="voucher_number" name="voucher_number" class="form-control-hover-light form-control"
+								placeholder="auto generate" readonly>
+						</div>
+					</div>
+					<div class="row mb-1">
+						<label for="batch_number" class="col-sm-4 col-form-label">Batch Number</label>
+						<div class="col-sm-8 input-group-sm">
+							<input type="text" id="batch_number" name="batch_number" class="form-control-hover-light form-control"
+								placeholder="auto generate" readonly>
+						</div>
+					</div>
+					<div class="row mb-1">
+						<label for="description" class="col-sm-4 col-form-label">Description</label>
+						<div class="col-sm-8 input-group-sm">
+							<input type="text" id="description" name="description" data-parsley-required="true"
+								data-parsley-errors-container=".err_description" required=""
+								class="form-control-hover-light form-control"
+								placeholder="input description">
+							<span class="text-danger err_description"></span>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-6">
-					<div class="mb-3">
-						<label class="form-label" for="nama_divisi">Nama Divisi</label>
-						<input type="text" id="nama_divisi" name="nama_divisi"
-							class="form-control-hover-light form-control kapital" data-parsley-required="true"
-							data-parsley-errors-container=".err_namadivisi" required=""
-							placeholder="input nama divisi">
-						<span class="text-danger err_namadivisi"></span>
-					</div>
-				</div>
-				<div class="col-6">
-					<div class="mb-3">
-						<label class="form-label" for="alias">Alias</label>
-						<input type="text" id="alias" name="alias" data-parsley-required="true"
-							data-parsley-errors-container=".err_sing_cc" required=""
-							class="form-control-hover-light form-control kapital"
-							placeholder="input singkatan cost center">
-						<span class="text-danger err_sing_cc"></span>
+			<!-- Line Items Table -->
+			<hr>
+			<h5 class="mb-3">Journal Items</h5>
+			<div class="mb-4 mb-md-5">
+				<div class="table-responsive  rounded overflow-hidden">
+					<table class="table mb-0" id="lineItemsTable">
+						<thead class="table-light">
+							<tr>
+								<th style="width: 20%;">Cost Center</th>
+								<th style="width: 25%;">No. Account</th>
+								<th>Description</th>
+								<th style="width: 15%;">Debit</th>
+								<th style="width: 15%;">Credit</th>
+								<th style="width: 5%;">Action</th>
+							</tr>
+						</thead>
+						<tbody id="lineItemsBody">
+							<tr data-index="0" class="align-middle">
+								<td class="p-2">
+									<select name="cost_center[]" data-parsley-required="true" data-parsley-errors-container=".err_cost_center0" required=""
+										class="form-control select_costcenter select2" style="width:100%">
+									</select>
+									<span class="text-danger err_cost_center0"></span>
+								</td>
+								<td class="p-2">
+									<select name="akun_debitcredit[]" data-parsley-required="true" data-parsley-errors-container=".err_akunline0" required=""
+										class="form-control select_account select2" style="width:100%">
+									</select>
+									<span class="text-danger err_akunline0"></span>
+								</td>
+								<td class="p-2">
+									<input type="text" class="form-control" placeholder="Description" name="description[]"
+										data-parsley-required="true" data-parsley-errors-container=".err_des0" required="">
+									<span class="text-danger err_des0"></span>
+								</td>
+								<td class="p-2">
+									<input type="text" onkeyup="debitcredit(this)" class="form-control currency debit-input" id="debit0" placeholder="0" name="debit[]"
+										data-parsley-errors-container=".err_debit0" required>
+									<span class="text-danger err_debit0"></span>
+								</td>
+								<td class="p-2">
+									<input type="text" onkeyup="debitcredit(this)" class="form-control currency credit-input" id="credit0" placeholder="0" name="credit[]"
+										data-parsley-errors-container=".err_kredit0" required>
+									<span class="text-danger err_kredit0"></span>
+								</td>
+								<td class="p-2 text-center"><i class="bi bi-trash text-danger fs-1 btnDeleteLineItem"></i></td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr class="table-light">
+								<td colspan="12" class="p-2 fw-bold">
+									<div class="row">
+										<div class="col-lg-4 col-md-4 col-12">
+											<label class="form-label" for="totalDebit">Debit Amount</label>
+											<input type="text" readonly id="totalDebit" name="totalDebit" class="form-control" placeholder="0">
+										</div>
+										<div class="col-lg-4 col-md-4 col-12">
+											<label class="form-label" for="totalCredit">Credit Amount</label>
+											<input type="text" readonly id="totalCredit" name="totalCredit" class="form-control" placeholder="0">
+										</div>
+										<div class="col-lg-4 col-md-4 col-12">
+											<label class="form-label" for="totalDifference">Difference</label>
+											<input type="text" readonly id="totalDifference" name="totalDifference" class="form-control" placeholder="0">
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+					<div class="mt-2 d-flex justify-content-end mb-4">
+						<button type="button" id="addLineItemBtn" class="btn btn-sm btn-success"> <i class="bi bi-plus-circle"></i> Add Line Item</button>
 					</div>
 				</div>
 			</div>
-			<div class="col-md-12 d-flex justify-content-end">
-				<div></div>
-				<div>
-					<button type="button" id="btnsubmit" class="btn btn-sm btn-primary"><i class="bi bi-send"></i>
-						Simpan</button>
-					<button type="reset" class="btn btn-sm btn-outline-danger"><i class="bi bi-eraser-fill"></i>
-						Reset</button>
-				</div>
+			<!-- Action Buttons -->
+			<div class="d-flex justify-content-end gap-2 pt-3">
+				<button type="button" id="btnsubmit" disabled class="btn btn-sm btn-danger"><i class="bi bi-send"></i> Save</button>
+				<button type="reset" id="resetBtn" class="btn btn-sm btn-outline-danger"><i class="bi bi-eraser-fill"></i> Reset</button>
 			</div>
 		</form>
 	</div>
 </div>
-<script>
-	$('#btnsubmit').click(function(e) {
-		e.preventDefault();
-		let form = $('#forms_add');
-		form.parsley().validate();
-		if (form.parsley().isValid()) {
-			$.ajax({
-				url: "<?= base_url('C_divisi/simpandata') ?>",
-				type: 'POST',
-				method: 'POST',
-				dataType: 'JSON',
-				data: form.serialize(),
-				beforeSend: function() {
-					showLoader();
-				},
-				success: function(data) {
-					if (data.hasil == 'true') {
-						swet_sukses(data.pesan);
-						loadform('<?= $load_grid ?>');
-					} else {
-						swet_gagal(data.pesan);
-						hideLoader();
-					}
-				},
-				error: function(xhr) {
-					
-					if (xhr.status === 422) {
-						let errors = xhr.responseJSON.errors;
-						$.each(errors, function(key, value) {
-							$(`.err_${key}`).html(value[0]);
-						});
-					} else {
-						swet_gagal("Terjadi kesalahan server (" + xhr.status + ")");
-					}
-				},
-			});
-		}
-	});
 
+<script>
 	$(document).ready(function() {
-		$('#kode_divisi').on('keyup', function() {
-			var currentValue = $(this).val();
-			currentValue = currentValue.replace(/[^0-9]/g, '');
-			if (currentValue === '') {
-				var incrementedValue = 0;
+		$(".flatpicker").flatpickr({
+			dateFormat: "Y-m-d"
+		});
+		$(".select2").select2({
+			placeholder: 'Search...',
+		});
+		$('.currency').mask("#.##0", {
+			reverse: true
+		});
+
+
+		$('#addLineItemBtn').on('click', function() {
+			var ll = Date.now();
+			var newRow = `
+				<tr data-index="${$('#lineItemsTable tbody tr').length}" class="align-middle">
+					<td class="p-2">
+						<select name="cost_center[]" data-parsley-required="true" 
+							data-parsley-errors-container=".err_cost_center${ll}"
+							class="form-control select_costcenter" style="width:100%">
+						</select>
+						<span class="text-danger err_cost_center${ll}"></span>
+					</td>
+					<td class="p-2">
+						<select name="akun_debitcredit[]" data-parsley-required="true" 
+							data-parsley-errors-container=".err_akunline${ll}"
+							class="form-control select_account" style="width:100%">
+						</select>
+						<span class="text-danger err_akunline${ll}"></span>
+					</td>
+					<td class="p-2">
+						<input type="text" class="form-control" placeholder="Description" name="description[]"
+							data-parsley-required="true" data-parsley-errors-container=".err_des${ll}" required>
+						<span class="text-danger err_des${ll}"></span>
+					</td>
+					<td class="p-2">
+						<input type="text" onkeyup="debitcredit(this)" class="form-control currency debit-input" 
+							id="debit${ll}" placeholder="0" name="debit[]"
+							data-parsley-errors-container=".err_debit${ll}" required>
+						<span class="text-danger err_debit${ll}"></span>
+					</td>
+					<td class="p-2">
+						<input type="text" onkeyup="debitcredit(this)" class="form-control currency credit-input" 
+							id="credit${ll}" placeholder="0" name="credit[]"
+							data-parsley-errors-container=".err_kredit${ll}" required>
+						<span class="text-danger err_kredit${ll}"></span>
+					</td>
+					<td class="p-2 text-center">
+						<i class="bi bi-trash text-danger fs-1 btnDeleteLineItem"></i>
+					</td>
+				</tr>
+			`;
+
+			// 🔥 KONVERSI KE ELEMENT JQUERY
+			let $row = $(newRow);
+
+			// 🔥 TAMBAH KE TABLE
+			$('#lineItemsBody').append($row);
+
+			updateTotal();
+
+			$('.currency').mask("#.##0", {
+				reverse: true
+			});
+
+			// 🔥 Select2 HANYA untuk row baru (tidak mengganggu row lama)
+			initSelectCostCenter($row.find('.select_costcenter'));
+			initSelectAccount($row.find('.select_account'));
+		});
+
+
+
+		// Update total debit and credit when line items change
+		$('#lineItemsBody').on('input', '.debit-input, .credit-input', function() {
+			updateTotal();
+		});
+
+		function updateTotal() {
+			var totalDebit = 0;
+			var totalCredit = 0;
+			$('.currency').mask("#.##0", {
+				reverse: true
+			});
+			// Menghitung total debit
+			$('.debit-input').each(function() {
+				var value = $(this).val();
+				value = value.replace(/\./g, ''); // Menghapus titik
+				totalDebit += parseFloat(value) || 0;
+			});
+
+			// Menghitung total kredit
+			$('.credit-input').each(function() {
+				var value = $(this).val();
+				value = value.replace(/\./g, ''); // Menghapus titik
+				totalCredit += parseFloat(value) || 0;
+			});
+
+			$('#totalDebit').val(totalDebit.toLocaleString('id-ID'));
+			$('#totalCredit').val(totalCredit.toLocaleString('id-ID'));
+			var difference = totalDebit - totalCredit;
+			$('#totalDifference').val(difference.toLocaleString('id-ID'));
+			if (difference == 0 && totalDebit == 0 && totalCredit == 0) {
+				$("#totalDifference").removeClass('is-invalid');
+				$("#totalDifference").removeClass('is-valid');
+				$("#btnsubmit").removeClass('btn-primary').addClass('btn-danger');
+				$("#btnsubmit").prop('disabled', true);
 			} else {
-				var incrementedValue = parseInt(currentValue);
+				if (difference === 0) {
+					$("#totalDifference").removeClass('is-invalid').addClass('is-valid');
+					$("#btnsubmit").removeClass('btn-danger').addClass('btn-primary');
+					$("#btnsubmit").prop('disabled', false);
+				} else {
+					$("#totalDifference").removeClass('is-valid').addClass('is-invalid');
+					$("#btnsubmit").removeClass('btn-primary').addClass('btn-danger');
+					$("#btnsubmit").prop('disabled', true);
+				}
 			}
-			var formattedValue = String(incrementedValue).padStart(2, '0');
-			if (formattedValue.length > 2) {
-				$(this).val(formattedValue.slice(0, 2));
+		}
+		// Delete bank row (with restriction for single row)
+		$('#bankDetailsBody').on('click', '.btnDeleteBank', function() {
+			// Check if there is only one row left
+			if ($('#bankDetailsTable tbody tr').length > 1) {
+				$(this).closest('tr').remove();
 			} else {
-				$(this).val(formattedValue).trigger("input");
+				swet_gagal("You cannot delete the last row.");
 			}
 		});
-		$('#kode_divisi').on('blur', function() {
-			var currentValue = $(this).val();
-			if (currentValue === '00') {
-				$(this).val('01');
+
+		// Delete line item row (with restriction for single row)
+		$('#lineItemsBody').on('click', '.btnDeleteLineItem', function() {
+			if ($('#lineItemsTable tbody tr').length > 1) {
+				$(this).closest('tr').remove();
+				updateTotal();
+			} else {
+				swet_gagal("You cannot delete the last row.");
 			}
 		});
-		$('.kapital').on('input', function(e) {
-			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
+		$('#btnsubmit').click(function(e) {
+			e.preventDefault();
+
+			// Ambil data dari form
+			let formData = {
+				voucherNo: $('#voucherNo').val(),
+				date: $('#date').val(),
+				lineItems: [], // Array untuk menyimpan data line items
+			};
+
+			// Mengambil data dari table line items
+			$('#lineItemsBody tr').each(function() {
+				var lineItem = {
+					cost_center: $(this).find('select[name="cost_center[]"]').val(),
+					accountNo: $(this).find('select[name="akun_debitcredit[]"]').val(),
+					description: $(this).find('input[name="description[]"]').val(),
+					debit: $(this).find('input[name="debit[]"]').val().replace(/\./g, ''), // Menghapus titik jika ada
+					credit: $(this).find('input[name="credit[]"]').val().replace(/\./g, '') // Menghapus titik jika ada
+				};
+				formData.lineItems.push(lineItem);
+			});
+			// Validasi form jika perlu
+			let form = $('#voucherForm');
+			form.parsley().validate();
+
+			// Jika form valid, lanjutkan ke proses AJAX
+			if (form.parsley().isValid()) {
+				$.ajax({
+					url: "<?= base_url('C_journal_entry/simpandata') ?>",
+					type: 'POST',
+					data: JSON.stringify(formData),
+					contentType: 'application/json',
+					dataType: 'JSON',
+					beforeSend: function() {
+						showLoader();
+					},
+					success: function(data) {
+						if (data.hasil == 'true') {
+							swet_sukses(data.pesan);
+							loadform('<?= $load_grid ?>');
+						} else {
+							swet_gagal(data.pesan);
+							hideLoader();
+						}
+					},
+					error: function(xhr) {
+						if (xhr.status === 422) {
+							let errors = xhr.responseJSON.errors;
+							$.each(errors, function(key, value) {
+								$(`.err_${key}`).html(value[0]);
+							});
+						} else {
+							swet_gagal("Terjadi kesalahan server (" + xhr.status + ")");
+						}
+					},
+				});
+			}
 		});
-		$("#perusahaan").select2({
-			placeholder: 'search code or name',
+	});
+</script>
+<script>
+	function debitcredit(element) {
+		var id = element.id;
+		var nilai = element.value;
+		let id_number = id.replace(/\D/g, "");
+		let id_text = id.replace(/[^a-zA-Z]/g, "");
+		if (id_text == 'debit') {
+			if (nilai == '' || nilai == 0) {
+				// console.log("debit tidak ada nilai → credit terbuka & wajib");
+				$("#credit" + id_number).prop('required', true).prop('readonly', false);
+			} else {
+				// debit ada nilai → credit terkunci & tidak wajib
+				// console.log("debit ada nilai → credit terkunci & tidak wajib");
+				$("#debit" + id_number).prop('required', true).prop('readonly', false);
+				$("#credit" + id_number).prop('required', false).prop('readonly', true);
+			}
+
+
+		} else if (id_text == 'credit') {
+			if (nilai == '' || nilai == 0) {
+				// console.log("credit tidak ada nilai → debit terbuka & wajib");
+				$("#debit" + id_number).prop('required', true).prop('readonly', false);
+
+			} else {
+				// console.log("credit ada nilai → debit terkunci & tidak wajib");
+				$("#debit" + id_number).prop('required', false).prop('readonly', true);
+				$("#credit" + id_number).prop('required', true).prop('readonly', false);
+			}
+		}
+
+
+		$("#debit" + id_number).parsley().validate();
+		$("#credit" + id_number).parsley().validate();
+	}
+
+	function select_account() {
+		var code_company = '<?= $code_company; ?>';
+		var branch = $('#branch').val();
+		$(".select_account").select2({
+			placeholder: 'Search account',
+			minimumInputLength: 1,
 			allowClear: true,
 			ajax: {
-				url: "<?= base_url('C_company/search') ?>",
+				url: "<?= base_url('C_petty_cash/Coa_all') ?>",
 				dataType: "json",
 				delay: 250,
 				data: function(params) {
 					return {
-						getCompany: params.term
+						cari: params.term,
+						code_company: code_company,
 					};
 				},
 				processResults: function(data) {
 					var results = [];
 					$.each(data, function(index, item) {
 						results.push({
-							id: item.code_company,
-							text: item.code_company + ' - ' + item.name,
+							id: item.account_number,
+							text: item.account_number + ' - ' + item.name,
 						});
 					});
 					return {
@@ -163,5 +429,56 @@
 				}
 			}
 		});
-	})
+	}
+
+	function select_costcenter() {
+		var code_company = '<?= $code_company; ?>';
+		var branch = $('#branch').val();
+		$(".select_costcenter").select2({
+			placeholder: 'Search account',
+			minimumInputLength: 1,
+			allowClear: true,
+			ajax: {
+				url: "<?= base_url('C_journal_entry/Costcenter_all') ?>",
+				dataType: "json",
+				delay: 250,
+				data: function(params) {
+					return {
+						cari: params.term,
+						code_company: code_company,
+					};
+				},
+				processResults: function(data) {
+					return {
+						results: data.map(function(item) {
+							return {
+								id: item.code_cost_center,
+								code: item.code_cost_center,
+								group: item.group_team,
+								text: item.code_cost_center + ' - ' + item.group_team,
+							};
+						})
+					};
+				}
+			},
+
+			// Tampilan saat dropdown (normal)
+			templateResult: function(data) {
+				if (data.loading) return data.text;
+				return data.code + " - " + data.group;
+			},
+
+			// Tampilan setelah dipilih
+			templateSelection: function(data) {
+				return data.code || data.text;
+			}
+		});
+	}
+
+	function active_account(element) {
+		$('.select_account').empty().append('<option value="">Search...</option>');
+		$('.select_costcenter').empty().append('<option value="">Search...</option>');
+		select_account();
+		select_costcenter();
+	}
 </script>
