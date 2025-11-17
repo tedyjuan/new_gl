@@ -151,9 +151,14 @@
 							</tr>
 						</tfoot>
 					</table>
-					<div class="mt-2 d-flex justify-content-end mb-4">
-						<button type="button" id="addLineItemBtn" class="btn btn-sm btn-success"> <i class="bi bi-plus-circle"></i> Add Line Item</button>
+					<div id="showbtnadd" class="add-btn-wrapper" style="display: none;">
+						<div class="mt-2 d-flex justify-content-end mb-4">
+							<button type="button" id="addLineItemBtn" class="btn btn-sm btn-success">
+								<i class="bi bi-plus-circle"></i> Add Line Item
+							</button>
+						</div>
 					</div>
+
 				</div>
 			</div>
 			<!-- Action Buttons -->
@@ -183,34 +188,30 @@
 			var newRow = `
 				<tr data-index="${$('#lineItemsTable tbody tr').length}" class="align-middle">
 					<td class="p-2">
-						<select name="cost_center[]" data-parsley-required="true" 
-							data-parsley-errors-container=".err_cost_center${ll}"
+						<select name="cost_center[]" data-parsley-required="true" data-parsley-errors-container=".err_cost_center${ll}" required=""
 							class="form-control select_costcenter" style="width:100%">
 						</select>
 						<span class="text-danger err_cost_center${ll}"></span>
 					</td>
 					<td class="p-2">
-						<select name="akun_debitcredit[]" data-parsley-required="true" 
-							data-parsley-errors-container=".err_akunline${ll}"
+						<select name="akun_debitcredit[]" data-parsley-required="true" data-parsley-errors-container=".err_akunline${ll}" required=""
 							class="form-control select_account" style="width:100%">
 						</select>
 						<span class="text-danger err_akunline${ll}"></span>
 					</td>
 					<td class="p-2">
 						<input type="text" class="form-control" placeholder="Description" name="description[]"
-							data-parsley-required="true" data-parsley-errors-container=".err_des${ll}" required>
+						data-parsley-required="true" data-parsley-errors-container=".err_des${ll}" required="">
 						<span class="text-danger err_des${ll}"></span>
 					</td>
 					<td class="p-2">
-						<input type="text" onkeyup="debitcredit(this)" class="form-control currency debit-input" 
-							id="debit${ll}" placeholder="0" name="debit[]"
-							data-parsley-errors-container=".err_debit${ll}" required>
+						<input type="text" onkeyup="debitcredit(this)" class="form-control currency debit-input" id="debit${ll}" placeholder="0" name="debit[]"
+						data-parsley-errors-container=".err_debit${ll}" required>
 						<span class="text-danger err_debit${ll}"></span>
 					</td>
 					<td class="p-2">
-						<input type="text" onkeyup="debitcredit(this)" class="form-control currency credit-input" 
-							id="credit${ll}" placeholder="0" name="credit[]"
-							data-parsley-errors-container=".err_kredit${ll}" required>
+						<input type="text" onkeyup="debitcredit(this)" class="form-control currency credit-input" id="credit${ll}" placeholder="0" name="credit[]"
+						data-parsley-errors-container=".err_kredit${ll}" required>
 						<span class="text-danger err_kredit${ll}"></span>
 					</td>
 					<td class="p-2 text-center">
@@ -218,24 +219,14 @@
 					</td>
 				</tr>
 			`;
-
-			// 🔥 KONVERSI KE ELEMENT JQUERY
-			let $row = $(newRow);
-
-			// 🔥 TAMBAH KE TABLE
-			$('#lineItemsBody').append($row);
-
+			$('#lineItemsBody').append(newRow);
 			updateTotal();
-
 			$('.currency').mask("#.##0", {
 				reverse: true
 			});
-
-			// 🔥 Select2 HANYA untuk row baru (tidak mengganggu row lama)
-			initSelectCostCenter($row.find('.select_costcenter'));
-			initSelectAccount($row.find('.select_account'));
+			select_costcenter();
+			select_account();
 		});
-
 
 
 		// Update total debit and credit when line items change
@@ -437,7 +428,6 @@
 		$(".select_costcenter").select2({
 			placeholder: 'Search account',
 			minimumInputLength: 1,
-			allowClear: true,
 			ajax: {
 				url: "<?= base_url('C_journal_entry/Costcenter_all') ?>",
 				dataType: "json",
@@ -480,5 +470,6 @@
 		$('.select_costcenter').empty().append('<option value="">Search...</option>');
 		select_account();
 		select_costcenter();
+		$("#showbtnadd").show();
 	}
 </script>
