@@ -20,10 +20,10 @@
 		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%">
 			<thead>
 				<tr class="table-primary">
-					<th>Company</th>
-					<th>Kode Divisi</th>
-					<th>Nama Divisi</th>
-					<th>Nama Alias</th>
+					<Th>Batch Date</Th>
+					<Th>Journal Type</Th>
+					<Th>Batch Number</Th>
+					<Th>Voucher Number</Th>
 					<th style="width: 5%">Action</th>
 				</tr>
 			</thead>
@@ -42,7 +42,7 @@
 			processing: true,
 			serverSide: true, // Mengaktifkan server-side processing
 			ajax: {
-				url: "<?= base_url('C_divisi/griddata'); ?>", // URL ke controller
+				url: "<?= base_url('C_journal_entry/griddata'); ?>", // URL ke controller
 				type: "POST", // Gunakan GET untuk request
 			},
 			columnDefs: [{
@@ -58,6 +58,4 @@
 	$(document).ready(function() {
 		initTable();
 	});
-
-	
 </script>

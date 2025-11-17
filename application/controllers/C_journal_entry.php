@@ -19,22 +19,23 @@ class C_journal_entry extends CI_Controller
 	}
 	public function griddata()
 	{
-		$start  = $this->input->post('start') ?? 0;
-		$length = $this->input->post('length') ?? 10;
-		$search_input = $this->input->post('search');
-		$search = isset($search_input['value']) ? $search_input['value'] : '';
-		$order_input = $this->input->post('order');
-		$order_col = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
-		$dir = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
-		$columns = ['code_company', 'company_name', 'code_journal_entry', 'name','action'];
-		$order_by = $columns[$order_col] ?? 'name';
-		$data = $this->M_journal_entry->get_paginated_journal_entry($length, $start, $search, $order_by, $dir);
-		$total_records = $this->M_journal_entry->count_all_journal_entry();
-		$total_filtered = $this->M_journal_entry->count_filtered_journal_entry($search);
+		// $start  = $this->input->post('start') ?? 0;
+		// $length = $this->input->post('length') ?? 10;
+		// $search_input = $this->input->post('search');
+		// $search = isset($search_input['value']) ? $search_input['value'] : '';
+		// $order_input = $this->input->post('order');
+		// $order_col = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
+		// $dir = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
+		// $columns = ['code_company', 'company_name', 'code_journal_entry', 'name','action'];
+		// $order_by = $columns[$order_col] ?? 'name';
+		// $data = $this->M_journal_entry->get_paginated_journal_entry($length, $start, $search, $order_by, $dir);
+		// $total_records = $this->M_journal_entry->count_all_journal_entry();
+		// $total_filtered = $this->M_journal_entry->count_filtered_journal_entry($search);
 		$url_edit   = 'C_journal_entry/editform/';
 		$url_delete = 'C_journal_entry/hapusdata/';
 		$load_grid  = 'C_journal_entry/griddata';
 		$result = [];
+		$data = [];
 		foreach ($data as $row) {
 			$aksi = '<div class="dropdown">
 				<button type="button" class="btn btn-white btn-sm" id="aksi-dropdown-' . $row->code_journal_entry . '" data-bs-toggle="dropdown" aria-expanded="false">
@@ -60,8 +61,10 @@ class C_journal_entry extends CI_Controller
 		}
 		echo json_encode([
 			"draw" => intval($this->input->post('draw')) ?? 1,
-			"recordsTotal" => $total_records,
-			"recordsFiltered" => $total_filtered,
+			"recordsTotal" => 0,
+			"recordsFiltered" => 0,
+			// "recordsTotal" => $total_records,
+			// "recordsFiltered" => $total_filtered,
 			"data" => $result
 		]);
 	}
