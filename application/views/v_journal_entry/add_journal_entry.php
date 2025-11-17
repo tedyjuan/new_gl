@@ -16,7 +16,7 @@
 		</div>
 	</div>
 	<div class="card-body">
-		<form id="forms_add">
+		<form id="forms_journal_entry" data-parsley-validate>
 			<div class="row">
 				<div class="col-6">
 					<div class="row mb-1">
@@ -35,7 +35,7 @@
 					<div class="row mb-1">
 						<label for="batch_type" class="col-sm-4 col-form-label">Batch Type</label>
 						<div class="col-sm-8 input-group-sm">
-							<select id="batch_type" name="batch_type" style="width:100%" class="form-control-hover-light form-control select2"
+							<select id="batch_type" onchange="generateBatchCode()" name="batch_type" style="width:100%" class="form-control-hover-light form-control select2"
 								data-parsley-required="true" data-parsley-errors-container=".err_batch_type" required="">
 								<option value=""></option>
 								<?php foreach ($journal_sources as $row) : ?>
@@ -48,21 +48,14 @@
 					<div class="row mb-1">
 						<label for="batch_date" class="col-sm-4 col-form-label">Batch Date</label>
 						<div class="col-sm-8 input-group-sm">
-							<input type="text" id="batch_date" name="batch_date" data-parsley-required="true"
-								data-parsley-errors-container=".err_batch_date" required=""
+							<input type="text" id="batch_date" name="batch_date" data-parsley-required="true" onchange="generateBatchCode()"
+								data-parsley-errors-container=" .err_batch_date" required=""
 								class="form-control-hover-light form-control flatpicker" placeholder="input batch date">
 							<span class="text-danger err_batch_date"></span>
 						</div>
 					</div>
 				</div>
 				<div class="col-6">
-					<div class="row mb-1">
-						<label for="voucher_number" class="col-sm-4 col-form-label">Voucher Number</label>
-						<div class="col-sm-8 input-group-sm">
-							<input type="text" id="voucher_number" name="voucher_number" class="form-control-hover-light form-control"
-								placeholder="auto generate" readonly>
-						</div>
-					</div>
 					<div class="row mb-1">
 						<label for="batch_number" class="col-sm-4 col-form-label">Batch Number</label>
 						<div class="col-sm-8 input-group-sm">
@@ -71,13 +64,20 @@
 						</div>
 					</div>
 					<div class="row mb-1">
-						<label for="description" class="col-sm-4 col-form-label">Description</label>
+						<label for="voucher_number" class="col-sm-4 col-form-label">Voucher Number</label>
 						<div class="col-sm-8 input-group-sm">
-							<input type="text" id="description" name="description" data-parsley-required="true"
-								data-parsley-errors-container=".err_description" required=""
-								class="form-control-hover-light form-control"
+							<input type="text" id="voucher_number" name="voucher_number" class="form-control-hover-light form-control"
+								placeholder="auto generate" readonly>
+						</div>
+					</div>
+					<div class="row mb-1">
+						<label for="des_header" class="col-sm-4 col-form-label">Description</label>
+						<div class="col-sm-8 input-group-sm">
+							<input type="text" id="des_header" name="des_header" data-parsley-required="true"
+								data-parsley-errors-container=".err_des_header" required=""
+								class="form-control-hover-light form-control kapital"
 								placeholder="input description">
-							<span class="text-danger err_description"></span>
+							<span class="text-danger err_des_header"></span>
 						</div>
 					</div>
 				</div>
@@ -172,6 +172,10 @@
 
 <script>
 	$(document).ready(function() {
+		$("#batch_type").prop("disabled", true);
+		$("#batch_date").prop("disabled", true);
+		$("#batch_type").prop("disabled", true).val("").trigger("change");
+		$("#batch_date").prop("disabled", true).val("");
 		$(".flatpicker").flatpickr({
 			dateFormat: "Y-m-d"
 		});
@@ -181,15 +185,16 @@
 		$('.currency').mask("#.##0", {
 			reverse: true
 		});
-
-
+		$('.kapital').on('input', function(e) {
+			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
+		});
 		$('#addLineItemBtn').on('click', function() {
 			var ll = Date.now();
 			var newRow = `
 				<tr data-index="${$('#lineItemsTable tbody tr').length}" class="align-middle">
 					<td class="p-2">
-						<select name="cost_center[]" data-parsley-required="true" data-parsley-errors-container=".err_cost_center${ll}" required=""
-							class="form-control select_costcenter" style="width:100%">
+						<select name="cost_center[]" id="id_cc${ll}" data-parsley-required="true" data-parsley-errors-container=".err_cost_center${ll}" required=""
+							class="form-control" style="width:100%">
 						</select>
 						<span class="text-danger err_cost_center${ll}"></span>
 					</td>
@@ -200,7 +205,7 @@
 						<span class="text-danger err_akunline${ll}"></span>
 					</td>
 					<td class="p-2">
-						<input type="text" class="form-control" placeholder="Description" name="description[]"
+						<input type="text" class="form-control kapital" placeholder="Description" name="description[]"
 						data-parsley-required="true" data-parsley-errors-container=".err_des${ll}" required="">
 						<span class="text-danger err_des${ll}"></span>
 					</td>
@@ -224,7 +229,8 @@
 			$('.currency').mask("#.##0", {
 				reverse: true
 			});
-			select_costcenter();
+			var id_element = 'id_cc' + ll;
+			select_costcenter_byid(id_element);
 			select_account();
 		});
 
@@ -275,16 +281,6 @@
 				}
 			}
 		}
-		// Delete bank row (with restriction for single row)
-		$('#bankDetailsBody').on('click', '.btnDeleteBank', function() {
-			// Check if there is only one row left
-			if ($('#bankDetailsTable tbody tr').length > 1) {
-				$(this).closest('tr').remove();
-			} else {
-				swet_gagal("You cannot delete the last row.");
-			}
-		});
-
 		// Delete line item row (with restriction for single row)
 		$('#lineItemsBody').on('click', '.btnDeleteLineItem', function() {
 			if ($('#lineItemsTable tbody tr').length > 1) {
@@ -299,9 +295,13 @@
 
 			// Ambil data dari form
 			let formData = {
-				voucherNo: $('#voucherNo').val(),
-				date: $('#date').val(),
-				lineItems: [], // Array untuk menyimpan data line items
+				branch: $('#branch').val(),
+				batch_type: $('#batch_type').val(),
+				batch_date: $('#batch_date').val(),
+				// batch_number: $('#batch_number').val(),
+				// voucher_number: $('#voucher_number').val(),
+				des_header: $('#des_header').val(),
+				lineItems: [],
 			};
 
 			// Mengambil data dari table line items
@@ -316,7 +316,7 @@
 				formData.lineItems.push(lineItem);
 			});
 			// Validasi form jika perlu
-			let form = $('#voucherForm');
+			let form = $('#forms_journal_entry');
 			form.parsley().validate();
 
 			// Jika form valid, lanjutkan ke proses AJAX
@@ -328,9 +328,11 @@
 					contentType: 'application/json',
 					dataType: 'JSON',
 					beforeSend: function() {
-						showLoader();
+						// showLoader();
 					},
 					success: function(data) {
+						console.log(data);
+						
 						if (data.hasil == 'true') {
 							swet_sukses(data.pesan);
 							loadform('<?= $load_grid ?>');
@@ -338,17 +340,7 @@
 							swet_gagal(data.pesan);
 							hideLoader();
 						}
-					},
-					error: function(xhr) {
-						if (xhr.status === 422) {
-							let errors = xhr.responseJSON.errors;
-							$.each(errors, function(key, value) {
-								$(`.err_${key}`).html(value[0]);
-							});
-						} else {
-							swet_gagal("Terjadi kesalahan server (" + xhr.status + ")");
-						}
-					},
+					}
 				});
 			}
 		});
@@ -422,6 +414,49 @@
 		});
 	}
 
+	function select_costcenter_byid(id_element) {
+		var code_company = '<?= $code_company; ?>';
+		var branch = $('#branch').val();
+		$("#" + id_element).select2({
+			placeholder: 'Search account',
+			minimumInputLength: 1,
+			ajax: {
+				url: "<?= base_url('C_journal_entry/Costcenter_all') ?>",
+				dataType: "json",
+				delay: 250,
+				data: function(params) {
+					return {
+						cari: params.term,
+						code_company: code_company,
+					};
+				},
+				processResults: function(data) {
+					return {
+						results: data.map(function(item) {
+							return {
+								id: item.code_cost_center,
+								code: item.code_cost_center,
+								group: item.group_team,
+								text: item.code_cost_center + ' - ' + item.group_team,
+							};
+						})
+					};
+				}
+			},
+
+			// Tampilan saat dropdown (normal)
+			templateResult: function(data) {
+				if (data.loading) return data.text;
+				return data.code + " - " + data.group;
+			},
+
+			// Tampilan setelah dipilih
+			templateSelection: function(data) {
+				return data.code || data.text;
+			}
+		});
+	}
+
 	function select_costcenter() {
 		var code_company = '<?= $code_company; ?>';
 		var branch = $('#branch').val();
@@ -471,5 +506,38 @@
 		select_account();
 		select_costcenter();
 		$("#showbtnadd").show();
+		$("#batch_type").prop("disabled", false);
+		$("#batch_date").prop("disabled", false);
+	}
+
+	function generateBatchCode() {
+		let batchType = $("#batch_type").val();
+		let batchDate = $("#batch_date").val();
+		let branch = $("#branch").val();
+
+		// jika salah satu masih kosong, jangan ambil
+		if (batchType === "" || batchDate === "") {
+			$("#batch_code").val(""); // opsional
+			return;
+		}
+		$.ajax({
+			url: "<?= base_url('C_journal_entry/generate_code_journal'); ?>",
+			type: "POST",
+			data: {
+				batch_type: batchType,
+				batch_date: batchDate,
+				branch: branch,
+			},
+			dataType: 'JSON',
+			beforeSend: function() {
+				showLoader();
+			},
+			success: function(res) {
+				hideLoader();
+				$("#batch_number").val(res);
+				$("#voucher_number").val(res);
+			},
+		});
+
 	}
 </script>

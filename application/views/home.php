@@ -4,8 +4,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<title>Dashboard | General Ladger</title>
-	<link rel="shortcut icon" href="<?= base_url('public/assets/favicon.ico?v=1.0'); ?>">
+	<title>General Ladger</title>
+	<link rel="shortcut icon" href="<?= base_url('public/assets/img/logo/icon-star.svg'); ?>">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="<?= base_url('public/assets/css/vendor.min.css?v=1.0'); ?>">
 	<link rel="stylesheet" href="<?= base_url('public/assets/css/theme.minc619.css?v=1.0'); ?>">
@@ -242,7 +242,7 @@
 		<div class="footer" id="footer_default">
 			<div class="row justify-content-between align-items-center">
 				<div class="col">
-					<strong>ASIATRI</strong> &copy; <?= date('Y'); ?>
+					<strong>BINTANGMP</strong> &copy; <?= date('Y'); ?>
 				</div>
 				<div class="col-auto">
 					<div class="d-flex justify-content-end">

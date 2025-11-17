@@ -59,7 +59,7 @@
 						<span class="text-muted">
 							<div class="row justify-content-center align-items-center">
 								<div class="col">
-									<strong>ASIATRI</strong> &copy; <?= date('Y'); ?> | General Ledger System
+									<strong>BINTANGMP </strong> &copy; <?= date('Y'); ?> | General Ledger System
 								</div>
 
 								<!-- End Col -->

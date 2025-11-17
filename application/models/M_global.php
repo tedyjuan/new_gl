@@ -150,4 +150,5 @@ class M_global extends CI_Model
 
 		return $next_code;
 	}
+	
 }
