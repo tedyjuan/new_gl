@@ -47,10 +47,23 @@ class M_journal_entry extends CI_Model
 	}
 	public function get_where_journal_entry($param)
 	{
-
-		$this->db->select('a.*, b.description AS journal_source_name');
+		$this->db->select('a.*,
+						 b.description AS journal_source_name,
+						c.name AS branch_name');
 		$this->db->from('journals as a');
 		$this->db->join('journal_sources as b', 'b.code_journal_source = a.code_journal_source', 'left');
+		$this->db->join('depos as c', 'c.code_depo = a.code_depo', 'left');
+		$this->db->where($param);
+		return $this->db->get();
+	}
+	public function get_journal_entry_item($param)
+	{
+		$this->db->select('a.*,
+						b.group_team,
+						c.name AS account_name');
+		$this->db->from('journal_items as a');
+		$this->db->join('cost_centers as b', 'b.code_cost_center = a.code_cost_center', 'left');
+		$this->db->join('chart_of_accounts as c', 'c.account_number = a.code_coa', 'left');
 		$this->db->where($param);
 		return $this->db->get();
 	}

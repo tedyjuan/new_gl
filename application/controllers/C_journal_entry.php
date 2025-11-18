@@ -33,8 +33,9 @@ class C_journal_entry extends CI_Controller
 		$data           = $this->M_journal_entry->get_paginated_journal_entry($length, $start, $search, $order_by, $dir);
 		$total_records  = $this->M_journal_entry->count_all_journal_entry();
 		$total_filtered = $this->M_journal_entry->count_filtered_journal_entry($search);
-		$url_edit       = 'C_journal_entry/editform/';
-		$url_delete     = 'C_journal_entry/hapusdata/';
+		$url_detail       = 'C_journal_entry/detailform';
+		$url_edit       = 'C_journal_entry/editform';
+		$url_delete     = 'C_journal_entry/hapusdata';
 		$load_grid      = 'C_journal_entry/griddata';
 		$result = [];
 		foreach ($data as $row) {
@@ -43,6 +44,9 @@ class C_journal_entry extends CI_Controller
 					More <i class="bi-chevron-down ms-1"></i>
 				</button>
 				<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->batch_number . '">
+					<button class="dropdown-item editbtn" onclick="editform(\'' . $url_detail . '\', \'' . $row->uuid . '\')">
+						<i class="bi bi-eye"></i> Detail
+					</button>
 					<button class="dropdown-item editbtn" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
 						<i class="bi bi-pen"></i> Edit
 					</button>
@@ -67,6 +71,7 @@ class C_journal_entry extends CI_Controller
 			"data" => $result
 		]);
 	}
+
 	function add()
 	{
 		$data['judul']     = "Add Journal Entry";
@@ -206,5 +211,82 @@ class C_journal_entry extends CI_Controller
 			'hasil' => 'true',
 			'pesan' => 'Successfully saved data',
 		]);
+	}
+	public function hapusdata()
+	{
+		$uuid = $this->input->post('uuid');
+
+		if (empty($uuid)) {
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'UUID cannot be empty'
+			]);
+			return;
+		}
+
+		$param_kode = ['a.uuid' => $uuid];
+		$journal_entry = $this->M_journal_entry->get_where_journal_entry($param_kode)->row();
+
+		if (!$journal_entry) {
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Data not found'
+			]);
+			return;
+		}
+
+		if ($journal_entry->status != 'unposted') {
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Cannot delete data because status is not unposted.'
+			]);
+			return;
+		}
+
+		$batch = $journal_entry->batch_number;
+
+		// START TRANSACTION
+		$this->db->trans_begin();
+
+		// 1. Delete journal items (child first)
+		$this->db->where('batch_number', $batch)->delete('journal_items');
+
+		// 2. Delete journal header
+		$this->db->where('batch_number', $batch)->delete('journals');
+
+		// Check if transaction ok
+		if ($this->db->trans_status() === FALSE) {
+			$this->db->trans_rollback();
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Data deletion failed'
+			]);
+			return;
+		}
+
+		// Commit
+		$this->db->trans_commit();
+		echo json_encode([
+			'hasil' => 'true',
+			'pesan' => 'Data successfully deleted'
+		]);
+	}
+
+	public function detailform($uuid)
+	{
+		$cekdata =  $this->M_journal_entry->get_where_journal_entry(['a.uuid' => $uuid])->row();
+		if ($cekdata != null) {
+			$param = ['batch_number' => $cekdata->batch_number];
+			$data['head'] = $this->M_journal_entry->get_where_journal_entry($param)->row();
+			$data['journal_item']   = $this->M_journal_entry->get_journal_entry_item($param)->result();
+			$data['judul']          = "Detail Journal Entry";
+			$data['load_grid']      = 'C_journal_entry';
+			$data['load_refresh']   = "C_journal_entry/detailform/" . $uuid;
+			$data['uuid']           = $uuid;
+			$data['data']           = $cekdata;
+			$this->load->view("v_journal_entry/edit_journal_entry", $data);
+		} else {
+			$this->load->view('error');
+		}
 	}
 }

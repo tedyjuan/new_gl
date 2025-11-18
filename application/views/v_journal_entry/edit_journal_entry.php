@@ -16,118 +16,117 @@
 		</div>
 	</div>
 	<div class="card-body">
-		<form id="forms_add">
+		<form id="forms_journal_entry" data-parsley-validate>
 			<div class="row">
 				<div class="col-6">
-					<div class="mb-3">
-						<label class="form-label" for="perusahaan">Perusahaan</label>
-						<select id="perusahaan" name="perusahaan" class="bg-soft-dark form-control select2"
-							disabled data-parsley-required="true" data-parsley-errors-container=".err_name" required="">
-							<option value="">Pilih</option>
-						</select>
-						<span class="text-danger err_name"></span>
+					<div class="row mb-1">
+						<label for="branch" class="col-sm-4 col-form-label">Branch</label>
+						<div class="col-sm-8 input-group-sm">
+							<input type="text" id="branch" value="<?= $head->code_depo . ' - ' . $head->branch_name ?>" class=" form-control" readonly>
+						</div>
+					</div>
+					<div class="row mb-1">
+						<label for="batch_type" class="col-sm-4 col-form-label">Batch Type</label>
+						<div class="col-sm-8 input-group-sm">
+							<input type="text" id="batch_type" value="<?= $head->code_journal_source . ' - ' . $head->journal_source_name ?>" class=" form-control" readonly>
+						</div>
+					</div>
+					<div class="row mb-1">
+						<label for="batch_date" class="col-sm-4 col-form-label">Batch Date</label>
+						<div class="col-sm-8 input-group-sm">
+							<input type="text" id="batch_date" value="<?= $head->transaction_date ?>" class=" form-control" readonly>
+						</div>
 					</div>
 				</div>
 				<div class="col-6">
-					<div class="mb-3">
-						<label class="form-label" for="kode_divisi">Kode Divisi</label>
-						<input type="text" id="kode_divisi" name="kode_divisi" data-parsley-required="true"
-							data-parsley-errors-container=".err_kodedivisi" required=""
-							value="<?= $data->code_divisi ?>" class="form-control-hover-light form-control"
-							placeholder="input kode divisi max:2 karakter">
-						<span class="text-danger err_kodedivisi"></span>
+					<div class="row mb-1">
+						<label for="batch_number" class="col-sm-4 col-form-label">Batch Number</label>
+						<div class="col-sm-8 input-group-sm">
+							<input type="text" id="batch_number" value="<?= $head->batch_number ?>" class=" form-control" readonly>
+						</div>
+					</div>
+					<div class="row mb-1">
+						<label for="voucher_number" class="col-sm-4 col-form-label">Voucher Number</label>
+						<div class="col-sm-8 input-group-sm">
+							<input type="text" id="voucher_number" value="<?= $head->voucher_number ?>" class=" form-control" readonly>
+						</div>
+					</div>
+					<div class="row mb-1">
+						<label for="des_header" class="col-sm-4 col-form-label">Description</label>
+						<div class="col-sm-8 input-group-sm">
+							<input type="text" id="des_header" value="<?= $head->description ?>" class=" form-control" readonly>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-6">
-					<div class="mb-3">
-						<label class="form-label" for="nama_divisi">Nama Divisi</label>
-						<input type="text" id="nama_divisi" name="nama_divisi" value="<?= $data->name ?>"
-							class="form-control-hover-light form-control kapital" data-parsley-required="true"
-							data-parsley-errors-container=".err_namadivisi" required=""
-							placeholder="input nama divisi">
-						<span class="text-danger err_namadivisi"></span>
-					</div>
-				</div>
-				<div class="col-6">
-					<div class="mb-3">
-						<label class="form-label" for="alias">Alias</label>
-						<input type="text" id="alias" name="alias" data-parsley-required="true"
-							data-parsley-errors-container=".err_sing_cc" required="" value="<?= $data->alias ?>"
-							class="form-control-hover-light form-control kapital"
-							placeholder="input singkatan cost center">
-						<span class="text-danger err_sing_cc"></span>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-12 d-flex justify-content-end">
-				<div></div>
-				<div>
-					<button type="button" id="btnsubmit" class="btn btn-sm btn-primary"><i class="bi bi-send"></i>
-						Simpan</button>
-					<button type="reset" class="btn btn-sm btn-outline-danger"><i class="bi bi-eraser-fill"></i>
-						Reset</button>
+			<!-- Line Items Table -->
+			<hr>
+			<h5 class="mb-3">Journal Items</h5>
+			<div class="mb-4 mb-md-5">
+				<div class="table-responsive  rounded overflow-hidden">
+					<table class="table mb-0" id="lineItemsTable">
+						<thead class="table-light">
+							<tr>
+								<th>Cost Center</th>
+								<th>No. Account</th>
+								<th>Description</th>
+								<th style="width: 15%;">Debit</th>
+								<th style="width: 15%;">Credit</th>
+							</tr>
+						</thead>
+						<tbody id="lineItemsBody">
+							<?php foreach ($journal_item as $row) : ?>
+								<tr class="align-middle">
+									<td class="p-2">
+										<input type="text" title="<?= $row->code_cost_center . ' - ' . $row->group_team ?>" 
+										value="<?= $row->code_cost_center . ' - ' . $row->group_team ?>" class="form-control" name="description[]" readonly>
+									</td>
+									<td class="p-2">
+										<input type="text" title="<?= $row->code_coa . ' - ' . $row->account_name ?>" 
+										value="<?= $row->code_coa . ' - ' . $row->account_name ?>" class="form-control" name="description[]" readonly>
+									</td>
+									<td class="p-2">
+										<input type="text" title="<?= $row->description; ?>" value="<?= $row->description; ?>" class="form-control" name="description[]" readonly>
+									</td>
+									<td class="p-2">
+										<input type="text" value="<?= $row->debit; ?>" class="form-control format_number" name="debit[]" readonly>
+									</td>
+									<td class="p-2">
+										<input type="text" value="<?= $row->credit; ?>" class="form-control format_number" name="credit[]" readonly>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+						<tfoot>
+							<tr class="table-light">
+								<td colspan="12" class="p-2 fw-bold">
+									<div class="row">
+										<div class="col-lg-4 col-md-4 col-12">
+											<label class="form-label" for="totalDebit">Debit Amount</label>
+											<input type="text" readonly id="totalDebit" value="<?= $head->total_debit ?>" class="form-control format_number">
+										</div>
+										<div class="col-lg-4 col-md-4 col-12">
+											<label class="form-label" for="totalCredit">Credit Amount</label>
+											<input type="text" readonly id="totalCredit" value="<?= $head->total_credit ?>" class="form-control format_number">
+										</div>
+										<div class="col-lg-4 col-md-4 col-12">
+											<label class="form-label" for="totalDifference">Difference</label>
+											<input type="text" readonly id="totalDifference" value="<?= $head->difference ?>" class="form-control format_number">
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
 				</div>
 			</div>
 		</form>
 	</div>
 </div>
 <script>
-	$('#btnsubmit').click(function(e) {
-		e.preventDefault();
-		let form = $('#forms_add');
-		var uuid = "<?= ($uuid) ?>";
-		form.parsley().validate();
-		if (form.parsley().isValid()) {
-			$.ajax({
-				url: "<?= base_url('C_divisi/update') ?>",
-				type: 'POST',
-				method: 'POST',
-				dataType: 'JSON',
-				data: form.serialize() + '&uuid=' + uuid,
-				beforeSend: function() {
-					showLoader();
-				},
-				success: function(data) {
-					if (data.hasil == 'true') {
-						swet_sukses(data.pesan);
-						loadform('<?= $load_grid ?>');
-					} else {
-						swet_gagal(data.pesan);
-						hideLoader();
-					}
-				},
-			});
-		}
-	});
-
 	$(document).ready(function() {
-		$("#perusahaan").empty().append(`<option class='form-control' value="<?= $data->code_company ?>"><?= $data->code_company ?> - <?= $data->nm_company ?></option>`).val("<?= $data->code_company ?>").trigger('change');
-		$('#kode_divisi').on('keyup', function() {
-			var currentValue = $(this).val();
-			currentValue = currentValue.replace(/[^0-9]/g, '');
-			if (currentValue === '') {
-				var incrementedValue = 0;
-			} else {
-				var incrementedValue = parseInt(currentValue);
-			}
-			var formattedValue = String(incrementedValue).padStart(2, '0');
-			if (formattedValue.length > 2) {
-				$(this).val(formattedValue.slice(0, 2));
-			} else {
-				$(this).val(formattedValue).trigger("input");
-			}
+		$('.format_number').mask("#.##0", {
+			reverse: true
 		});
-		$('#kode_divisi').on('blur', function() {
-			var currentValue = $(this).val();
-			if (currentValue === '00') {
-				$(this).val('01');
-			}
-		});
-		$('.kapital').on('input', function(e) {
-			this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
-		});
-
-	})
+	});
 </script>

@@ -509,6 +509,7 @@
 		$("#showbtnadd").show();
 		$("#batch_type").prop("disabled", false);
 		$("#batch_date").prop("disabled", false);
+		generateBatchCode();
 	}
 
 	function generateBatchCode() {
