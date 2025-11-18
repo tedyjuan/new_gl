@@ -9,6 +9,7 @@ class C_journal_entry extends CI_Controller
 		$this->load->model('M_journal_entry');
 		$this->load->model('M_global');
 		$this->name = $this->session->userdata('sess_name');
+		$this->company = $this->session->userdata('sess_company');
 	}
 	function index()
 	{
@@ -26,8 +27,8 @@ class C_journal_entry extends CI_Controller
 		$search         = isset($search_input['value']) ? $search_input['value'] : '';
 		$order_input    = $this->input->post('order');
 		$order_col      = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
-		$dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'asc';
-		$columns        = ['transaction_date','code_journal_source','journal_source_name', 'batch_number', 'voucher_number','action'];
+		$dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'desc';
+		$columns        = ['transaction_date','code_journal_source', 'batch_number', 'voucher_number', 'action'];
 		$order_by       = $columns[$order_col] ?? 'name';
 		$data           = $this->M_journal_entry->get_paginated_journal_entry($length, $start, $search, $order_by, $dir);
 		$total_records  = $this->M_journal_entry->count_all_journal_entry();
@@ -114,9 +115,54 @@ class C_journal_entry extends CI_Controller
 		$parts       = explode("/", $counter);
 		$seq         = intval($parts[2]);
 
-		// header data
+		// =================================
+		// BUILD JOURNAL ITEMS (DETAIL)
+		// =================================
+		$journal_items = [];
+		$total_debit   = 0;
+		$total_credit  = 0;
+
+		foreach ($line_items as $key => $item) {
+
+			// amankan debit
+			$debit  = isset($item['debit']) && $item['debit'] !== ''
+				? (int) str_replace('.', '', $item['debit'])
+				: 0;
+
+			// amankan credit
+			$credit = isset($item['credit']) && $item['credit'] !== ''
+				? (int) str_replace('.', '', $item['credit'])
+				: 0;
+
+			// akumulasi total debit/credit
+			$total_debit  += $debit;
+			$total_credit += $credit;
+
+			// push item
+			$journal_items[] = [
+				'uuid'             => $this->uuid->v4(),
+				'sequence_number'  => $key + 1,
+				'batch_number'     => $counter,
+				'code_cost_center' => $item['cost_center'],
+				'code_coa'         => $item['accountNo'],
+				'description'      => $item['description'],
+				'debit'            => $debit,
+				'credit'           => $credit,
+				'transaction_date' => $batch_date,
+				'created_at'       => date('Y-m-d H:i:s'),
+				'updated_at'       => date('Y-m-d H:i:s'),
+			];
+		}
+
+		// hitung difference
+		$difference = $total_debit - $total_credit;
+
+		// =================================
+		// BUILD JOURNAL HEADER
+		// =================================
 		$journal_header = [
 			'uuid'                => $this->uuid->v4(),
+			'sequence'            => $seq,
 			'batch_number'        => $counter,
 			'voucher_number'      => $counter,
 			'code_depo'           => $branch,
@@ -126,58 +172,39 @@ class C_journal_entry extends CI_Controller
 			'year'                => $current_year,
 			'period'              => $month_year,
 			'transaction_date'    => $batch_date,
-			'total'               => 0,
-			'sequence'            => $seq,
+			'total_credit'        => $total_credit,
+			'total_debit'         => $total_debit,
+			'difference'          => $difference,
 			'user_create'         => $this->name,
+			'code_company'        => $this->company,
+			'created_at'          => date('Y-m-d H:i:s'),
+			'updated_at'          => date('Y-m-d H:i:s'),
 		];
-
-		// detail data
-		$journal_items = [];
-		foreach ($line_items as $key => $item) {
-			$journal_items[] = [
-				'uuid'             => $this->uuid->v4(),
-				'sequence_number'  => $key + 1,
-				'batch_number'     => $counter,
-				'code_cost_center' => $item['cost_center'],
-				'code_coa'         => $item['accountNo'],
-				'description'      => $item['description'],
-				'debit'            => str_replace('.', '', $item['debit']),
-				'credit'           => str_replace('.', '', $item['credit']),
-				'dpp'              => 0,
-				'ppn'              => 0,
-				'total'            => 0,
-				'transaction_date' => $batch_date,
-			];
-		}
 
 		// =============================================
 		// =============== BEGIN TRANSACTION ============
 		// =============================================
-
 		$this->db->trans_begin();
+
 		// insert header
 		$this->db->insert('journals', $journal_header);
 
 		// insert detail (batch)
 		$this->db->insert_batch('journal_items', $journal_items);
 
-		// cek status
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
-			$jsonmsg = [
+			echo json_encode([
 				'hasil' => 'false',
 				'pesan' => 'saving data failed',
-			];
-			echo json_encode($jsonmsg);
+			]);
 			return;
 		}
 
-		// commit
 		$this->db->trans_commit();
-		$jsonmsg = [
+		echo json_encode([
 			'hasil' => 'true',
 			'pesan' => 'Successfully saved data',
-		];
-		echo json_encode($jsonmsg);
+		]);
 	}
 }

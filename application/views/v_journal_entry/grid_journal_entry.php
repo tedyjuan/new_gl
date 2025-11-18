@@ -40,18 +40,17 @@
 
 		window.mytableDT = $('#mytable').DataTable({
 			processing: true,
-			serverSide: true, // Mengaktifkan server-side processing
+			serverSide: true,
 			ajax: {
-				url: "<?= base_url('C_journal_entry/griddata'); ?>", // URL ke controller
-				type: "POST", // Gunakan GET untuk request
+				url: "<?= base_url('C_journal_entry/griddata'); ?>", 
+				type: "POST",
 			},
 			columnDefs: [{
 				orderable: false,
 				targets: -1 // Menonaktifkan sorting pada kolom terakhir (aksi)
 			}],
-			// Opsi tambahan yang membantu saat SPA:
-			destroy: true, // Auto-destroy jika di-init di elemen yang sama
-			retrieve: true // Jika sudah ada instance, gunakan instance tersebut
+			destroy: true,
+			retrieve: true
 		});
 	}
 

@@ -113,7 +113,7 @@
 									<span class="text-danger err_akunline0"></span>
 								</td>
 								<td class="p-2">
-									<input type="text" class="form-control" placeholder="Description" name="description[]"
+									<input type="text" class="form-control kapital" placeholder="Description" name="description[]"
 										data-parsley-required="true" data-parsley-errors-container=".err_des0" required="">
 									<span class="text-danger err_des0"></span>
 								</td>
@@ -205,7 +205,7 @@
 						<span class="text-danger err_akunline${ll}"></span>
 					</td>
 					<td class="p-2">
-						<input type="text" class="form-control kapital" placeholder="Description" name="description[]"
+						<input type="text" class="form-control kapital" placeholder="Description"  name="description[]"
 						data-parsley-required="true" data-parsley-errors-container=".err_des${ll}" required="">
 						<span class="text-danger err_des${ll}"></span>
 					</td>
@@ -228,6 +228,9 @@
 			updateTotal();
 			$('.currency').mask("#.##0", {
 				reverse: true
+			});
+			$('.kapital').on('input', function(e) {
+				this.value = this.value.replace(/[^a-zA-Z0-9 /-]/g, '').toUpperCase();
 			});
 			var id_element = 'id_cc' + ll;
 			select_costcenter_byid(id_element);
@@ -298,8 +301,6 @@
 				branch: $('#branch').val(),
 				batch_type: $('#batch_type').val(),
 				batch_date: $('#batch_date').val(),
-				// batch_number: $('#batch_number').val(),
-				// voucher_number: $('#voucher_number').val(),
 				des_header: $('#des_header').val(),
 				lineItems: [],
 			};
@@ -332,7 +333,7 @@
 					},
 					success: function(data) {
 						console.log(data);
-						
+
 						if (data.hasil == 'true') {
 							swet_sukses(data.pesan);
 							loadform('<?= $load_grid ?>');
