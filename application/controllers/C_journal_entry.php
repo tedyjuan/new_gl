@@ -284,9 +284,31 @@ class C_journal_entry extends CI_Controller
 			$data['load_refresh']   = "C_journal_entry/detailform/" . $uuid;
 			$data['uuid']           = $uuid;
 			$data['data']           = $cekdata;
+			$this->load->view("v_journal_entry/detail_journal_entry", $data);
+		} else {
+			$this->load->view('error');
+		}
+	}
+	public function editform($uuid)
+	{
+		$cekdata = $this->M_journal_entry->get_where_journal_entry(['a.uuid' => $uuid])->row();
+		if ($cekdata != null) {
+			$param                = ['batch_number' => $cekdata->batch_number];
+			$data['head']         = $this->M_journal_entry->get_where_journal_entry($param)->row();
+			$data['items'] = $this->M_journal_entry->get_journal_entry_item($param)->result();
+			$data['judul']        = "Edit Journal Entry";
+			$data['load_grid']    = 'C_journal_entry';
+			$data['load_back'] = "C_journal_entry/editform/" . $uuid;
+			$data['uuid']         = $uuid;
+			$data['data']         = $cekdata;
 			$this->load->view("v_journal_entry/edit_journal_entry", $data);
 		} else {
 			$this->load->view('error');
 		}
 	}
+
+	 public function updatedata(){
+		$post        = json_decode($this->input->raw_input_stream, true);
+		var_dump($post); die;
+	 }
 }

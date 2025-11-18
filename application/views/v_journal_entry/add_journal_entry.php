@@ -351,6 +351,12 @@
 	function debitcredit(element) {
 		var id = element.id;
 		var nilai = element.value;
+		var firstInput = nilai.charAt(0);
+		var second = nilai.charAt(1);
+		if (firstInput == 0) {
+			$(element).val("");
+		}
+
 		let id_number = id.replace(/\D/g, "");
 		let id_text = id.replace(/[^a-zA-Z]/g, "");
 		if (id_text == 'debit') {

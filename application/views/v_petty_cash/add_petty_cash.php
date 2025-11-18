@@ -57,7 +57,7 @@
 				<div class="col-md-6">
 					<div class="mb-3">
 						<label for="voucherNo" class="form-label ">Voucher No</label>
-						<input type="text" class="form-control" value="<?= $counter;?>" readonly id="voucherNo" name="voucherNo" placeholder="Enter voucher number"
+						<input type="text" class="form-control" value="<?= $counter; ?>" readonly id="voucherNo" name="voucherNo" placeholder="Enter voucher number"
 							data-parsley-required="true" data-parsley-errors-container=".err_voucherno" required="">
 						<span class="text-danger err_voucherno"></span>
 					</div>
@@ -443,6 +443,12 @@
 	function debitcredit(element) {
 		var id = element.id;
 		var nilai = element.value;
+		var firstInput = nilai.charAt(0);
+		var second = nilai.charAt(1);
+		if (firstInput == 0) {
+			$(element).val("");
+		}
+
 		let id_number = id.replace(/\D/g, "");
 		let id_text = id.replace(/[^a-zA-Z]/g, "");
 		if (id_text == 'debit') {
