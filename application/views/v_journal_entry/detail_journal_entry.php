@@ -67,7 +67,7 @@
 					<table class="table mb-0" id="lineItemsTable">
 						<thead class="table-light">
 							<tr>
-								<th>Cost Center</th>
+								<th style="width: 15%;">Cost Center</th>
 								<th>No. Account</th>
 								<th>Description</th>
 								<th style="width: 15%;">Debit</th>
@@ -78,12 +78,12 @@
 							<?php foreach ($journal_item as $row) : ?>
 								<tr class="align-middle">
 									<td class="p-2">
-										<input type="text" title="<?= $row->code_cost_center . ' - ' . $row->group_team ?>" 
-										value="<?= $row->code_cost_center . ' - ' . $row->group_team ?>" class="form-control" name="description[]" readonly>
+										<input type="text" title="<?= $row->code_cost_center . ' - ' . $row->group_team ?>"
+											value="<?= $row->code_cost_center ?>" class="form-control" name="description[]" readonly>
 									</td>
 									<td class="p-2">
-										<input type="text" title="<?= $row->code_coa . ' - ' . $row->account_name ?>" 
-										value="<?= $row->code_coa . ' - ' . $row->account_name ?>" class="form-control" name="description[]" readonly>
+										<input type="text" title="<?= $row->code_coa . ' - ' . $row->account_name ?>"
+											value="<?= $row->code_coa . ' - ' . $row->account_name ?>" class="form-control" name="description[]" readonly>
 									</td>
 									<td class="p-2">
 										<input type="text" title="<?= $row->description; ?>" value="<?= $row->description; ?>" class="form-control" name="description[]" readonly>

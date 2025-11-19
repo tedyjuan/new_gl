@@ -172,13 +172,43 @@
 
 <script>
 	$(document).ready(function() {
+		let tanggalDb = "<?= $tanggal_sekarang ?>";
+		let persetujuan = "<?= $close_period;?>"; // on/off
+
+		// Convert database date ke objek JS Date
+		let d = new Date(tanggalDb);
+		let year = d.getFullYear();
+		let month = d.getMonth(); // 0 = Januari
+
+		let minDate, maxDate;
+
+		if (persetujuan === "off") {
+			// batas hanya bulan ini (1 sampai akhir bulan)
+			minDate = new Date(year, month, 1);
+
+			// Dapatkan akhir bulan
+			maxDate = new Date(year, month + 1, 0);
+		} else {
+			// persetujuan = on
+			// minDate = 1 januari tahun tersebut
+			minDate = new Date(year, 0, 1);
+
+			// maxDate = akhir bulan dari tanggal yang dipilih
+			maxDate = new Date(year, month + 1, 0);
+		}
+
+		// Inisialisasi Flatpickr
+		$("#batch_date").flatpickr({
+			dateFormat: "Y-m-d",
+			minDate: minDate,
+			maxDate: maxDate
+		});
+	});
+	$(document).ready(function() {
 		$("#batch_type").prop("disabled", true);
 		$("#batch_date").prop("disabled", true);
 		$("#batch_type").prop("disabled", true).val("").trigger("change");
 		$("#batch_date").prop("disabled", true).val("");
-		$(".flatpicker").flatpickr({
-			dateFormat: "Y-m-d"
-		});
 		$(".select2").select2({
 			placeholder: 'Search...',
 		});

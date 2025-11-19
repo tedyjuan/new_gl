@@ -28,7 +28,7 @@ class C_journal_entry extends CI_Controller
 		$order_input    = $this->input->post('order');
 		$order_col      = isset($order_input[0]['column']) ? $order_input[0]['column'] : 0;
 		$dir            = isset($order_input[0]['dir']) ? $order_input[0]['dir'] : 'desc';
-		$columns        = ['transaction_date','code_journal_source', 'batch_number', 'voucher_number', 'action'];
+		$columns        = ['transaction_date', 'code_journal_source', 'batch_number', 'voucher_number', 'action'];
 		$order_by       = $columns[$order_col] ?? 'name';
 		$data           = $this->M_journal_entry->get_paginated_journal_entry($length, $start, $search, $order_by, $dir);
 		$total_records  = $this->M_journal_entry->count_all_journal_entry();
@@ -58,7 +58,7 @@ class C_journal_entry extends CI_Controller
 			</div>';
 			$result[] = [
 				$row->transaction_date,
-				$row->code_journal_source .' - '.$row->journal_source_name,
+				$row->code_journal_source . ' - ' . $row->journal_source_name,
 				$row->batch_number,
 				$row->voucher_number,
 				$aksi,
@@ -78,12 +78,11 @@ class C_journal_entry extends CI_Controller
 		$data['load_back'] = 'C_journal_entry/add';
 		$data['load_grid'] = 'C_journal_entry';
 		$data['code_company'] = $this->session->userdata('sess_company');
-
-		$param = [
-			'code_company' => $this->session->userdata('sess_company'),
-		];
+		$param['code_company'] = $this->session->userdata('sess_company');
 		$data['depos'] = $this->M_global->getWhere('depos', $param)->result();
 		$data['journal_sources'] = $this->M_global->getWhere('journal_sources', $param)->result();
+		$data['tanggal_sekarang'] = date('Y-m-d');
+		$data['close_period'] = "on"; //  off/on
 		$this->load->view("v_journal_entry/add_journal_entry", $data);
 	}
 	public function Costcenter_all()
@@ -115,7 +114,6 @@ class C_journal_entry extends CI_Controller
 		$counter      = $this->M_journal_entry->preview_code_journal($batch_type, $batch_date, $branch);
 		$current_year = date('Y', strtotime($batch_date));
 		$month_year   = date('m', strtotime($batch_date));
-
 		// sequence
 		$parts       = explode("/", $counter);
 		$seq         = intval($parts[2]);
@@ -128,7 +126,6 @@ class C_journal_entry extends CI_Controller
 		$total_credit  = 0;
 
 		foreach ($line_items as $key => $item) {
-
 			// amankan debit
 			$debit  = isset($item['debit']) && $item['debit'] !== ''
 				? (int) str_replace('.', '', $item['debit'])
@@ -146,6 +143,7 @@ class C_journal_entry extends CI_Controller
 			// push item
 			$journal_items[] = [
 				'uuid'             => $this->uuid->v4(),
+				'sequence_header'  => $seq,
 				'sequence_number'  => $key + 1,
 				'batch_number'     => $counter,
 				'code_cost_center' => $item['cost_center'],
@@ -196,7 +194,7 @@ class C_journal_entry extends CI_Controller
 
 		// insert detail (batch)
 		$this->db->insert_batch('journal_items', $journal_items);
-
+		// $this->M_journal_entry->geser_batch_journal($batch_type, $branch, $current_year, $month_year);
 		if ($this->db->trans_status() === FALSE) {
 			$this->db->trans_rollback();
 			echo json_encode([
@@ -295,20 +293,142 @@ class C_journal_entry extends CI_Controller
 		if ($cekdata != null) {
 			$param                = ['batch_number' => $cekdata->batch_number];
 			$data['head']         = $this->M_journal_entry->get_where_journal_entry($param)->row();
-			$data['items'] = $this->M_journal_entry->get_journal_entry_item($param)->result();
+			$data['items']        = $this->M_journal_entry->get_journal_entry_item($param)->result();
 			$data['judul']        = "Edit Journal Entry";
 			$data['load_grid']    = 'C_journal_entry';
-			$data['load_back'] = "C_journal_entry/editform/" . $uuid;
+			$data['load_back']    = "C_journal_entry/editform/" . $uuid;
 			$data['uuid']         = $uuid;
 			$data['data']         = $cekdata;
+			$data['close_period'] = "off";                                                             //  off/on
 			$this->load->view("v_journal_entry/edit_journal_entry", $data);
 		} else {
 			$this->load->view('error');
 		}
 	}
 
-	 public function updatedata(){
-		$post        = json_decode($this->input->raw_input_stream, true);
-		var_dump($post); die;
-	 }
+	public function updatedata()
+	{
+		$post    = json_decode($this->input->raw_input_stream, true);
+		$uuid    = $post['uuid'];
+
+		$cekdata = $this->M_journal_entry->get_where_journal_entry(['a.uuid' => $uuid])->row();
+
+		if ($cekdata == null) {
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Data not found',
+			]);
+			return;
+		}
+
+		// Mulai Transaction
+		$this->db->trans_begin();
+
+		try {
+
+			$old_counter    = $cekdata->batch_number;
+			$branch         = $cekdata->code_depo;
+			$batch_type     = $cekdata->code_journal_source;
+			$batch_date     = $post['batch_date'];
+			$des_header     = $post['des_header'];
+			$current_year   = date('Y', strtotime($batch_date));
+			$month_year     = date('m', strtotime($batch_date));
+
+			// ==============================
+			// DELETE detail lama
+			// ==============================
+			$this->db->where(['batch_number' => $old_counter])->delete('journal_items');
+
+			// ==============================
+			// INSERT ULANG journal_items
+			// ==============================
+			$line_items    = $post['lineItems'];
+			$journal_items = [];
+			$total_debit   = 0;
+			$total_credit  = 0;
+
+			foreach ($line_items as $key => $item) {
+
+				$debit = isset($item['debit']) && $item['debit'] !== ''
+					? (int) str_replace('.', '', $item['debit'])
+					: 0;
+
+				$credit = isset($item['credit']) && $item['credit'] !== ''
+					? (int) str_replace('.', '', $item['credit'])
+					: 0;
+
+				$total_debit  += $debit;
+				$total_credit += $credit;
+
+				$journal_items[] = [
+					'uuid'             => $this->uuid->v4(),
+					'sequence_header'  => $cekdata->sequence,
+					'sequence_number'  => $key + 1,
+					'batch_number'     => $old_counter,
+					'code_cost_center' => $item['cost_center'],
+					'code_coa'         => $item['accountNo'],
+					'description'      => $item['description'],
+					'debit'            => $debit,
+					'credit'           => $credit,
+					'transaction_date' => $batch_date,
+					'created_at'       => date('Y-m-d H:i:s'),
+					'updated_at'       => date('Y-m-d H:i:s'),
+				];
+			}
+
+			// Masukkan detail baru
+			if (!empty($journal_items)) {
+				$this->db->insert_batch('journal_items', $journal_items);
+			}
+
+			// ==============================
+			// UPDATE HEADER journals
+			// ==============================
+			$param = [
+				'batch_number'        => $old_counter,
+				'code_depo'           => $branch,
+				'code_journal_source' => $batch_type
+			];
+
+			$journal_header = [
+				'description'      => $des_header,
+				'year'             => $current_year,
+				'period'           => $month_year,
+				'transaction_date' => $batch_date,
+				'total_credit'     => $total_credit,
+				'total_debit'      => $total_debit,
+				'difference'       => $total_debit - $total_credit,
+				'updated_at'       => date('Y-m-d H:i:s'),
+			];
+
+			$this->db->where($param)->update('journals', $journal_header);
+
+			// ==============================
+			// CHECK STATUS TRANSACTION
+			// ==============================
+			if ($this->db->trans_status() === FALSE) {
+				throw new Exception("DB Transaction Failed");
+			}
+
+			// Jika kamu ingin reorder counter setelah edit:
+			// $this->M_journal_entry->reorder_journal_period($batch_type, $branch, $current_year, $month_year);
+
+			// Commit
+			$this->db->trans_commit();
+
+			echo json_encode([
+				'hasil' => 'true',
+				'pesan' => 'Successfully updated data',
+			]);
+		} catch (Exception $e) {
+
+			// ROLLBACK jika error
+			$this->db->trans_rollback();
+
+			echo json_encode([
+				'hasil' => 'false',
+				'pesan' => 'Update failed: ' . $e->getMessage(),
+			]);
+		}
+	}
 }

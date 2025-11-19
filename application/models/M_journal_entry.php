@@ -123,4 +123,63 @@ class M_journal_entry extends CI_Model
 		return $preview_code;
 
 	}
+
+	public function geser_batch_journal($batch_type, $branch, $year, $period)
+	{
+		// 1. AMBIL SEMUA DATA JURNAL DALAM 1 PERIODE
+		$journals = $this->db
+			->where('code_journal_source', $batch_type)
+			->where('code_depo', $branch)
+			->where('year', $year)
+			->where('period', $period)
+			->order_by('transaction_date', 'ASC')
+			->order_by('id', 'ASC')
+			->get('journals')
+			->result();
+
+		if (!$journals) {
+			return;
+		}
+
+		$seq = 1;
+		$updateJournal = [];
+		$updateItem = [];
+
+		foreach ($journals as $j) {
+
+			$new_counter = sprintf("%s/%s%s/%04d", $batch_type, $year, $period, $seq);
+			// UPDATE HEADER
+			$updateJournal[] = [
+				'id'             => $j->id,
+				'sequence'       => $seq,
+				'batch_number'   => $new_counter,
+				'voucher_number' => $new_counter
+			];
+
+			// UPDATE DETAIL (journal_items)
+			// sesuaikan sequence_header + batch_number baru
+			$updateItem[] = [
+				'sequence_header' => $seq,
+				'batch_number'    => $new_counter,
+				'old_batch'       => $j->batch_number // untuk where nanti
+			];
+
+			$seq++;
+		}
+
+		// 2. UPDATE JOURNALS (HEADER)
+		if (!empty($updateJournal)) {
+			$this->db->update_batch('journals', $updateJournal, 'id');
+		}
+
+		// 3. UPDATE JOURNAL ITEMS (DETAIL)
+		foreach ($updateItem as $ui) {
+			$this->db
+				->where('batch_number', $ui['old_batch'])
+				->update('journal_items', [
+					'sequence_header' => $ui['sequence_header'],
+					'batch_number'    => $ui['batch_number']
+				]);
+		}
+	}
 }
