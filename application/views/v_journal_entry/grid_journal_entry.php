@@ -4,10 +4,33 @@
 		<div class="row align-items-center mb-3">
 			<div class="col-md-12 d-flex justify-content-between">
 				<h2 class="mb-0"><?= $judul; ?></h2>
-				<div class="div">
-					<button class="btn btn-sm btn-primary" onclick="loadform('<?= $load_add ?>')">
+				<div class="d-flex gap-2">
+					<div>
+						<div class="dropdown">
+							<button type="button" class="btn btn-primary btn-sm" id="aksi-dropdown-' . $row->batch_number . '" data-bs-toggle="dropdown" aria-expanded="false">
+								Action <i class="bi-chevron-down ms-1"></i>
+							</button>
+							<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->batch_number . '">
+								<button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalposting">
+									<i class="bi bi-shift"></i> Posting Journal
+								</button>
+								<button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalfilter">
+									<i class="bi bi-filter-square"></i> Filter Journal
+								</button>
+								<button class="dropdown-item" onclick="wait()">
+									<i class="bi bi-cloud-download"></i> Download Journal
+								</button>
+								<div class="dropdown-divider"></div>
+								<button class="dropdown-item text-danger" onclick="wait()">
+									<i class="bi bi-arrow-repeat"></i> Reset Sequence
+								</button>
+							</div>
+						</div>
+					</div>
+					<a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
+						onclick="loadform('<?= $load_add ?>')">
 						<i class="bi bi-plus-circle"></i> Add Journal
-					</button>
+					</a>
 					<a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
 						onclick="loadform('<?= $load_grid ?>')">
 						<i class="bi bi-arrow-clockwise"></i> Refresh
@@ -16,8 +39,8 @@
 			</div>
 		</div>
 	</div>
-	<div class="card-body">
-		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%">
+	<div class="card-body ">
+		<table class="table table-sm table-striped table-hover table-bordered " id="mytable" style="width: 100%">
 			<thead>
 				<tr class="table-primary">
 					<Th>Batch Date</Th>
@@ -28,6 +51,75 @@
 				</tr>
 			</thead>
 		</table>
+	</div>
+</div>
+<!-- Modal Filter-->
+<div class="modal fade" id="modalfilter" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalfilterLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header bg-secondary">
+				<h4 class="modal-title mb-3 text-white" id="modalfilterLabel">FILTER JOURNAL</h4>
+			</div>
+			<form id="form_filter">
+				<div class="modal-body">
+					<div class="mb-2">
+						<label class="form-label" for="batc_voucher">Batch / Voucher</label>
+						<input type="text" id="batc_voucher" name="batc_voucher" class="form-control" placeholder="search batch or voucher">
+					</div>
+					<div class="mb-2">
+						<label class="form-label" for="date_periode">Date Period</label>
+						<input type="text" id="date_periode" name="date_periode" class="form-control date_periode" placeholder="search date periode">
+					</div>
+					<div class="mb-2">
+						<label class="form-label" for="journal_type">Journal Type</label>
+						<select id="journal_type" name="journal_type" style="width:100%" class="form-control-hover-light form-control select2"
+							data-parsley-required="true" data-parsley-errors-container=".err_journal_type" required="">
+							<option value=""></option>
+							<?php foreach ($journal_sources as $row) : ?>
+								<option value="<?= $row->code_journal_source ?>"><?= $row->code_journal_source ?> - <?= $row->description ?></option>
+							<?php endforeach; ?>
+						</select>
+						<span class="text-danger err_journal_type"></span>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal"><i class="bi bi-x"></i> Close</button>
+					<button type="button" class="btn btn-sm btn-primary" onclick="wait()"><i class="bi bi-search"></i> Search</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- Modal posting-->
+<div class="modal fade" id="modalposting" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalpostingLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header bg-info">
+				<h4 class="modal-title mb-3 text-white" id="modalpostingLabel">POSTING JOURNAL</h4>
+			</div>
+			<form id="form_filter">
+				<div class="modal-body">
+					<div class="mb-2">
+						<select style="width:100%" id="branch" name="branch" class="form-control-hover-light form-control select2"
+							data-parsley-required="true" data-parsley-errors-container=".err_branch" required="">
+							<option value=""></option>
+							<?php foreach ($depos as $row) : ?>
+								<option value="<?= $row->code_depo ?>"><?= $row->code_depo ?> - <?= $row->name ?></option>
+							<?php endforeach; ?>
+						</select>
+						<span class="text-danger err_branch"></span>
+					</div>
+					<div class="mb-2">
+						<label class="form-label" for="date_periode">Date Period</label>
+						<input type="text" id="date_periode" name="date_periode" class="form-control date_periode" placeholder="search date periode">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal"><i class="bi bi-x"></i> Close</button>
+					<button type="button" class="btn btn-sm btn-primary" onclick="wait()"><i class="bi bi-check2-circle"></i> Posting</button>
+				</div>
+			</form>
+		</div>
 	</div>
 </div>
 <script>
@@ -42,7 +134,7 @@
 			processing: true,
 			serverSide: true,
 			ajax: {
-				url: "<?= base_url('C_journal_entry/griddata'); ?>", 
+				url: "<?= base_url('C_journal_entry/griddata'); ?>",
 				type: "POST",
 			},
 			columnDefs: [{
@@ -56,5 +148,36 @@
 
 	$(document).ready(function() {
 		initTable();
+		$(".select2").select2({
+			placeholder: "Search Branch",
+			allowClear: true,
+			width: '100%'
+		});
+		// Dapatkan awal & akhir bulan ini
+		let now = new Date();
+		let lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+		$(".date_periode").flatpickr({
+			mode: "range",
+			maxDate: lastDay, // tanggal terakhir bulan ini
+			dateFormat: "Y-m-d",
+
+			// Pastikan range tetap dalam bulan yang sama
+			onChange: function(selectedDates, dateStr, instance) {
+				if (selectedDates.length === 2) {
+					const start = selectedDates[0];
+					const end = selectedDates[1];
+
+					if (start.getMonth() !== end.getMonth()) {
+						instance.setDate([start]);
+						alert("Tanggal mulai dan akhir harus dalam bulan yang sama.");
+					}
+				}
+			}
+		});
+
 	});
+
+	function wait() {
+		swet_gagal("Fiture Under Development");
+	}
 </script>

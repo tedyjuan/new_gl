@@ -17,6 +17,9 @@ class C_journal_entry extends CI_Controller
 		$data['load_grid']  = 'C_journal_entry';
 		$data['load_add']   = 'C_journal_entry/add';
 		$data['url_delete'] = 'C_journal_entry/delete';
+		$param['code_company'] = $this->session->userdata('sess_company');
+		$data['depos'] = $this->M_global->getWhere('depos', $param)->result();
+		$data['journal_sources'] = $this->M_global->getWhere('journal_sources', $param)->result();
 		$this->load->view("v_journal_entry/grid_journal_entry", $data);
 	}
 	public function griddata()
