@@ -178,6 +178,6 @@
 	});
 
 	function wait() {
-		swet_gagal("Fiture Under Development");
+		swet_gagal("feature Under Development");
 	}
 </script>
