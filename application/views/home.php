@@ -13,6 +13,8 @@
 	<link rel="stylesheet" href="<?= base_url('public/assets/vendor/select2/css/select2.min.css?v=1.0'); ?>">
 	<link rel="stylesheet" href="<?= base_url('public/assets/vendor/sweetalert/sweetalert.css?v=1.0'); ?>">
 	<link rel="stylesheet" href="<?= base_url('public/assets/vendor/flatpiker/flatpickr.min.css?v=1.0'); ?>">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
 
 	<style>
 		.select2-container .select2-selection--single {
@@ -71,6 +73,7 @@
 	<script src="<?= base_url('public/assets/vendor/datatable-bootstrap5/datatables-bootstrap5.min.js?v=1.0'); ?>"></script>
 	<script src="<?= base_url('public/assets/vendor/flatpiker/flatpickr.js?v=1.0'); ?>"></script>
 	<script src="<?= base_url('public/assets/vendor/select2/js/select2.js?v=1.0'); ?>"></script>
+	<script src="<?= base_url('public/assets/vendor/datepicker/bootstrap-datepicker.min.js'); ?>"></script>
 
 	<!-- ========== HEADER ========== -->
 	<header id="header" class="navbar navbar-expand-lg navbar-fixed navbar-height navbar-container navbar-bordered bg-white">
@@ -276,6 +279,7 @@
 	<script src="<?= base_url('public/assets/vendor/parsleyjs/parsley.min.js?v=1.0'); ?>"></script>
 	<script src="<?= base_url('public/assets/vendor/jquery-mask/jquery.mask.min.js?v=1.0'); ?>"></script>
 	<script src="<?= base_url('public/assets/vendor/flatpiker/flatpickr_new.js'); ?>"></script>
+	<script src="<?= base_url('public/assets/vendor/datepicker/bootstrap-datepicker.min.js'); ?>"></script>
 
 	<script>
 		<?php

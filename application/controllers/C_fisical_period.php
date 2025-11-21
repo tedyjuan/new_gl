@@ -8,6 +8,7 @@ class C_fisical_period extends CI_Controller
 		is_logged_in();
 		$this->load->model('M_fisical_period');
 		$this->load->model('M_global');
+		$this->company = $this->session->userdata('sess_company');
 	}
 	function index()
 	{
@@ -15,6 +16,8 @@ class C_fisical_period extends CI_Controller
 		$data['load_grid']  = 'C_fisical_period';
 		$data['load_add']   = 'C_fisical_period/add';
 		$data['url_delete'] = 'C_fisical_period/delete';
+		$param['code_company'] = $this->session->userdata('sess_company');
+		$data['depos'] = $this->M_global->getWhere('depos', $param)->result();
 		$this->load->view("v_fisical_period/grid_fisical_period", $data);
 	}
 	public function griddata()
@@ -29,56 +32,48 @@ class C_fisical_period extends CI_Controller
 		$columns        = ['year', 'period', 'status', 'action'];
 		$order_by       = $columns[$order_col] ?? 'name';
 		$data           = $this->M_fisical_period->get_paginated_fisical_period($length, $start, $search, $order_by, $dir);
-		$total_records  = $this->M_fisical_period->count_all_fisical_period();
-		$total_filtered = $this->M_fisical_period->count_filtered_fisical_period($search);
 		$url_edit   = 'C_fisical_period/editform/';
-		$url_delete = 'C_fisical_period/hapusdata/';
-		$load_grid  = 'C_fisical_period/griddata';
 		$result = [];
-		foreach ($data as $key => $row) {
-			$aksi = '<div class="dropdown">
-				<button type="button" class="btn btn-white btn-sm" id="aksi-dropdown-' . $key . '" data-bs-toggle="dropdown" aria-expanded="false">
-					More <i class="bi-chevron-down ms-1"></i>
-				</button>
-				<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $key . '">
-					<button class="dropdown-item editbtn" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
-						<i class="bi bi-pen"></i> Edit
-					</button>
-					<div class="dropdown-divider"></div>
-					<button class="dropdown-item text-danger" onclick="hapus(\'' . $row->uuid . '\', \'' . $url_delete . '\', \'' . $load_grid . '\')">
-						<i class="bi bi-trash3"></i> Delete
-					</button>
-				</div>
-			</div>';
+		foreach ($data as  $row) {
+			$aksi = '
+			<button type="button"  onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')" class="btn btn-soft-primary">Edit</button>';
+			$badge_status = '';
+			if ($row->status == 'open') {
+				$badge_status = '<span class="badge bg-success">Open</span>';
+			} elseif ($row->status == 'closed') {
+				$badge_status = '<span class="badge bg-danger">Closed</span>';
+			} 
+			$input = $row->year . '-' . str_pad($row->period, 2, '0', STR_PAD_LEFT);
+			$timestamp = strtotime($input);
+			$format_Month_Y = date('F Y', $timestamp);
 			$result[] = [
-				$key++,
-				$row->year . '-' . $row->period,
-				$row->year . '-' . $row->period,
-				$row->status,
+				$row->code_depo . ' - ' . $row->depo_name,
+				$format_Month_Y,
+				$badge_status,
 				$aksi,
 			];
 		}
 		echo json_encode([
 			"draw" => intval($this->input->post('draw')) ?? 1,
-			"recordsTotal" => $total_records,
-			"recordsFiltered" => $total_filtered,
+			"recordsTotal" => 12,
+			"recordsFiltered" => 12,
 			"data" => $result
 		]);
 	}
 	function add()
 	{
-		$data['judul']     = "Form Tambah Divisi";
+		$data['judul']     = "Add Template Fiscal Period";
 		$data['load_back'] = 'C_fisical_period/add';
 		$data['load_grid'] = 'C_fisical_period';
+		$param['code_company'] = $this->session->userdata('sess_company');
+		$data['depos'] = $this->M_global->getWhere('depos', $param)->result();
 		$this->load->view("v_fisical_period/add_fisical_period", $data);
 	}
 	public function simpandata()
 	{
 		// Validasi input
-		$this->form_validation->set_rules('perusahaan', 'Perusahaan', 'required');
-		$this->form_validation->set_rules('kode_fisical_period', 'Code Divisi', 'required');
-		$this->form_validation->set_rules('nama_fisical_period', 'Nama Divisi', 'required');
-		$this->form_validation->set_rules('alias', 'Nama Alias', 'required');
+		$this->form_validation->set_rules('year', 'year', 'required');
+		$this->form_validation->set_rules('branch', 'branch', 'required');
 		if ($this->form_validation->run() == FALSE) {
 			// Jika validasi gagal
 			$jsonmsg = [
@@ -88,174 +83,96 @@ class C_fisical_period extends CI_Controller
 			echo json_encode($jsonmsg);
 			return;
 		}
-		// Ambil data dari request
-		$perusahaan  = $this->input->post('perusahaan');
-		$code_fisical_period = $this->input->post('kode_fisical_period');
-		$nama_fisical_period = $this->input->post('nama_fisical_period');
-		$alias       = $this->input->post('alias');
-		// Cek apakah kode Divisi sudah ada
+		$year  = $this->input->post('year');
+		$branch = $this->input->post('branch');
 		$param_kode =[
-			'code_fisical_period'  => $code_fisical_period
+			'code_company' => $this->company,
+			'code_depo'    => $branch,
+			'year'         => $year,
 		];
-		$exisCode = $this->M_global->getWhere('divisions', $param_kode)->num_rows();
-		if ($exisCode != null) {
+		$exisName = $this->M_global->getWhere('fiscal_periods', $param_kode)->num_rows();
+		if ($exisName != 0) {
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Kode Divisi sudah digunakan',
-			];
-			echo json_encode($jsonmsg);
-			exit;
-		}
-		$param_alias = ['alias'  => $alias];
-		$exisalias = $this->M_global->getWhere('divisions', $param_alias)->num_rows();
-		if ($exisalias != null) {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Alias sudah digunakan',
-			];
-			echo json_encode($jsonmsg);
-			exit;
-		}
-		$param_nama = [
-			'name'         => $nama_fisical_period,
-			'code_company' => $perusahaan,
-		];
-		$exisName = $this->M_global->getWhere('divisions', $param_nama)->num_rows();
-		if ($exisName != null) {
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'Kode Divisi sudah digunakan',
+				'pesan' => 'Template Fiscal Period is already exist for the selected branch and year',
 			];
 			echo json_encode($jsonmsg);
 			exit;
 		} 
-		// Data untuk insert ke database
-		$datainsert = [
-			'uuid'         => $this->uuid->v4(),
-			'code_fisical_period'  => $code_fisical_period,
-			'code_company' => $perusahaan,
-			'name'         => $nama_fisical_period,
-			'alias'        => $alias,
-			'created_at'   => date('Y-m-d H:i:s'),
-			'updated_at'   => date('Y-m-d H:i:s')
-		];
+		$fiscalBatch = [];
+		for($i= 1; $i <=12; $i++){
+			// Data untuk insert ke database
+			$fiscalBatch[] = [
+				'uuid'         => $this->uuid->v4(),
+				'code_company' => $this->company,
+				'code_depo'    => $branch,
+				'year'         => $year,
+				'period'       => $i,
+				'start_date'   => date('Y-m-d', strtotime($year . '-' . str_pad($i, 2, '0', STR_PAD_LEFT) . '-01')),
+				'end_date'     => date('Y-m-t', strtotime($year . '-' . str_pad($i, 2, '0', STR_PAD_LEFT) . '-01')),
+				'status'       => 'closed',
+				'created_at'   => date('Y-m-d H:i:s'),
+				'updated_at'   => date('Y-m-d H:i:s')
+			];
+		}
+		
 		// Melakukan insert data
-		$this->db->insert('divisions', $datainsert);
+		$this->db->insert_batch('fiscal_periods', $fiscalBatch);
 		if ($this->db->affected_rows() > 0) {
 			$jsonmsg = [
 				'hasil' => 'true',
-				'pesan' => 'Data Berhasil Disimpan',
+				'pesan' => 'Data successfully saved',
 			];
 		} else {
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Gagal Menyimpan Data',
+				'pesan' => 'Failed to save data',
 			];
 		}
 		echo json_encode($jsonmsg);
 	}
 	public function editform($uuid)
 	{
-		$data =  $this->M_fisical_period->get_where_fisical_period(['a.uuid' => $uuid])->row();
-		if ($data != null) {
-			$judul = "Form Edit Divisi";
-			$load_grid = "C_fisical_period";
-			$load_refresh = "C_fisical_period/editform/" . $uuid;
-			$this->load->view('v_fisical_period/edit_fisical_period', [
-				'judul' => $judul,
-				'load_grid' => $load_grid,
-				'load_refresh' => $load_refresh,
-				'data' => $data,
-				'uuid' => $uuid
-			]);
+		$cekdata = $this->M_fisical_period->get_where_fisical_period(['a.uuid' => $uuid])->row();
+		if ($cekdata != null) {
+			$data['judul']        = "Edit Fiscal Period";
+			$data['load_grid']    = 'C_fisical_period';
+			$data['load_refresh']    = "C_fisical_period/editform/" . $uuid;
+			$data['uuid']         = $uuid;
+			$data['data']         = $cekdata;
+			$this->load->view("v_fisical_period/edit_fisical_period", $data);
 		} else {
 			$this->load->view('error');
 		}
 	}
-	// Fungsi untuk update data Divisi
 	public function update()
 	{
-		// Ambil data dari POST request
-		$uuid = $this->input->post('uuid'); 
-		$code_fisical_period = $this->input->post('kode_fisical_period');
-		$nama_fisical_period = $this->input->post('nama_fisical_period');
-		$alias_post       = $this->input->post('alias');
-		// Cek apakah UUID Divisi ada di database
+		$uuid = $this->input->post('uuid');
+		$status = $this->input->post('status');
 		$data =  $this->M_fisical_period->get_where_fisical_period(['a.uuid' => $uuid])->row();
 		if ($data != null) {
-			$code_company = $data->code_company;
-			$cek_cost_center =  $this->M_global->getWhere('cost_centers', ['code_fisical_period' => $data->code_fisical_period])->num_rows();
-			if ($cek_cost_center != 0) {
-				$jsonmsg = [
-					'hasil' => 'false',
-					'pesan' => 'Tidak bisa mengubah Data Divisi karena sedang digunakan di cost centers.',
-				];
-				echo json_encode($jsonmsg);
-				exit;
-			}
-			if($data->code_fisical_period != $code_fisical_period){
-				$cekkode =  $this->M_fisical_period->get_where_fisical_period(['a.code_fisical_period' => $code_fisical_period, "a.code_company" => $code_company ])->num_rows();
-				if ($cekkode != 0) {
-					$jsonmsg = [
-						'hasil' => 'false',
-						'pesan' => 'Kode Depo sudah terdaftar',
-					];
-					echo json_encode($jsonmsg);
-					exit;
-				}
-			}
-			if($data->name != $nama_fisical_period){
-				$param_nama = ['a.name' => $nama_fisical_period, "a.code_company" => $code_company];
-				$ceknama =  $this->M_fisical_period->get_where_fisical_period($param_nama)->num_rows();
-				if ($ceknama !== 0) {
-					$jsonmsg = [
-						'hasil' => 'false',
-						'pesan' => 'Nama sudah terdaftar',
-					];
-					echo json_encode($jsonmsg);
-					exit;
-				}
-			}
-			if($data->alias !== $alias_post){
-				$cekalias =  $this->M_fisical_period->get_where_fisical_period(['a.alias' => $alias_post])->num_rows();
-				if ($cekalias !== 0) {
-					$jsonmsg = [
-						'hasil' => 'false',
-						'pesan' => 'Alias sudah terdaftar',
-					];
-					echo json_encode($jsonmsg);
-					exit;
-				}
-			}
 			$dataupdate = [
-				'code_fisical_period'  => $code_fisical_period,
-				'name'         => $nama_fisical_period,
-				'alias'        => $alias_post,
-				'updated_at'   => date('Y-m-d H:i:s')
+				'status'     => $status,
+				'updated_at' => date('Y-m-d H:i:s')
 			];
-			// Melakukan update data
-			$update = $this->M_global->update($dataupdate, 'divisions', ['uuid' => $uuid]);
-			if ($update) {
-				// Jika update berhasil
+			$update = $this->M_global->update($dataupdate, 'fiscal_periods', ['uuid' => $uuid]);
+			if ($update == true) {
 				$jsonmsg = [
 					'hasil' => 'true',
-					'pesan' => 'Data Berhasil Diupdate',
+					'pesan' => 'Data successfully updated',
 				];
 				echo json_encode($jsonmsg);
 			} else {
-				// Jika gagal update
 				$jsonmsg = [
 					'hasil' => 'false',
-					'pesan' => 'Gagal Menyimpan Data',
+					'pesan' => 'Failed to update data',
 				];
 				echo json_encode($jsonmsg);
 			}
-			
 		} else {
-			// Jika UUID Divisi tidak ditemukan
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'UUID Divisi tidak ditemukan',
+				'pesan' => 'UUID Fiscal Period not found',
 			];
 			echo json_encode($jsonmsg);
 		}

@@ -181,3 +181,20 @@ if (!function_exists('badge')) {
 		}
 	}
 }
+if (!function_exists('getMonthName')) {
+	function getMonthName($monthNumber)
+	{
+		// Pastikan input adalah angka antara 1 sampai 12
+		if ($monthNumber >= 1 && $monthNumber <= 12) {
+			/* * mktime(hour, minute, second, month, day, year) 
+			 * Fungsi ini membuat timestamp pada tanggal 1 bulan yang diminta 
+			 */
+			$timestamp = mktime(0, 0, 0, $monthNumber, 1);
+	
+			// date('F', ...) memformat timestamp menjadi nama bulan lengkap (English)
+			return date('F', $timestamp);
+		}
+	
+		return 'Invalid Month'; // Kembalikan pesan error jika angka tidak valid
+	}
+}

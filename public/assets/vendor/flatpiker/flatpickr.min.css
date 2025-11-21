@@ -450,7 +450,9 @@
 	-webkit-box-sizing: border-box;
 	-webkit-appearance: menulist;
 	-moz-appearance: menulist;
-	width: auto
+	width: auto;
+
+	
 }
 
 .flatpickr-current-month .flatpickr-monthDropdown-months:focus,

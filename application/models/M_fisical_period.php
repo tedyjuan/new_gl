@@ -9,8 +9,19 @@ class M_fisical_period extends CI_Model
 	}
 	public function get_paginated_fisical_period($limit, $start, $search, $order_by, $order_dir)
 	{
-		$this->db->select('a.*');
+		$year = $this->input->post('tahun');
+		$branch = $this->input->post('post_branch');
+		$this->db->select('a.*, b.name as depo_name');
 		$this->db->from('fiscal_periods as a');
+		$this->db->join('depos b', 'b.code_depo = a.code_depo AND b.code_company = a.code_company', 'inner');
+		if($year != ''){
+			$this->db->where('a.year', $year);
+		}else{
+			$this->db->where('a.year', date('Y'));
+		}
+		if($branch != ''){
+			$this->db->where('a.code_depo', $branch);
+		}
 		if (!empty($search)) {
 			$this->db->group_start()
 				->like('a.period', $search)
@@ -28,23 +39,12 @@ class M_fisical_period extends CI_Model
 		return $query->result();
 	}
 
-	// Fungsi untuk menghitung total data
-	public function count_all_fisical_period()
-	{
-		return $this->db->count_all('fiscal_periods');
-	}
-	// Fungsi untuk menghitung jumlah data yang difilter berdasarkan pencarian
-	public function count_filtered_fisical_period($search)
-	{
-		$this->db->like('period', $search);
-		$this->db->or_like('status', $search); 
-		$query = $this->db->get('fiscal_periods');
-		return $query->num_rows();
-	}
+	
 	public function get_where_fisical_period($param)
 	{
-		$this->db->select('a.*');
+		$this->db->select('a.*, b.name as depo_name');
 		$this->db->from('fiscal_periods as a');
+		$this->db->join('depos b', 'b.code_depo = a.code_depo AND b.code_company = a.code_company', 'inner');
 		$this->db->where($param);
 		return $this->db->get();
 	}
