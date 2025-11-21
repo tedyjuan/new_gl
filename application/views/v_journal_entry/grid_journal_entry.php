@@ -63,6 +63,16 @@
 			<form id="form_filter">
 				<div class="modal-body">
 					<div class="mb-2">
+						<select style="width:100%" id="post_branch" name="post_branch" class="form-control-hover-light form-control select2"
+							data-parsley-required="true" data-parsley-errors-container=".err_post_branch" required="">
+							<option value=""></option>
+							<?php foreach ($depos as $row) : ?>
+								<option value="<?= $row->code_depo ?>"><?= $row->code_depo ?> - <?= $row->name ?></option>
+							<?php endforeach; ?>
+						</select>
+						<span class="text-danger err_post_branch"></span>
+					</div>
+					<div class="mb-2">
 						<label class="form-label" for="batch_voucher">Batch / Voucher</label>
 						<input type="text" id="batch_voucher" name="batch_voucher" class="form-control" placeholder="search batch or voucher">
 					</div>
@@ -124,10 +134,6 @@
 </div>
 <script>
 	function initTable() {
-		var branch = $('#branch').val();
-		var date_periode = $('#date_periode').val();
-		var journal_type = $('#journal_type').val();
-		console.log(branch, date_periode, journal_type);
 
 		// kalau sebelumnya sudah ada instance, hancurkan dulu
 		if (window.mytableDT && $.fn.dataTable.isDataTable('#mytable')) {
@@ -143,6 +149,7 @@
 				type: "POST",
 				data: function(d) {
 					d.batch_voucher = $('#batch_voucher').val();
+					d.post_branch = $('#post_branch').val();
 					d.date_periode = $('#date_periode').val();
 					d.journal_type = $('#journal_type').val();
 				}
@@ -202,5 +209,6 @@
 		// RESET FORM SETELAH KIRIM
 		$('#form_filter')[0].reset(); // reset input biasa
 		$('#journal_type').val('').trigger('change'); // reset select2
+		$('#post_branch').val('').trigger('change'); // reset select2
 	}
 </script>

@@ -12,6 +12,7 @@ class M_journal_entry extends CI_Model
 		$batch_voucher = $this->input->post('batch_voucher');
 		$date_periode  = $this->input->post('date_periode');
 		$journal_type  = $this->input->post('journal_type');
+		$post_branch  = $this->input->post('post_branch');
 		$this->db->select('a.*, b.description AS journal_source_name');
 		$this->db->from('journals as a');
 		$this->db->join('journal_sources as b', 'b.code_journal_source = a.code_journal_source', 'left');
@@ -40,6 +41,9 @@ class M_journal_entry extends CI_Model
 		// filter batch / voucher
 		if ($batch_voucher != '') {
 			$this->db->where('a.batch_number', $batch_voucher);
+		}
+		if ($post_branch != '') {
+			$this->db->where('a.code_depo', $post_branch);
 		}
 		// pencarian
 		if (!empty($search)) {
