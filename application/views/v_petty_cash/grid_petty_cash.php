@@ -59,4 +59,56 @@
 	$(document).ready(function() {
 		initTable();
 	});
+
+	function voids(uuid) {
+		Swal.fire({
+			icon: "question",
+			title: "Are you sure!",
+			text: "This data void action cannot be undone.",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			cancelButtonText: "Cancel",
+			confirmButtonText: "Yes !",
+			reverseButtons: true,
+		}).then((result) => {
+			if (result.value) {
+				$.ajax({
+					type: "POST",
+					url: "<?= base_url('C_petty_cash/voiddata'); ?>",
+					method: "POST",
+					dataType: "JSON",
+					data: {
+						uuid: uuid,
+					},
+					beforeSend: function() {
+						showLoader();
+					},
+					success: function(data) {
+						if (data.hasil == "true") {
+							hideLoader();
+							swet_sukses(data.pesan);
+							if (window.mytableDT && $.fn.dataTable.isDataTable("#mytable")) {
+								window.mytableDT.ajax.reload(null, false);
+							} else {
+								initTable(); // fallback kalau tabel belum pernah di-init
+							}
+						} else {
+							Swal.fire({
+								icon: "info",
+								title: "Information",
+								text: data.pesan,
+							});
+						}
+					},
+				});
+			} else if (result.dismiss === "cancel") {
+				Swal.fire({
+					icon: "info",
+					title: "Information",
+					html: "Void Canceled",
+				});
+			}
+		});
+	}
 </script>

@@ -33,9 +33,8 @@ class C_petty_cash extends CI_Controller
 		$data           = $this->M_petty_cash->get_paginated_petty_cash($length, $start, $search, $order_by, $dir);
 		$total_records  = $this->M_petty_cash->count_all_petty_cash();
 		$total_filtered = $this->M_petty_cash->count_filtered_petty_cash($search);
-		$url_detail   = 'C_petty_cash/detailform';
-		$url_delete = 'C_petty_cash/hapusdata';
-		$load_grid  = 'C_petty_cash/griddata';
+		$url_detail     = 'C_petty_cash/detailform';
+		$url_void       = 'C_petty_cash/voiddata';
 		$result = [];
 		foreach ($data as $row) {
 			$aksi = '<div class="dropdown">
@@ -47,8 +46,8 @@ class C_petty_cash extends CI_Controller
 						<i class="bi bi-eye"></i> Detail
 					</button>
 					<div class="dropdown-divider"></div>
-					<button class="dropdown-item text-danger" onclick="hapus(\'' . $row->uuid . '\', \'' . $url_delete . '\', \'' . $load_grid . '\')">
-						<i class="bi bi-trash3"></i> Void
+					<button class="dropdown-item text-danger" onclick="voids(\'' . $row->uuid . '\', \'' . $url_void . '\')">
+						<i class="bi bi-file-earmark-zip"></i> Void
 					</button>
 				</div>
 			</div>';
@@ -97,6 +96,7 @@ class C_petty_cash extends CI_Controller
 			'proveniance' => $data['proveniance'],
 			'flow'        => $data['flow'],
 			'created_at'  => date('Y-m-d H:i:s'),
+			'status'      => 'APPLIED',
 			'user_at'     => $this->session->userdata('sess_username'),
 		];
 
@@ -200,158 +200,45 @@ class C_petty_cash extends CI_Controller
 			$this->load->view('error');
 		}
 	}
-	// Fungsi untuk update data Divisi
-	public function update()
-	{
-		// Ambil data dari POST request
-		$uuid = $this->input->post('uuid'); 
-		$code_petty_cash = $this->input->post('kode_petty_cash');
-		$nama_petty_cash = $this->input->post('nama_petty_cash');
-		$alias_post       = $this->input->post('alias');
-		// Cek apakah UUID Divisi ada di database
-		$data =  $this->M_petty_cash->get_where_petty_cash(['a.uuid' => $uuid])->row();
-		if ($data != null) {
-			$code_company = $data->code_company;
-			$cek_cost_center =  $this->M_global->getWhere('cost_centers', ['code_petty_cash' => $data->code_petty_cash])->num_rows();
-			if ($cek_cost_center != 0) {
-				$jsonmsg = [
-					'hasil' => 'false',
-					'pesan' => 'Tidak bisa mengubah Data Divisi karena sedang digunakan di cost centers.',
-				];
-				echo json_encode($jsonmsg);
-				exit;
-			}
-			if($data->code_petty_cash != $code_petty_cash){
-				$cekkode =  $this->M_petty_cash->get_where_petty_cash(['a.code_petty_cash' => $code_petty_cash, "a.code_company" => $code_company ])->num_rows();
-				if ($cekkode != 0) {
-					$jsonmsg = [
-						'hasil' => 'false',
-						'pesan' => 'Kode Depo sudah terdaftar',
-					];
-					echo json_encode($jsonmsg);
-					exit;
-				}
-			}
-			if($data->name != $nama_petty_cash){
-				$param_nama = ['a.name' => $nama_petty_cash, "a.code_company" => $code_company];
-				$ceknama =  $this->M_petty_cash->get_where_petty_cash($param_nama)->num_rows();
-				if ($ceknama !== 0) {
-					$jsonmsg = [
-						'hasil' => 'false',
-						'pesan' => 'Nama sudah terdaftar',
-					];
-					echo json_encode($jsonmsg);
-					exit;
-				}
-			}
-			if($data->alias !== $alias_post){
-				$cekalias =  $this->M_petty_cash->get_where_petty_cash(['a.alias' => $alias_post])->num_rows();
-				if ($cekalias !== 0) {
-					$jsonmsg = [
-						'hasil' => 'false',
-						'pesan' => 'Alias sudah terdaftar',
-					];
-					echo json_encode($jsonmsg);
-					exit;
-				}
-			}
-			$dataupdate = [
-				'code_petty_cash'  => $code_petty_cash,
-				'name'         => $nama_petty_cash,
-				'alias'        => $alias_post,
-				'updated_at'   => date('Y-m-d H:i:s')
-			];
-			// Melakukan update data
-			$update = $this->M_global->update($dataupdate, 'divisions', ['uuid' => $uuid]);
-			if ($update) {
-				// Jika update berhasil
-				$jsonmsg = [
-					'hasil' => 'true',
-					'pesan' => 'Data Berhasil Diupdate',
-				];
-				echo json_encode($jsonmsg);
-			} else {
-				// Jika gagal update
-				$jsonmsg = [
-					'hasil' => 'false',
-					'pesan' => 'Gagal Menyimpan Data',
-				];
-				echo json_encode($jsonmsg);
-			}
-			
-		} else {
-			// Jika UUID Divisi tidak ditemukan
-			$jsonmsg = [
-				'hasil' => 'false',
-				'pesan' => 'UUID Divisi tidak ditemukan',
-			];
-			echo json_encode($jsonmsg);
-		}
-	}
-	public function hapusdata()
+	
+	public function voiddata()
 	{
 		$uuid = $this->input->post('uuid');
 		// Validasi input
 		if (empty($uuid)) {
 			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'UUID tidak boleh kosong'
+				'pesan' => 'UUID cannot be empty'
 			]);
 			return;
 		}
 		$param_kode = ['a.uuid' => $uuid];
-		$divisi = $this->M_petty_cash->get_where_petty_cash($param_kode)->row();
+		$petty_cash = $this->M_petty_cash->get_where_petty_cash($param_kode)->row();
 		// Jika data tidak ditemukan
-		if (!$divisi) {
+		if (!$petty_cash) {
 			$this->db->trans_rollback();
 			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'Data tidak ditemukan'
+				'pesan' => 'Data cannot be found.'
 			]);
 			return;
 		}
-		$cek_cc = $this->M_global->getWhere('cost_centers', ['code_petty_cash' => $divisi->code_petty_cash])->num_rows();
-		if ($cek_cc != 0) {
+		$dataupdate = [
+			'status'     => 'VOID',
+			'updated_at' => date('Y-m-d H:i:s'),
+			'user_up'    => $this->session->userdata('sess_username'),
+		];
+		// Melakukan update data
+		$update = $this->M_global->update($dataupdate, 'petty_cash_headers', ['uuid' => $uuid]);
+		if($update == 'TRUE'){
 			echo json_encode([
-				'hasil' => 'false',
-				'pesan' => 'Tidak bisa Menghapus Data, karena sedang digunakan di cost centers.',
+				'hasil' => 'true',
+				'pesan' => 'Data successfully voided.'
 			]);
-			return;
-		}
-		$this->db->trans_begin();
-		try {
-			// Ambil data divisi berdasarkan UUID
-			
-			// Lakukan penghapusan data di tabel divisions
-			$this->db->where('uuid', $uuid)->delete('divisions');
-			if ($this->db->affected_rows() <= 0) {
-				$this->db->trans_rollback();
-				echo json_encode([
-					'hasil' => 'false',
-					'pesan' => 'Data gagal dihapus atau tidak ditemukan'
-				]);
-				return;
-			}
-			// Pastikan semua operasi berhasil
-			if ($this->db->trans_status() === FALSE) {
-				$this->db->trans_rollback();
-				echo json_encode([
-					'hasil' => 'false',
-					'pesan' => 'Terjadi kesalahan dalam transaksi, rollback dijalankan'
-				]);
-			} else {
-				$this->db->trans_commit();
-				echo json_encode([
-					'hasil' => 'true',
-					'pesan' => 'Data berhasil dihapus'
-				]);
-			}
-		} catch (Exception $e) {
-			// Jika ada error di proses apapun → rollback
-			$this->db->trans_rollback();
+		} else {
 			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'Terjadi error: ' . $e->getMessage()
+				'pesan' => 'Failed to void data.'
 			]);
 		}
 	}
