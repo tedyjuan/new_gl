@@ -54,7 +54,7 @@
 	</div>
 </div>
 <!-- Modal Filter-->
-<div class="modal fade" id="modalfilter" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalfilterLabel" aria-hidden="true">
+<div class="modal fade" id="modalfilter" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalfilterLabel">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header bg-secondary">
@@ -63,8 +63,8 @@
 			<form id="form_filter">
 				<div class="modal-body">
 					<div class="mb-2">
-						<label class="form-label" for="batc_voucher">Batch / Voucher</label>
-						<input type="text" id="batc_voucher" name="batc_voucher" class="form-control" placeholder="search batch or voucher">
+						<label class="form-label" for="batch_voucher">Batch / Voucher</label>
+						<input type="text" id="batch_voucher" name="batch_voucher" class="form-control" placeholder="search batch or voucher">
 					</div>
 					<div class="mb-2">
 						<label class="form-label" for="date_periode">Date Period</label>
@@ -83,8 +83,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal"><i class="bi bi-x"></i> Close</button>
-					<button type="button" class="btn btn-sm btn-primary" onclick="wait()"><i class="bi bi-search"></i> Search</button>
+					<button type="button" id="btn_cancel" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal"><i class="bi bi-x"></i> Close</button>
+					<button type="button" class="btn btn-sm btn-primary" onclick="filters()"><i class="bi bi-search"></i> Search</button>
 				</div>
 			</form>
 		</div>
@@ -124,6 +124,11 @@
 </div>
 <script>
 	function initTable() {
+		var branch = $('#branch').val();
+		var date_periode = $('#date_periode').val();
+		var journal_type = $('#journal_type').val();
+		console.log(branch, date_periode, journal_type);
+
 		// kalau sebelumnya sudah ada instance, hancurkan dulu
 		if (window.mytableDT && $.fn.dataTable.isDataTable('#mytable')) {
 			window.mytableDT.clear().destroy();
@@ -136,10 +141,15 @@
 			ajax: {
 				url: "<?= base_url('C_journal_entry/griddata'); ?>",
 				type: "POST",
+				data: function(d) {
+					d.batch_voucher = $('#batch_voucher').val();
+					d.date_periode = $('#date_periode').val();
+					d.journal_type = $('#journal_type').val();
+				}
 			},
 			columnDefs: [{
 				orderable: false,
-				targets: -1 // Menonaktifkan sorting pada kolom terakhir (aksi)
+				targets: -1
 			}],
 			destroy: true,
 			retrieve: true
@@ -179,5 +189,18 @@
 
 	function wait() {
 		swet_gagal("feature Under Development");
+	}
+
+	function filters() {
+		$('#btn_cancel').click();
+		if (window.mytableDT) {
+			window.mytableDT.ajax.reload(null, false); // reload data tanpa reset paging
+		} else {
+			initTable(); // fallback kalau belum ke-init
+		}
+
+		// RESET FORM SETELAH KIRIM
+		$('#form_filter')[0].reset(); // reset input biasa
+		$('#journal_type').val('').trigger('change'); // reset select2
 	}
 </script>

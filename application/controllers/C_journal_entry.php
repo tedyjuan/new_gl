@@ -24,6 +24,7 @@ class C_journal_entry extends CI_Controller
 	}
 	public function griddata()
 	{
+		
 		$start          = $this->input->post('start') ?? 0;
 		$length         = $this->input->post('length') ?? 10;
 		$search_input   = $this->input->post('search');

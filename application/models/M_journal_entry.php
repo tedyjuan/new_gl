@@ -9,9 +9,38 @@ class M_journal_entry extends CI_Model
 	}
 	public function get_paginated_journal_entry($limit, $start, $search, $order_by, $order_dir)
 	{
+		$batch_voucher = $this->input->post('batch_voucher');
+		$date_periode  = $this->input->post('date_periode');
+		$journal_type  = $this->input->post('journal_type');
 		$this->db->select('a.*, b.description AS journal_source_name');
 		$this->db->from('journals as a');
 		$this->db->join('journal_sources as b', 'b.code_journal_source = a.code_journal_source', 'left');
+		if ($date_periode != '') {
+			// cek apakah mengandung " to "
+			if (strpos($date_periode, ' to ') !== false) {
+				// format range: start to end
+				$dateRange = explode(' to ', $date_periode);
+				if (count($dateRange) === 2) {
+					$startDate = $dateRange[0];
+					$endDate   = $dateRange[1];
+					$this->db->where('a.transaction_date >=', $startDate);
+					$this->db->where('a.transaction_date <=', $endDate);
+				} 
+			} else {
+				// format single date
+				$startDate = $date_periode;
+				$endDate   = $date_periode;
+				$this->db->where('a.transaction_date', $startDate);
+			}
+		}
+		// filter jenis jurnal
+		if ($journal_type != '') {
+			$this->db->where('a.code_journal_source', $journal_type);
+		}
+		// filter batch / voucher
+		if ($batch_voucher != '') {
+			$this->db->where('a.batch_number', $batch_voucher);
+		}
 		// pencarian
 		if (!empty($search)) {
 			$this->db->group_start()
