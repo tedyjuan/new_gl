@@ -38,7 +38,7 @@ class C_journal_source extends CI_Controller
 		$data           = $this->M_journal_source->get_paginated_journal_source($length, $start, $search, $order_by, $dir);
 		$total_records  = $this->M_journal_source->count_all_journal_source();
 		$total_filtered = $this->M_journal_source->count_filtered_journal_source($search);
-		$url_detail   = 'C_journal_source/detailform';
+		$url_edit   = 'C_journal_source/editform';
 		$url_delete = 'C_journal_source/hapusdata';
 		$load_grid  = 'C_journal_source/griddata';
 		$result = [];
@@ -48,7 +48,7 @@ class C_journal_source extends CI_Controller
 					More <i class="bi-chevron-down ms-1"></i>
 				</button>
 				<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->code_journal_source . '">
-					<button class="dropdown-item" onclick="detail(\'' . $url_detail . '\', \'' . $row->uuid . '\')">
+					<button class="dropdown-item" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
 						<i class="bi bi-pen"></i> Edit
 					</button>
 					<div class="dropdown-divider"></div>
@@ -106,7 +106,7 @@ class C_journal_source extends CI_Controller
 		if ($exisCode != null) {
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Kode journal sources sudah digunakan',
+				'pesan' => 'Code Journal is already registered',
 			];
 			echo json_encode($jsonmsg);
 			exit;
@@ -122,12 +122,12 @@ class C_journal_source extends CI_Controller
 		if ($this->db->affected_rows() > 0) {
 			$jsonmsg = [
 				'hasil' => 'true',
-				'pesan' => 'Data Berhasil Disimpan',
+				'pesan' => 'Data successfully saved',
 			];
 		} else {
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Gagal Menyimpan Data',
+				'pesan' => 'Failed to save data',
 			];
 		}
 		echo json_encode($jsonmsg);
@@ -212,7 +212,7 @@ class C_journal_source extends CI_Controller
 		if (empty($uuid)) {
 			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'UUID tidak boleh kosong'
+				'pesan' => 'UUID cannot be empty'
 			]);
 			return;
 		}
@@ -221,7 +221,7 @@ class C_journal_source extends CI_Controller
 		if (!$journal_source) {
 			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'Data tidak ditemukan'
+				'pesan' => 'Data not found'
 			]);
 			return;
 		}
@@ -233,7 +233,7 @@ class C_journal_source extends CI_Controller
 				$this->db->trans_rollback();
 				echo json_encode([
 					'hasil' => 'false',
-					'pesan' => 'Data gagal dihapus atau tidak ditemukan'
+					'pesan' => 'Failed to delete data or data not found'
 				]);
 				return;
 			}
@@ -242,13 +242,13 @@ class C_journal_source extends CI_Controller
 				$this->db->trans_rollback();
 				echo json_encode([
 					'hasil' => 'false',
-					'pesan' => 'Terjadi kesalahan dalam transaksi, rollback dijalankan'
+					'pesan' => 'An error occurred during the transaction, rollback executed'
 				]);
 			} else {
 				$this->db->trans_commit();
 				echo json_encode([
 					'hasil' => 'true',
-					'pesan' => 'Data berhasil dihapus'
+					'pesan' => 'Data successfully deleted'
 				]);
 			}
 		} catch (Exception $e) {

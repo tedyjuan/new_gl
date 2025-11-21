@@ -20,10 +20,10 @@
 		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%">
 			<thead>
 				<tr class="table-primary">
-					<th style="width: 15%;">Kode Company</th>
-					<th>Nama Depo</th>
-					<th>Kode</th>
-					<th>Deskripsi</th>
+					<th style="width: 15%;">Company</th>
+					<th>Name Branch</th>
+					<th>Code Journal Source</th>
+					<th>Description</th>
 					<th style="width: 5%">Action</th>
 				</tr>
 			</thead>
