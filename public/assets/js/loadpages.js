@@ -156,6 +156,9 @@ function hapus(uuid, url_hapus, load_grid) {
 				data: {
 					uuid: uuid,
 				},
+				beforeSend: function () {
+					showLoader();
+				},
 				success: function (data) {
 					if (data.hasil == "true") {
 						hideLoader();

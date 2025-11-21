@@ -359,7 +359,7 @@
 					contentType: 'application/json',
 					dataType: 'JSON',
 					beforeSend: function() {
-						// showLoader();
+						showLoader();
 					},
 					success: function(data) {
 						console.log(data);

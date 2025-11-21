@@ -58,10 +58,7 @@ class M_chart_of_account extends CI_Model
 		$this->db->select('account_type, code_trialbalance1, description, code_company');
 		$this->db->from('trial_balance_account_group_1');
 		$this->db->where('code_company', $code_company);
-		if($akun_type == null){
-			// hanya menampilkan type akun
-			$this->db->group_by('account_type');
-		}else{
+		if($akun_type != null){
 			// hanya menampilkan ke tbg1 by akun spesifix
 			$this->db->where('account_type', $akun_type);
 			$this->db->group_by('account_type, code_trialbalance1, description, code_company');

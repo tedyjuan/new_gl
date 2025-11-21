@@ -119,7 +119,7 @@ class C_chart_of_account extends CI_Controller
 	
 	public function get_tbag1(){
 		$code_company = $this->input->post('code_company');
-		$akun_type = $this->input->post('akun_type');
+		$akun_type    = $this->input->post('akun_type');
 		$tbag1 = $this->M_chart_of_account->get_tbag1Bycompany($code_company, $akun_type);
 		echo json_encode($tbag1);
 	}
