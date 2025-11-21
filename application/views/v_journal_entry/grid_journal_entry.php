@@ -107,7 +107,7 @@
 			<div class="modal-header bg-info">
 				<h4 class="modal-title mb-3 text-white" id="modalpostingLabel">POSTING JOURNAL</h4>
 			</div>
-			<form id="form_filter">
+			<form id="form_posting">
 				<div class="modal-body">
 					<div class="mb-2">
 						<select style="width:100%" id="branch" name="branch" class="form-control-hover-light form-control select2"
@@ -120,13 +120,13 @@
 						<span class="text-danger err_branch"></span>
 					</div>
 					<div class="mb-2">
-						<label class="form-label" for="date_periode">Date Period</label>
-						<input type="text" id="date_periode" name="date_periode" class="form-control date_periode" placeholder="search date periode">
+						<label class="form-label" for="date_periode_journal">Date Period</label>
+						<input type="text" id="date_periode_journal" name="date_periode_journal" class="form-control" placeholder="search date periode">
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal"><i class="bi bi-x"></i> Close</button>
-					<button type="button" class="btn btn-sm btn-primary" onclick="wait()"><i class="bi bi-check2-circle"></i> Posting</button>
+					<button type="button" id="btn_cancel" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal"><i class="bi bi-x"></i> Close</button>
+					<button type="button" class="btn btn-sm btn-primary" onclick="posting_journal()"><i class="bi bi-check2-circle"></i> Posting</button>
 				</div>
 			</form>
 		</div>
@@ -191,11 +191,46 @@
 				}
 			}
 		});
-
+		$('#date_periode_journal').datepicker({
+			format: "yyyy-mm",
+			startView: "months",
+			minViewMode: "months",
+			autoclose: true,
+			orientation: "bottom auto"
+		});
 	});
 
-	function wait() {
-		swet_gagal("feature Under Development");
+	function posting_journal() {
+		let form = $('#form_posting');
+		form.parsley().validate();
+		if (form.parsley().isValid()) {
+			$.ajax({
+				url: "<?= base_url('C_journal_entry/posting_journal') ?>",
+				type: 'POST',
+				method: 'POST',
+				dataType: 'JSON',
+				data: form.serialize(),
+				beforeSend: function() {
+					showLoader();
+				},
+				success: function(data) {
+					hideLoader();
+					if (data.hasil == 'true') {
+						swet_sukses(data.pesan);
+						if (window.mytableDT) {
+							window.mytableDT.ajax.reload(null, false);
+						} else {
+							initTable();
+						}
+					} else {
+						swet_gagal(data.pesan);
+					}
+					$('#modalposting').modal('hide');
+					$('#form_posting')[0].reset();
+					$('#branch').val('').trigger('change');
+				},
+			});
+		}
 	}
 
 	function filters() {

@@ -435,4 +435,13 @@ class C_journal_entry extends CI_Controller
 			]);
 		}
 	}
+
+	public function posting_journal()
+	{
+		$jsonmsg = [
+		'hasil' => 'true',
+		'pesan' => 'Feature under development',
+		];
+		echo json_encode($jsonmsg);
+	}
 }

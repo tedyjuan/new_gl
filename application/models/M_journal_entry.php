@@ -16,6 +16,7 @@ class M_journal_entry extends CI_Model
 		$this->db->select('a.*, b.description AS journal_source_name');
 		$this->db->from('journals as a');
 		$this->db->join('journal_sources as b', 'b.code_journal_source = a.code_journal_source', 'left');
+		$this->db->where('a.status', 'unposted');
 		if ($date_periode != '') {
 			// cek apakah mengandung " to "
 			if (strpos($date_periode, ' to ') !== false) {
