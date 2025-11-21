@@ -172,7 +172,7 @@ class C_chart_of_account extends CI_Controller
 		if ($exisCode != null) {
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Kode Chart Of Account sudah digunakan',
+				'pesan' => 'Code Chart Of Account already exist',
 			];
 			echo json_encode($jsonmsg);
 			exit;
@@ -185,7 +185,7 @@ class C_chart_of_account extends CI_Controller
 		if ($exisName != null) {
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Nama Chart Of Account sudah digunakan',
+				'pesan' => 'Name Chart Of Account already exist',
 			];
 			echo json_encode($jsonmsg);
 			exit;
@@ -213,12 +213,12 @@ class C_chart_of_account extends CI_Controller
 		if ($this->db->affected_rows() > 0) {
 			$jsonmsg = [
 				'hasil' => 'true',
-				'pesan' => 'Data Berhasil Disimpan',
+				'pesan' => 'Data successfully saved',
 			];
 		} else {
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Gagal Menyimpan Data',
+				'pesan' => 'Failed to save data',
 			];
 		}
 		echo json_encode($jsonmsg);
@@ -277,7 +277,7 @@ class C_chart_of_account extends CI_Controller
 					$this->db->trans_rollback();
 					$jsonmsg = [
 						'hasil' => 'false',
-						'pesan' => 'Kode Chart Of Account sudah digunakan',
+						'pesan' => 'Code Chart Of Account already exist',
 					];
 					echo json_encode($jsonmsg);
 					exit;
@@ -296,7 +296,7 @@ class C_chart_of_account extends CI_Controller
 					$this->db->trans_rollback();
 					$jsonmsg = [
 						'hasil' => 'false',
-						'pesan' => 'Nama Chart Of Account sudah digunakan',
+						'pesan' => 'Name Chart Of Account already exist',
 					];
 					echo json_encode($jsonmsg);
 					exit;
@@ -323,13 +323,13 @@ class C_chart_of_account extends CI_Controller
 			if ($updatedb == TRUE) {
 				$jsonmsg = [
 					'hasil' => 'true',
-					'pesan' => 'Data Berhasil Diupdate',
+					'pesan' => 'Data successfully updated',
 				];
 				echo json_encode($jsonmsg);
 			} else {
 				$jsonmsg = [
 					'hasil' => 'false',
-					'pesan' => 'Gagal Update Data',
+					'pesan' => 'Failed to update data',
 				];
 				echo json_encode($jsonmsg);
 			}
@@ -338,7 +338,7 @@ class C_chart_of_account extends CI_Controller
 			$this->db->trans_rollback();
 			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'UUID tidak Terdaftar'
+				'pesan' => 'UUID not registered'
 			]);
 			return;
 		}
@@ -352,7 +352,7 @@ class C_chart_of_account extends CI_Controller
 		if (empty($uuid)) {
 			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'UUID tidak boleh kosong'
+				'pesan' => 'UUID cannot be empty'
 			]);
 			exit;
 		}
@@ -363,7 +363,7 @@ class C_chart_of_account extends CI_Controller
 			$this->db->trans_rollback();
 			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'Data tidak ditemukan'
+				'pesan' => 'Data not found'
 			]);
 			exit;
 		}
@@ -382,7 +382,7 @@ class C_chart_of_account extends CI_Controller
 					'a.code_header' => $account_number, // 1000
 					'a.code_company' => $code_company,
 				];
-				$pesan = 'Gagal Hapus, No COA : ' . $account_number . ' masih memiliki akun Ledger.';
+				$pesan = 'Failed to delete, COA No: ' . $account_number . ' still has Ledger accounts.';
 				
 			}
 			if ($kategori == 'ledger') {
@@ -390,7 +390,7 @@ class C_chart_of_account extends CI_Controller
 					'a.code_ledger' => $account_number, // 100010
 					'a.code_company' => $code_company,
 				];
-				$pesan = 'Gagal Hapus, No COA : ' . $account_number . ' masih memiliki akun sub-Ledger.';
+				$pesan = 'Failed to delete, COA No: ' . $account_number . ' still has sub-Ledger accounts.';
 			}
 			$cek_ledger = $this->M_chart_of_account->get_where_chart_of_account($param_cheking)->num_rows();
 			if ($cek_ledger != 0) {
@@ -412,7 +412,7 @@ class C_chart_of_account extends CI_Controller
 				$this->db->trans_rollback();
 				echo json_encode([
 					'hasil' => 'false',
-					'pesan' => 'Data gagal dihapus atau tidak ditemukan'
+					'pesan' => 'Failed to delete data or data not found'
 				]);
 				exit;
 			}
@@ -421,13 +421,13 @@ class C_chart_of_account extends CI_Controller
 				$this->db->trans_rollback();
 				echo json_encode([
 					'hasil' => 'false',
-					'pesan' => 'Terjadi kesalahan dalam transaksi, rollback dijalankan'
+					'pesan' => 'An error occurred during the transaction, rollback executed'
 				]);
 			} else {
 				$this->db->trans_commit();
 				echo json_encode([
 					'hasil' => 'true',
-					'pesan' => 'Data berhasil dihapus'
+					'pesan' => 'Data successfully deleted'
 				]);
 			}
 		} catch (Exception $e) {
@@ -435,7 +435,7 @@ class C_chart_of_account extends CI_Controller
 			$this->db->trans_rollback();
 			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'Terjadi error: ' . $e->getMessage()
+				'pesan' => 'An error occurred: ' . $e->getMessage()
 			]);
 		}
 	}
@@ -560,7 +560,7 @@ class C_chart_of_account extends CI_Controller
 			if($cekledger != 0){
 				$jsonmsg = [
 					'hasil' => 'false',
-					'pesan' => 'No Ledger sudah di gunakan pada company ' . $code_company,
+					'pesan' => 'Ledger No already in use in company ' . $code_company,
 				];
 				echo json_encode($jsonmsg);
 				exit;
@@ -632,7 +632,7 @@ class C_chart_of_account extends CI_Controller
 			if ($this->db->trans_status() === FALSE || $this->db->affected_rows() <= 0) {
 				$jsonmsg = [
 					'hasil' => 'false',
-					'pesan' => 'Gagal Menyimpan Data',
+					'pesan' => 'failed to save data',
 				];
 				echo json_encode($jsonmsg);
 				exit;
@@ -640,13 +640,13 @@ class C_chart_of_account extends CI_Controller
 			$this->db->trans_commit();
 			echo json_encode([
 				'hasil' => 'true',
-				'pesan' => 'Data Berhasil Disimpan',
+				'pesan' => 'Data successfully saved',
 			]);
 			return;
 		}else{
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Data ID-COA tidak ditemukan',
+				'pesan' => 'ID-COA data not found',
 			];
 			echo json_encode($jsonmsg);
 		}
@@ -730,7 +730,7 @@ class C_chart_of_account extends CI_Controller
 			if ($updatedb === FALSE) {
 				$jsonmsg = [
 					'hasil' => 'false',
-					'pesan' => 'Gagal Menyimpan Data',
+					'pesan' => 'failed to save data',
 				];
 				echo json_encode($jsonmsg);
 				exit;
@@ -738,13 +738,13 @@ class C_chart_of_account extends CI_Controller
 			$this->db->trans_commit();
 			echo json_encode([
 				'hasil' => 'true',
-				'pesan' => 'Data Berhasil Diupdate',
+				'pesan' => 'Data successfully updated',
 			]);
 			return;
 		}else{
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Data ID-COA tidak ditemukan',
+				'pesan' => 'ID-COA data not found',
 			];
 			echo json_encode($jsonmsg);
 		}
@@ -847,7 +847,7 @@ class C_chart_of_account extends CI_Controller
 				// Jika nomor ledger sudah ada
 				$jsonmsg = [
 					'hasil' => 'false',
-					'pesan' => 'No Sub-Ledger sudah di gunakan pada company ' . $code_company,
+					'pesan' => 'Sub-Ledger No already in use in company ' . $code_company,
 				];
 				echo json_encode($jsonmsg);
 				$this->db->trans_rollback(); // Rollback jika ada error
@@ -901,7 +901,7 @@ class C_chart_of_account extends CI_Controller
 				// Jika terjadi kesalahan, rollback transaksi
 				$jsonmsg = [
 					'hasil' => 'false',
-					'pesan' => 'Gagal Menyimpan Data',
+					'pesan' => 'failed to save data',
 				];
 				echo json_encode($jsonmsg);
 				$this->db->trans_rollback(); // Rollback jika ada error
@@ -910,14 +910,14 @@ class C_chart_of_account extends CI_Controller
 				$this->db->trans_commit(); // Commit transaksi
 				echo json_encode([
 					'hasil' => 'true',
-					'pesan' => 'Data Berhasil Disimpan',
+					'pesan' => 'Data successfully saved',
 				]);
 			}
 		} else {
 			// Jika ID-COA tidak ditemukan
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Data ID-COA tidak ditemukan',
+				'pesan' => 'ID-COA data not found',
 			];
 			echo json_encode($jsonmsg);
 			$this->db->trans_rollback(); // Rollback transaksi jika ID-COA tidak ditemukan
@@ -975,7 +975,7 @@ class C_chart_of_account extends CI_Controller
 			if ($this->db->trans_status() === FALSE) {
 				$jsonmsg = [
 					'hasil' => 'false',
-					'pesan' => 'Gagal Update Data',
+					'pesan' => 'failed to update data',
 				];
 				echo json_encode($jsonmsg);
 				$this->db->trans_rollback(); 
@@ -983,14 +983,14 @@ class C_chart_of_account extends CI_Controller
 				$this->db->trans_commit();
 				echo json_encode([
 					'hasil' => 'true',
-					'pesan' => 'Data Berhasil Diupdate',
+					'pesan' => 'Data successfully updated',
 				]);
 			}
 		} else {
 			// Jika ID-COA tidak ditemukan
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Data ID-COA tidak ditemukan',
+				'pesan' => 'ID-COA data not found',
 			];
 			echo json_encode($jsonmsg);
 			$this->db->trans_rollback(); // Rollback transaksi jika ID-COA tidak ditemukan

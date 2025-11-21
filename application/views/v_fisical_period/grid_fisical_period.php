@@ -5,6 +5,9 @@
 			<div class="col-md-12 d-flex justify-content-between">
 				<h2 class="mb-0"><?= $judul; ?></h2>
 				<div class="div">
+					<button class="btn btn-sm btn-primary" onclick="loadform('<?= $load_add ?>')">
+						<i class="bi bi-plus-circle"></i> Add data
+					</button>
 					<a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
 						onclick="loadform('<?= $load_grid ?>')">
 						<i class="bi bi-arrow-clockwise"></i> Refresh
@@ -18,6 +21,7 @@
 			<thead>
 				<tr class="table-primary">
 					<th style="width: 10%">No</th>
+					<th>Branch</th>
 					<th>Period</th>
 					<th>Status</th>
 					<th style="width: 5%">Action</th>

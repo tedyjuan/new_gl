@@ -53,6 +53,7 @@ class C_fisical_period extends CI_Controller
 			$result[] = [
 				$key++,
 				$row->year . '-' . $row->period,
+				$row->year . '-' . $row->period,
 				$row->status,
 				$aksi,
 			];
