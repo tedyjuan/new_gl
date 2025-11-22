@@ -18,9 +18,9 @@
 									<i class="bi bi-filter-square"></i> Filter Journal
 								</button>
 								<div class="dropdown-divider"></div>
-								<button class="dropdown-item text-primary" onclick="wait()">
+								<a class="dropdown-item text-primary" href="<?= base_url('Report/export_excel');?>" target="_blank">
 									<i class="bi bi-cloud-download"></i> Download Journal
-								</button>
+								</a>
 							</div>
 						</div>
 					</div>
