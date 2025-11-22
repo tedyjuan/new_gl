@@ -35,8 +35,7 @@ class C_fisical_period extends CI_Controller
 		$url_edit   = 'C_fisical_period/editform/';
 		$result = [];
 		foreach ($data as  $row) {
-			$aksi = '
-			<button type="button"  onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')" class="btn btn-soft-primary">Edit</button>';
+			$aksi = '<button type="button"  onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')" class="btn btn-soft-primary">Edit</button>';
 			$badge_status = '';
 			if ($row->status == 'open') {
 				$badge_status = '<span class="badge bg-success">Open</span>';
