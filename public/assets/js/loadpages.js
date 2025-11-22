@@ -131,7 +131,7 @@ function swet_gagal(pesan) {
 		icon: "info",
 		title: pesan,
 		showConfirmButton: false,
-		timer: 1500,
+		timer: 3000,
 	});
 }
 

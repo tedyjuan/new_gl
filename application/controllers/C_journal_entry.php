@@ -438,10 +438,138 @@ class C_journal_entry extends CI_Controller
 
 	public function posting_journal()
 	{
-		$jsonmsg = [
-		'hasil' => 'true',
-		'pesan' => 'Feature under development',
+		$branch  = $this->input->post('branch');
+		$periode = $this->input->post('date_periode_journal');
+
+		$expl = explode('-', $periode);
+		$year  = $expl[0];
+		$month = (int)$expl[1];
+
+		$param = [
+			'code_company' => $this->company,
+			'code_depo'    => $branch,
+			'year'         => $year,
+			'period'       => $month,
 		];
-		echo json_encode($jsonmsg);
+
+		// ===================================================================
+		// 1. VALIDASI FISCAL PERIOD
+		// ===================================================================
+		$cek_period = $this->M_global->getWhere("fiscal_periods", $param)->row();
+
+		if ($cek_period == null) {
+			echo json_encode([
+				'hasil'  => 'false',
+				'pesan'  => 'Please set template fiscal period.',
+				'detail' => []
+			]);
+			return;
+		}
+
+		if ($cek_period->status == 'closed') {
+			echo json_encode([
+				'hasil'  => 'false',
+				'pesan'  => 'Selected fiscal period is locked (closed).'
+			]);
+			return;
+		}
+
+		// ===================================================================
+		// 2. CEK JURNAL BALANCE
+		// ===================================================================
+		$check_balance = $this->M_journal_entry->check_journal_balance($branch, $year, $month);
+
+		if (!empty($check_balance)) {
+			echo json_encode([
+				'hasil'  => 'false',
+				'pesan'  => 'Journal entries not balanced.',
+				'detail' => $check_balance
+			]);
+			return;
+		}
+
+		// ===================================================================
+		// 3. MULAI TRANSAKSI
+		// ===================================================================
+		$this->db->trans_begin();
+
+		// ===================================================================
+		// 4. Ambil Data Summary per COA & Cost Center
+		// ===================================================================
+		$summary = $this->M_journal_entry->get_summary_posting($branch, $year, $month);
+
+		// ===================================================================
+		// 5. UPDATE / INSERT POSTING BALANCE
+		// ===================================================================
+		$batchInsert = []; // untuk insert 12 bulan sekaligus
+
+		foreach ($summary as $row) {
+
+			$where = [
+				'code_company'     => $this->company,
+				'code_depo'        => $branch,
+				'year'             => $year,
+				'code_coa'         => $row->code_coa,
+				'code_cost_center' => $row->code_cost_center,
+			];
+
+			// Check apakah sudah ada data untuk tahun tsb (1 tahun 12 bulan)
+			$existing = $this->db->get_where('posting_balances', $where)->result();
+
+			if ($existing) {
+				// UPDATE period yang sedang diposting
+				$whereUpdate = $where;
+				$whereUpdate['period'] = $month;
+
+				$this->db->set('debit',  'debit + ' . (float)$row->total_debit, FALSE);
+				$this->db->set('credit', 'credit + ' . (float)$row->total_credit, FALSE);
+				$this->db->set('updated_at', date('Y-m-d H:i:s'));
+				$this->db->where($whereUpdate);
+				$this->db->update('posting_balances');
+			} else {
+				// ========== INSERT BARU → 12 BULAN ==========
+				for ($i = 1; $i <= 12; $i++) {
+					$batchInsert[] = [
+						'uuid'             => $this->uuid->v4(),
+						'code_company'     => $this->company,
+						'code_depo'        => $branch,
+						'year'             => $year,
+						'period'           => $i,
+						'code_coa'         => $row->code_coa,
+						'code_cost_center' => $row->code_cost_center,
+						'opening_balance'  => 0,
+						'debit'            => ($i == $month) ? $row->total_debit : 0,
+						'credit'           => ($i == $month) ? $row->total_credit : 0,
+						'created_at'       => date('Y-m-d H:i:s'),
+						'updated_at'       => date('Y-m-d H:i:s'),
+					];
+				}
+			}
+		}
+
+		// INSERT BATCH kalau ada data baru
+		if (!empty($batchInsert)) {
+			$this->db->insert_batch('posting_balances', $batchInsert, 2000);
+		}
+
+		// ===================================================================
+		// 6. UPDATE JURNAL → POSTED
+		// ===================================================================
+		$this->db->set('status', 'posted');
+		$this->db->where('code_depo', $branch);
+		$this->db->where('year', $year);
+		$this->db->where('period', $month);
+		$this->db->update('journals');
+
+		// ===================================================================
+		// 7. TRANSAKSI COMMIT
+		// ===================================================================
+		if ($this->db->trans_status() === FALSE) {
+			$this->db->trans_rollback();
+			echo json_encode(['hasil' => 'false', 'pesan' => 'Posting failed, rolled back.']);
+		} else {
+			$this->db->trans_commit();
+			echo json_encode(['hasil' => 'true', 'pesan' => 'Posting success!']);
+		}
 	}
 }

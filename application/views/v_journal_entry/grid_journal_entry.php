@@ -123,6 +123,7 @@
 						<label class="form-label" for="date_periode_journal">Date Period</label>
 						<input type="text" id="date_periode_journal" name="date_periode_journal" class="form-control" placeholder="search date periode">
 					</div>
+					<div id="list_journal"></div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" id="btn_cancel" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal"><i class="bi bi-x"></i> Close</button>
@@ -211,7 +212,7 @@
 				dataType: 'JSON',
 				data: form.serialize(),
 				beforeSend: function() {
-					showLoader();
+					// showLoader();
 				},
 				success: function(data) {
 					hideLoader();
@@ -222,12 +223,26 @@
 						} else {
 							initTable();
 						}
+						$('#modalposting').modal('hide');
+						$('#form_posting')[0].reset();
+						$('#branch').val('').trigger('change');
 					} else {
 						swet_gagal(data.pesan);
+						var length = data.details.length;
+						if (length > 0) {
+							$('#list_journal').empty();
+							$.each(data.details, function(index, item) {
+								$('#list_journal').append(
+									'<p>Batch Number ' + ': ' + item.batch_number + '</p>'
+								);
+							});
+						} else {
+							$('#modalposting').modal('hide');
+							$('#form_posting')[0].reset();
+							$('#branch').val('').trigger('change');
+						}
 					}
-					$('#modalposting').modal('hide');
-					$('#form_posting')[0].reset();
-					$('#branch').val('').trigger('change');
+
 				},
 			});
 		}

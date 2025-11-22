@@ -216,4 +216,41 @@ class M_journal_entry extends CI_Model
 				]);
 		}
 	}
+
+	 public function check_journal_balance($branch, $year, $month){
+		$sql = "SELECT
+				j.batch_number,
+				j.transaction_date,
+				COALESCE(SUM(ji.debit), 0) AS total_debit,
+				COALESCE(SUM(ji.credit), 0) AS total_credit,
+				(COALESCE(SUM(ji.debit), 0) - COALESCE(SUM(ji.credit), 0)) AS difference
+			FROM journals j
+			LEFT JOIN journal_items ji ON j.batch_number = ji.batch_number
+			WHERE j.code_depo = ?
+			AND j.status = 'unposted'
+			AND YEAR(j.transaction_date) = ?
+			AND MONTH(j.transaction_date) = ?
+			GROUP BY j.batch_number, j.transaction_date
+			HAVING difference <> 0;";
+		$param = [$branch, $year, $month];
+		$query = $this->db->query($sql, $param)->result();
+		return $query;
+	}
+	public function get_summary_posting($code_depo, $year, $period)
+	{
+		$sql = "SELECT
+				ji.code_coa,
+				ji.code_cost_center,
+				SUM(ji.debit) AS total_debit,
+				SUM(ji.credit) AS total_credit
+			FROM journal_items ji
+			JOIN journals j ON j.batch_number = ji.batch_number
+			WHERE j.code_depo = ?
+			AND j.year = ?
+			AND j.period = ?
+			AND j.status = 'unposted'
+			GROUP BY ji.code_coa, ji.code_cost_center
+		";
+		return $this->db->query($sql, [$code_depo, $year, $period])->result();
+	}
 }
