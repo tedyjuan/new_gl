@@ -98,7 +98,7 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header bg-info">
-				<h4 class="modal-title mb-3 text-white" id="modalpostingLabel">POSTING JOURNAL</h4>
+				<h4 class="modal-title mb-3 text-white" id="modalpostingLabel">UN-POSTING JOURNAL</h4>
 			</div>
 			<form id="form_posting">
 				<div class="modal-body">
@@ -120,7 +120,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" id="btn_cancel" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal"><i class="bi bi-x"></i> Close</button>
-					<button type="button" class="btn btn-sm btn-primary" onclick="posting_journal()"><i class="bi bi-check2-circle"></i> Posting</button>
+					<button type="button" class="btn btn-sm btn-primary" onclick="unposting_journal()"><i class="bi bi-check2-circle"></i> Posting</button>
 				</div>
 			</form>
 		</div>
@@ -194,12 +194,12 @@
 		});
 	});
 
-	function posting_journal() {
+	function unposting_journal() {
 		let form = $('#form_posting');
 		form.parsley().validate();
 		if (form.parsley().isValid()) {
 			$.ajax({
-				url: "<?= base_url('C_journal_entry/posting_journal') ?>",
+				url: "<?= base_url('C_journal_posted/unposting_journal') ?>",
 				type: 'POST',
 				method: 'POST',
 				dataType: 'JSON',

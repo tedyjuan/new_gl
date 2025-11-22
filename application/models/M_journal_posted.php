@@ -9,7 +9,7 @@ class M_journal_posted extends CI_Model
 	}
 	public function get_paginated_journal_posted($limit, $start, $search, $order_by, $order_dir)
 	{
-		$batch_voucher = $this->input->post('batch_voucher');
+		$batch_voucher = trim($this->input->post('batch_voucher'));
 		$date_periode  = $this->input->post('date_periode');
 		$journal_type  = $this->input->post('journal_type');
 		$post_branch  = $this->input->post('post_branch');

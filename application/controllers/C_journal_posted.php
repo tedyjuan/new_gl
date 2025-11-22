@@ -75,4 +75,65 @@ class C_journal_posted extends CI_Controller
 			$this->load->view('error');
 		}
 	}
+	public function unposting_journal()
+	{
+		$branch  = $this->input->post('branch');
+		$periode = $this->input->post('date_periode_journal');
+
+		list($year, $month) = explode('-', $periode);
+		$month = (int)$month;
+
+		$param = [
+			'code_company' => $this->company,
+			'code_depo'    => $branch,
+			'year'         => $year,
+			'period'       => $month,
+		];
+
+		// 1. VALIDASI FISCAL PERIOD
+		$cek_period = $this->M_global->getWhere('fiscal_periods', $param)->row();
+		if (!$cek_period) {
+			echo json_encode(['hasil' => 'false', 'pesan' => 'Fiscal period not found']);
+			return;
+		}
+		if ($cek_period->status == 'closed') {
+			echo json_encode(['hasil' => 'false', 'pesan' => 'Period closed']);
+			return;
+		}
+
+		// 2. AMBIL POSTING BALANCE YANG AKAN DI-RESET
+		$balances = $this->db->get_where('posting_balances', $param)->result();
+		if (empty($balances)) {
+			echo json_encode(['hasil' => 'false', 'pesan' => 'No posting found']);
+			return;
+		}
+
+		// 3. TRANSAKSI
+		$this->db->trans_begin();
+
+		// 4. RESET NILAI (SET 0)
+		$this->db
+			->set('debit', 0)
+			->set('credit', 0)
+			->set('updated_at', date('Y-m-d H:i:s'))
+			->where($param)
+			->update('posting_balances');
+
+		// 5. UPDATE JOURNAL STATUS
+		$this->db
+			->set('status', 'unposted')
+			->where('code_depo', $branch)
+			->where('year', $year)
+			->where('period', $month)
+			->update('journals');
+
+		// 6. COMMIT
+		if ($this->db->trans_status() === FALSE) {
+			$this->db->trans_rollback();
+			echo json_encode(['hasil' => 'false', 'pesan' => 'Unposting failed']);
+		} else {
+			$this->db->trans_commit();
+			echo json_encode(['hasil' => 'true', 'pesan' => 'Unposting success']);
+		}
+	}
 }
