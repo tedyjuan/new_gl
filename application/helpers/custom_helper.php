@@ -198,3 +198,25 @@ if (!function_exists('getMonthName')) {
 		return 'Invalid Month'; // Kembalikan pesan error jika angka tidak valid
 	}
 }
+if (!function_exists('get_device_info')) {
+	function get_device_info()
+	{
+		$CI = &get_instance();
+		$CI->load->library('user_agent');
+
+		// Browser & version
+		$browser     = $CI->agent->browser();       // contoh: Chrome
+		$version     = $CI->agent->version();       // contoh: 142.0.0.0
+		$platform    = $CI->agent->platform();      // contoh: Windows 10
+
+		// Device (mobile / desktop)
+		if ($CI->agent->is_mobile()) {
+			$device = $CI->agent->mobile();         // Android, iPhone, etc
+		} else {
+			$device = "Desktop";
+		}
+
+		// Output format
+		return "{$browser} {$version}, {$platform}, {$device}";
+	}
+}

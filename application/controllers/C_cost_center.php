@@ -18,19 +18,19 @@ class C_cost_center extends CI_Controller
 		$segments    = $this->M_global->count_all_tabel('segments');
 		$pesan = '';
 		if ($companies == 0) {
-			$pesan .= "Master Department belum memiliki data.<br>";
+			$pesan .= "Master company is empty<br>";
 		}
 		if ($depos == 0) {
-			$pesan .= "Master Department belum memiliki data.<br>";
+			$pesan .= "Master depos is empty<br>";
 		}
 		if ($departments == 0) {
-			$pesan .= "Master Department belum memiliki data.<br>";
+			$pesan .= "Master departments is empty<br>";
 		}
 		if ($divisions == 0) {
-			$pesan .= "Master Division belum memiliki data.<br>";
+			$pesan .= "Master divisions is empty<br>";
 		}
 		if ($segments == 0) {
-			$pesan .= "Master Segment belum memiliki data.<br>";
+			$pesan .= "Master segments is empty<br>";
 		}
 		if ($pesan != '') {
 			$data['pesan'] = nl2br($pesan);

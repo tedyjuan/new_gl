@@ -72,7 +72,7 @@
 					</div>
 					<div class="mb-3">
 						<label class="form-label" for="akun_type">Tipe Akun</label>
-						<select id="akun_type" name="akun_type" class="form-control-hover-light form-control select2"
+						<select id="akun_type" name="akun_type" class="form-control-hover-light form-control select2" style="width: 100%;"
 							data-parsley-required="true" data-parsley-errors-container=".err_akun_type" required="">
 							<option value="">Pilih company dahulu</option>
 						</select>
@@ -189,7 +189,7 @@
 		} else {
 			$('#akun_type').empty().append('<option value="">Pilih</option>');
 		}
-		if (companyCode) {
+		if (companyCode != '') {
 			$.ajax({
 				url: '<?= base_url('C_chart_of_account/get_tbag1'); ?>',
 				method: 'POST',

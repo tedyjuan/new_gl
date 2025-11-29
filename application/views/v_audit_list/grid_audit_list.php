@@ -5,9 +5,6 @@
 			<div class="col-md-12 d-flex justify-content-between">
 				<h2 class="mb-0"><?= $judul; ?></h2>
 				<div class="div">
-					<button class="btn btn-sm btn-primary" onclick="loadform('<?= $load_add ?>')">
-						<i class="bi bi-plus-circle"></i> Add data
-					</button>
 					<a href="javascript:void(0)" class="btn btn-sm btn-outline-primary"
 						onclick="loadform('<?= $load_grid ?>')">
 						<i class="bi bi-arrow-clockwise"></i> Refresh
@@ -20,11 +17,13 @@
 		<table class="table table-sm table-striped table-hover table-bordered" id="mytable" style="width: 100%">
 			<thead>
 				<tr class="table-primary">
-					<th>Company</th>
-					<th>Code Department</th>
-					<th>Name Department</th>
-					<th>Abbreviation</th>
-					<th style="width: 5%">Action</th>
+					<th>Date</th>
+					<th>User</th>
+					<th>Branch</th>
+					<th>Batch Number</th>
+					<th>Method</th>
+					<th>Description</th>
+					<th style="width: 5%;">Action</th>
 				</tr>
 			</thead>
 		</table>
@@ -42,7 +41,7 @@
 			processing: true,
 			serverSide: true, // Mengaktifkan server-side processing
 			ajax: {
-				url: "<?= base_url('C_department/griddata'); ?>", // URL ke controller
+				url: "<?= base_url('C_audit_list/griddata'); ?>", // URL ke controller
 				type: "POST", // Gunakan GET untuk request
 			},
 			columnDefs: [{

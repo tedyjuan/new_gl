@@ -115,17 +115,17 @@ class C_depos extends CI_Controller
 
 		// Cek data duplikat
 		if ($this->db->where('code_depo', $kode_depo)->count_all_results('depos') > 0) {
-			echo json_encode(['hasil' => 'false', 'pesan' => 'Kode depo sudah digunakan']);
+			echo json_encode(['hasil' => 'false', 'pesan' => 'Code branch already exists']);
 			return;
 		}
 
 		if ($this->db->where('code_area', $kd_depo_cost_center)->count_all_results('depos') > 0) {
-			echo json_encode(['hasil' => 'false', 'pesan' => 'Kode Depo Cost Center sudah digunakan']);
+			echo json_encode(['hasil' => 'false', 'pesan' => 'Branch Cost Center Code already exists']);
 			return;
 		}
 
 		if ($this->db->where('alias', $singkatan_cost_center)->count_all_results('depos') > 0) {
-			echo json_encode(['hasil' => 'false', 'pesan' => 'Singkatan cost center sudah digunakan']);
+			echo json_encode(['hasil' => 'false', 'pesan' => 'Branch Cost Center Abbreviation already exists']);
 			return;
 		}
 
@@ -155,16 +155,16 @@ class C_depos extends CI_Controller
 			$this->db->insert('depos', $datainsert);
 			if ($this->db->affected_rows() <= 0) {
 				$this->db->trans_rollback();
-				echo json_encode(['hasil' => 'false', 'pesan' => 'Gagal Menyimpan Data']);
+				echo json_encode(['hasil' => 'false', 'pesan' => 'Failed to save data']);
 				return;
 			}
 			// Commit transaksi
 			$this->db->trans_commit();
 
-			echo json_encode(['hasil' => 'true', 'pesan' => 'Data Berhasil Disimpan']);
+			echo json_encode(['hasil' => 'true', 'pesan' => 'Data Successfully Saved']);
 		} catch (Exception $e) {
 			$this->db->trans_rollback();
-			echo json_encode(['hasil' => 'false', 'pesan' => 'Gagal Menyimpan Data: ' . $e->getMessage()]);
+			echo json_encode(['hasil' => 'false', 'pesan' => 'Failed to save data: ' . $e->getMessage()]);
 		}
 	}
 	public function editform($uuid)
@@ -276,13 +276,13 @@ class C_depos extends CI_Controller
 						$this->db->trans_commit();
 						$jsonmsg = [
 							'hasil' => 'true',
-							'pesan' => 'Data Berhasil Diupdate'
+							'pesan' => 'Data Successfully Updated'
 						];
 					} else {
 						$this->db->trans_rollback();
 						$jsonmsg = [
 							'hasil' => 'false',
-							'pesan' => 'Gagal Menyimpan Data'
+							'pesan' => 'failed to update data'
 						];
 					}
 				} else {
@@ -290,11 +290,11 @@ class C_depos extends CI_Controller
 					$this->db->trans_rollback();
 
 					if ($param_kode == 'TIDAK_LOLOS') {
-						$jsonmsg = ['hasil' => 'false', 'pesan' => 'Kode Depo sudah terdaftar'];
+						$jsonmsg = ['hasil' => 'false', 'pesan' => 'Branch code already exists'];
 					} elseif ($param_area == 'TIDAK_LOLOS') {
-						$jsonmsg = ['hasil' => 'false', 'pesan' => 'Kode Cost Center sudah terdaftar'];
+						$jsonmsg = ['hasil' => 'false', 'pesan' => 'Branch Cost Center Code already exists'];
 					} elseif ($param_alias == 'TIDAK_LOLOS') {
-						$jsonmsg = ['hasil' => 'false', 'pesan' => 'Singkatan cost center sudah terdaftar'];
+						$jsonmsg = ['hasil' => 'false', 'pesan' => 'Branch Cost Center Abbreviation already exists'];
 					}
 				}
 			} else {
@@ -302,7 +302,7 @@ class C_depos extends CI_Controller
 				$this->db->trans_rollback();
 				$jsonmsg = [
 					'hasil' => 'false',
-					'pesan' => 'UUID perusahaan tidak ditemukan'
+					'pesan' => 'UUID not found'
 				];
 			}
 
@@ -312,7 +312,7 @@ class C_depos extends CI_Controller
 			$this->db->trans_rollback();
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Terjadi kesalahan: ' . $e->getMessage()
+				'pesan' => 'An error occurred: ' . $e->getMessage()
 			];
 			echo json_encode($jsonmsg);
 		}
@@ -325,7 +325,7 @@ class C_depos extends CI_Controller
 		if (empty($uuid)) {
 			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'UUID tidak boleh kosong'
+				'pesan' => 'UUID cannot be empty'
 			]);
 			return;
 		}
@@ -340,7 +340,7 @@ class C_depos extends CI_Controller
 				$this->db->trans_rollback();
 				echo json_encode([
 					'hasil' => 'false',
-					'pesan' => 'Data tidak ditemukan'
+					'pesan' => 'Data not found'
 				]);
 				return;
 			}
@@ -352,7 +352,7 @@ class C_depos extends CI_Controller
 				$this->db->trans_rollback();
 				echo json_encode([
 					'hasil' => 'false',
-					'pesan' => 'Data gagal dihapus atau tidak ditemukan'
+					'pesan' => 'Failed to delete data or data not found'
 				]);
 				return;
 			}
@@ -362,13 +362,13 @@ class C_depos extends CI_Controller
 				$this->db->trans_rollback();
 				echo json_encode([
 					'hasil' => 'false',
-					'pesan' => 'Terjadi kesalahan dalam transaksi, rollback dijalankan'
+					'pesan' => 'An error occurred in the transaction, rollback executed'
 				]);
 			} else {
 				$this->db->trans_commit();
 				echo json_encode([
 					'hasil' => 'true',
-					'pesan' => 'Data berhasil dihapus'
+					'pesan' => 'Data successfully deleted'
 				]);
 			}
 		} catch (Exception $e) {
@@ -376,7 +376,7 @@ class C_depos extends CI_Controller
 			$this->db->trans_rollback();
 			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'Terjadi error: ' . $e->getMessage()
+				'pesan' => 'An error occurred: ' . $e->getMessage()
 			]);
 		}
 	}

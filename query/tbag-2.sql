@@ -10,182 +10,91 @@ VALUES
 	(
 		'd1217dbe-2445-423a-affc-f2ad3ae44616',
 		'AKL',
-		'ABC',
+		'BMP',
 		'AKTIVA LANCAR',
 		'AK'
 	),
 	(
 		'd1217dbe-2445-423a-affc-f2ad3ae44617',
 		'AKT',
-		'ABC',
+		'BMP',
 		'AKTIVA TETAP',
 		'AK'
 	),
 	(
 		'd1217dbe-2445-423a-affc-f2ad3ae44618',
 		'AKN',
-		'ABC',
+		'BMP',
 		'AKTIVA LAIN-LAIN',
 		'AK'
 	),
 	(
 		'd1217dbe-2445-423a-affc-f2ad3ae44619',
 		'AKTN',
-		'ABC',
+		'BMP',
 		'AKTIVA TETAP & LAIN-LAIN',
 		'AK'
 	),
 	(
 		'd1217dbe-2445-423a-affc-f2ad3ae44620',
 		'HL',
-		'ABC',
+		'BMP',
 		'HUTANG LANCAR',
 		'PS'
 	),
 	(
 		'd1217dbe-2445-423a-affc-f2ad3ae44621',
 		'HTL',
-		'ABC',
+		'BMP',
 		'HUTANG TIDAK LANCAR',
 		'PS'
 	),
 	(
 		'd1217dbe-2445-423a-affc-f2ad3ae44622',
 		'EM',
-		'ABC',
+		'BMP',
 		'EKUITAS / MODAL DISETOR',
 		'PS'
 	),
 	(
 		'd1217dbe-2445-423a-affc-f2ad3ae44623',
 		'LB',
-		'ABC',
+		'BMP',
 		'LABA RUGI',
 		'PS'
 	),
 	(
 		'd1217dbe-2445-423a-affc-f2ad3ae44624',
 		'LBTS',
-		'ABC',
+		'BMP',
 		'LABA RUGI TAHUN SEBELUM',
 		'PS'
 	),
 	(
 		'd1217dbe-2445-423a-affc-f2ad3ae44625',
 		'LBTB',
-		'ABC',
+		'BMP',
 		'LABA RUGI TAHUN BERJALAN',
 		'PS'
 	),
 	(
 		'd1217dbe-2445-423a-affc-f2ad3ae44626',
 		'BPA',
-		'ABC',
+		'BMP',
 		'BIAYA PENYUSUTAN & AMORTISASI',
 		'BU'
 	),
 	(
 		'd1217dbe-2445-423a-affc-f2ad3ae44627',
 		'BO',
-		'ABC',
+		'BMP',
 		'BIAYA OPERASIONAL',
 		'BUB'
 	),
 	(
 		'd1217dbe-2445-423a-affc-f2ad3ae44628',
 		'BA',
-		'ABC',
-		'BIAYA ADMINISTRASI',
-		'BUB'
-	),
-	(
-		'd1217dbe-2445-423a-affc-f2ad3ae44629',
-		'AKL',
-		'XYZ',
-		'AKTIVA LANCAR',
-		'AK'
-	),
-	(
-		'd1217dbe-2445-423a-affc-f2ad3ae44630',
-		'AKT',
-		'XYZ',
-		'AKTIVA TETAP',
-		'AK'
-	),
-	(
-		'd1217dbe-2445-423a-affc-f2ad3ae44631',
-		'AKN',
-		'XYZ',
-		'AKTIVA LAIN-LAIN',
-		'AK'
-	),
-	(
-		'd1217dbe-2445-423a-affc-f2ad3ae44632',
-		'AKTN',
-		'XYZ',
-		'AKTIVA TETAP & LAIN-LAIN',
-		'AK'
-	),
-	(
-		'd1217dbe-2445-423a-affc-f2ad3ae44633',
-		'HL',
-		'XYZ',
-		'HUTANG LANCAR',
-		'PS'
-	),
-	(
-		'd1217dbe-2445-423a-affc-f2ad3ae44634',
-		'HTL',
-		'XYZ',
-		'HUTANG TIDAK LANCAR',
-		'PS'
-	),
-	(
-		'd1217dbe-2445-423a-affc-f2ad3ae44635',
-		'EM',
-		'XYZ',
-		'EKUITAS / MODAL DISETOR',
-		'PS'
-	),
-	(
-		'd1217dbe-2445-423a-affc-f2ad3ae44636',
-		'LB',
-		'XYZ',
-		'LABA RUGI',
-		'PS'
-	),
-	(
-		'd1217dbe-2445-423a-affc-f2ad3ae44637',
-		'LBTS',
-		'XYZ',
-		'LABA RUGI TAHUN SEBELUM',
-		'PS'
-	),
-	(
-		'd1217dbe-2445-423a-affc-f2ad3ae44638',
-		'LBTB',
-		'XYZ',
-		'LABA RUGI TAHUN BERJALAN',
-		'PS'
-	),
-	(
-		'd1217dbe-2445-423a-affc-f2ad3ae44639',
-		'BPA',
-		'XYZ',
-		'BIAYA PENYUSUTAN & AMORTISASI',
-		'BU'
-	),
-	(
-		'd1217dbe-2445-423a-affc-f2ad3ae44640',
-		'BO',
-		'XYZ',
-		'BIAYA OPERASIONAL',
-		'BUB'
-	),
-	(
-		'd1217dbe-2445-423a-affc-f2ad3ae44641',
-		'BA',
-		'XYZ',
+		'BMP',
 		'BIAYA ADMINISTRASI',
 		'BUB'
 	);

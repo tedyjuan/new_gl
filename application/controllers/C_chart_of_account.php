@@ -135,6 +135,9 @@ class C_chart_of_account extends CI_Controller
 		$tbag3 = $this->M_chart_of_account->get_tbag3Bycompany($code_company, $tbag2);
 		echo json_encode($tbag3);
 	}
+	//@ ==================================================
+	//@ ==================================================
+	//@ ================= HEADER =========================
 	public function simpandata()
 	{
 		// Validasi input
@@ -570,6 +573,7 @@ class C_chart_of_account extends CI_Controller
 			// === TRANSAKSI DB ===
 			$this->db->trans_strict(TRUE);
 			$this->db->trans_begin();
+			$data_cc_res = [];
 			if($post_cc_start != '' && $post_cc_end != ''){
 				$cost_center_type = 'unit';
 				preg_match('/\((\d+)\)/', $post_cc_start, $start_match);
@@ -594,6 +598,8 @@ class C_chart_of_account extends CI_Controller
 				];
 				$data_cc_res = $this->M_global->getWhere('cost_centers', $where_cc)->result();
 			}
+			$new_data_pb = [];
+			$data_cc = [];
 			if (!empty($data_cc_res)) {
 				foreach ($data_cc_res as $row) {
 					$data_cc[] = [
@@ -604,7 +610,25 @@ class C_chart_of_account extends CI_Controller
 						'created_at'   => date('Y-m-d H:i:s'),
 						'updated_at'   => date('Y-m-d H:i:s'),
 					];
+					for ($i = 1; $i <= 12; $i++) {
+						$new_data_pb[] = [
+							'uuid'             => $this->uuid->v4(),
+							'code_company'     => $code_company,
+							'code_depo'        => $row->code_depo,
+							'year'             => date('Y'),
+							'period'           => $i,
+							'code_cost_center' => $row->code_cost_center,
+							'code_coa'         => (int)$noakun_ledger,
+							'opening_balance'  => 0,
+							'debit'            => 0,
+							'credit'           => 0,
+							'created_at'   => date('Y-m-d H:i:s'),
+							'updated_at'   => date('Y-m-d H:i:s'),
+						];
+					}
+	
 				}
+				$this->db->insert_batch('posting_balances', $new_data_pb);
 				$this->db->insert_batch('account_centers', $data_cc);
 			}
 			

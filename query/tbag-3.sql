@@ -11,7 +11,7 @@ INSERT INTO
 	)
 VALUES
 	(
-		'ABC',
+		'BMP',
 		'NP',
 		'NILAI PEROLEHAN',
 		'AK',
@@ -21,7 +21,7 @@ VALUES
 		NOW()
 	),
 	(
-		'ABC',
+		'BMP',
 		'AS',
 		'AKTIVA SGU',
 		'AK',
@@ -31,7 +31,7 @@ VALUES
 		NOW()
 	),
 	(
-		'ABC',
+		'BMP',
 		'HGB',
 		'HGB',
 		'AK',
@@ -41,7 +41,7 @@ VALUES
 		NOW()
 	),
 	(
-		'ABC',
+		'BMP',
 		'S',
 		'SOFTWARE',
 		'AK',
@@ -51,7 +51,7 @@ VALUES
 		NOW()
 	),
 	(
-		'ABC',
+		'BMP',
 		'AP',
 		'AKUMULASI PENYUSUTAN',
 		'AK',
@@ -61,7 +61,7 @@ VALUES
 		NOW()
 	),
 	(
-		'ABC',
+		'BMP',
 		'AAHGB',
 		'AKUMULASI AMORTISASI HGB',
 		'AK',
@@ -71,7 +71,7 @@ VALUES
 		NOW()
 	),
 	(
-		'ABC',
+		'BMP',
 		'AAS',
 		'AKUMULASI AMORTISASI SOFTWARE',
 		'AK',
@@ -81,87 +81,7 @@ VALUES
 		NOW()
 	),
 	(
-		'ABC',
-		'AP',
-		'AKUMULASI PENYUSUTAN',
-		'AK',
-		'AKN',
-		UUID(),
-		NOW(),
-		NOW()
-	),
-	(
-		'XYZ',
-		'NP',
-		'NILAI PEROLEHAN',
-		'AK',
-		'AKT',
-		UUID(),
-		NOW(),
-		NOW()
-	),
-	(
-		'XYZ',
-		'AS',
-		'AKTIVA SGU',
-		'AK',
-		'AKN',
-		UUID(),
-		NOW(),
-		NOW()
-	),
-	(
-		'XYZ',
-		'HGB',
-		'HGB',
-		'AK',
-		'AKN',
-		UUID(),
-		NOW(),
-		NOW()
-	),
-	(
-		'XYZ',
-		'S',
-		'SOFTWARE',
-		'AK',
-		'AKN',
-		UUID(),
-		NOW(),
-		NOW()
-	),
-	(
-		'XYZ',
-		'AP',
-		'AKUMULASI PENYUSUTAN',
-		'AK',
-		'AKT',
-		UUID(),
-		NOW(),
-		NOW()
-	),
-	(
-		'XYZ',
-		'AAHGB',
-		'AKUMULASI AMORTISASI HGB',
-		'AK',
-		'AKN',
-		UUID(),
-		NOW(),
-		NOW()
-	),
-	(
-		'XYZ',
-		'AAS',
-		'AKUMULASI AMORTISASI SOFTWARE',
-		'AK',
-		'AKT',
-		UUID(),
-		NOW(),
-		NOW()
-	),
-	(
-		'XYZ',
+		'BMP',
 		'AP',
 		'AKUMULASI PENYUSUTAN',
 		'AK',

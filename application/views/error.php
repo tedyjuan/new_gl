@@ -9,13 +9,17 @@
    		</div>
 
    		<div class="col-sm-7 col-lg-6 text-center text-sm-start">
-   			<h1 class="display-1 mb-0">404</h1>
+   			<?php if ($kode != '') { ?>
+   				<h1 class="display-1 mb-0"><?= $kode; ?></h1>
+   			<?php } else { ?>
+   				<h1 class="display-1 mb-0">404</h1>
+   			<?php } ?>
    			<?php if (empty($pesan)) { ?>
    				<p class="lead">Maaf, halaman yang Anda cari tidak dapat ditemukan.</p>
    			<?php } else { ?>
    				<p class="lead"><?php echo $pesan; ?></p>
    			<?php } ?>
-   			<a class="btn btn-primary" href="<?= base_url('/');?>">Kembali ke Halaman Utama</a>
+   			<a class="btn btn-primary" href="<?= base_url('/'); ?>">Kembali ke Halaman Utama</a>
    		</div>
    		<!-- End Col -->
    	</div>

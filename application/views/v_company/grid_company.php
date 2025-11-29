@@ -22,7 +22,7 @@
 				<tr class="table-primary">
 					<th style="width: 20%">Code Company</th>
 					<th style="width: 60%">Name Company</th>
-					<th style="width: 10%" class="text-center">Aksi</th>
+					<th style="width: 10%" class="text-center">Action</th>
 				</tr>
 			</thead>
 		</table>

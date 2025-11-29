@@ -56,4 +56,19 @@ MySQL Database (users, roles, menus, role_menu_access)
 
 Username: admin
 Password: admin
+
+
+Syarat Pembuatan Journal 
+1. Company harus sudah dibuat
+2. Branch harus sudah dibuat
+3. Department harus sudah dibuat
+4. segmen harus sudah dibuat
+5. divisi harus sudah dibuat
+6. Cost Center harus sudah dibuat
+7. trial balance harus sudah dibuat group 1,2,3 berdasarkan company
+8. cost Center harus sudah di assign ke user yang akan membuat journal
+9. chart of account harus sudah dibuat
+10. chart of account harus sudah di assign ke cost center
+
+
  

@@ -20,7 +20,7 @@
 			<div class="row">
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="perusahaan">Perusahaan</label>
+						<label class="form-label" for="perusahaan">Company</label>
 						<select id="perusahaan" name="perusahaan" class="form-control-hover-light form-control select2"
 							data-parsley-required="true" data-parsley-errors-container=".err_name" required="">
 							<option value="">Pilih</option>
@@ -30,11 +30,11 @@
 				</div>
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="kode_department">Kode Department</label>
+						<label class="form-label" for="kode_department">Code Department</label>
 						<input type="text" id="kode_department" name="kode_department" data-parsley-required="true"
 							data-parsley-errors-container=".err_kodedepartment" required=""
 							class="form-control-hover-light form-control"
-							placeholder="input kode department max:2 karakter">
+							placeholder="input code department max:2 characters">
 						<span class="text-danger err_kodedepartment"></span>
 					</div>
 				</div>
@@ -42,21 +42,21 @@
 			<div class="row">
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="nama_department">Nama Department</label>
+						<label class="form-label" for="nama_department">Name Department</label>
 						<input type="text" id="nama_department" name="nama_department"
 							class="form-control-hover-light form-control kapital" data-parsley-required="true"
 							data-parsley-errors-container=".err_namadepartment" required=""
-							placeholder="input nama department">
+							placeholder="input name department">
 						<span class="text-danger err_namadepartment"></span>
 					</div>
 				</div>
 				<div class="col-6">
 					<div class="mb-3">
-						<label class="form-label" for="alias">Alias</label>
+						<label class="form-label" for="alias">Abbreviation</label>
 						<input type="text" id="alias" name="alias" data-parsley-required="true"
 							data-parsley-errors-container=".err_sing_cc" required=""
 							class="form-control-hover-light form-control kapital"
-							placeholder="input singkatan cost center">
+							placeholder="input abbreviation">
 						<span class="text-danger err_sing_cc"></span>
 					</div>
 				</div>
@@ -98,7 +98,7 @@
 					}
 				},
 				error: function(xhr) {
-					
+
 					if (xhr.status === 422) {
 						let errors = xhr.responseJSON.errors;
 						$.each(errors, function(key, value) {

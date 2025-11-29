@@ -37,25 +37,27 @@ class C_company extends CI_Controller
 		$total_records = $this->M_company->count_all_companies();
 		$total_filtered = $this->M_company->count_filtered_companies($search);
 		$url_edit   = 'C_company/editform/';
-		$url_delete = 'C_company/hapusdata/';
-		$load_grid  = 'C_company/griddata';
+		// $url_delete = 'C_company/hapusdata/';
+		// $load_grid  = 'C_company/griddata';
 		// Format data untuk dikirimkan ke DataTables
 		$result = [];
 		foreach ($data as $row) {
-			$aksi = '<div class="dropdown">
-				<button type="button" class="btn btn-white btn-sm" id="aksi-dropdown-' . $row->code_company . '" data-bs-toggle="dropdown" aria-expanded="false">
-					More <i class="bi-chevron-down ms-1"></i>
-				</button>
-				<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->code_company . '">
-					<button class="dropdown-item editbtn" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
-						<i class="bi bi-pen"></i> Edit
-					</button>
-					<div class="dropdown-divider"></div>
-					<button class="dropdown-item text-danger" onclick="hapus(\'' . $row->uuid . '\', \'' . $url_delete . '\', \'' . $load_grid . '\')">
-						<i class="bi bi-trash3"></i> Delete
-					</button>
-				</div>
-			</div>';
+			$aksi = '<button type="button"  onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')" class="btn btn-soft-primary"><i class="bi bi-pen"></i> Edit</button>';
+
+			// $aksi = '<div class="dropdown">
+			// 	<button type="button" class="btn btn-white btn-sm" id="aksi-dropdown-' . $row->code_company . '" data-bs-toggle="dropdown" aria-expanded="false">
+			// 		More <i class="bi-chevron-down ms-1"></i>
+			// 	</button>
+			// 	<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end" aria-labelledby="aksi-dropdown-' . $row->code_company . '">
+			// 		<button class="dropdown-item editbtn" onclick="editform(\'' . $url_edit . '\', \'' . $row->uuid . '\')">
+			// 			<i class="bi bi-pen"></i> Edit
+			// 		</button>
+			// 		<div class="dropdown-divider"></div>
+			// 		</div>
+			// 		<button class="dropdown-item text-danger" onclick="hapus(\'' . $row->uuid . '\', \'' . $url_delete . '\', \'' . $load_grid . '\')">
+			// 			<i class="bi bi-trash3"></i> Delete
+			// 		</button>
+			// 		</div>';
 			$result[] = [
 				$row->code_company,  // code Company
 				$row->name,          // nama Company

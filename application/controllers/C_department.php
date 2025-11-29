@@ -11,7 +11,7 @@ class C_department extends CI_Controller
 	}
 	function index()
 	{
-		$data['judul']      = 'List Data Department';
+		$data['judul']      = 'List Department';
 		$data['load_grid']  = 'C_department';
 		$data['load_add']   = 'C_department/add';
 		$data['url_delete'] = 'C_department/delete';
@@ -67,7 +67,7 @@ class C_department extends CI_Controller
 	}
 	function add()
 	{
-		$data['judul']     = "Form Tambah Department";
+		$data['judul']     = "Form Add Department";
 		$data['load_back'] = 'C_department/add';
 		$data['load_grid'] = 'C_department';
 		$this->load->view("v_department/add_department", $data);

@@ -71,7 +71,7 @@ class M_cost_center extends CI_Model
 	}
 	public function getCC_Start_End_ByCompany($start, $end, $code_company)
 	{
-		$this->db->select('a.code_cost_center');
+		$this->db->select('a.code_cost_center, a.code_depo');
 		$this->db->from('cost_centers a');
 		$this->db->where('a.code_company', $code_company);
 		$this->db->where('a.code_cost_center >=', $start);

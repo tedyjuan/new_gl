@@ -98,12 +98,12 @@ class C_role extends CI_Controller
 		if ($this->db->affected_rows() > 0) {
 			$jsonmsg = [
 				'hasil' => 'true',
-				'pesan' => 'Data Berhasil Disimpan',
+				'pesan' => 'Data saved successfully',
 			];
 		} else {
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'Gagal Menyimpan Data',
+				'pesan' => 'Failed to save data',
 			];
 		}
 		echo json_encode($jsonmsg);
@@ -144,7 +144,7 @@ class C_role extends CI_Controller
 			if ($cek_cost_center != 0) {
 				$jsonmsg = [
 					'hasil' => 'false',
-					'pesan' => 'Tidak bisa mengubah Data Role karena sedang digunakan di cost centers.',
+					'pesan' => 'Cannot update Role data because it is still being used in cost centers.',
 				];
 				echo json_encode($jsonmsg);
 				exit;
@@ -154,7 +154,7 @@ class C_role extends CI_Controller
 				if ($cekkode != 0) {
 					$jsonmsg = [
 						'hasil' => 'false',
-						'pesan' => 'Kode Depo sudah terdaftar',
+						'pesan' => 'Role code is already registered',
 					];
 					echo json_encode($jsonmsg);
 					exit;
@@ -166,7 +166,7 @@ class C_role extends CI_Controller
 				if ($ceknama !== 0) {
 					$jsonmsg = [
 						'hasil' => 'false',
-						'pesan' => 'Nama sudah terdaftar',
+						'pesan' => 'Name is already registered',
 					];
 					echo json_encode($jsonmsg);
 					exit;
@@ -177,7 +177,7 @@ class C_role extends CI_Controller
 				if ($cekalias !== 0) {
 					$jsonmsg = [
 						'hasil' => 'false',
-						'pesan' => 'Alias sudah terdaftar',
+						'pesan' => 'Alias is already registered',
 					];
 					echo json_encode($jsonmsg);
 					exit;
@@ -195,14 +195,14 @@ class C_role extends CI_Controller
 				// Jika update berhasil
 				$jsonmsg = [
 					'hasil' => 'true',
-					'pesan' => 'Data Berhasil Diupdate',
+					'pesan' => 'Data updated successfully',
 				];
 				echo json_encode($jsonmsg);
 			} else {
 				// Jika gagal update
 				$jsonmsg = [
 					'hasil' => 'false',
-					'pesan' => 'Gagal Menyimpan Data',
+					'pesan' => 'Failed to updated data',
 				];
 				echo json_encode($jsonmsg);
 			}
@@ -211,7 +211,7 @@ class C_role extends CI_Controller
 			// Jika UUID Role tidak ditemukan
 			$jsonmsg = [
 				'hasil' => 'false',
-				'pesan' => 'UUID Role tidak ditemukan',
+				'pesan' => 'UUID Role not found',
 			];
 			echo json_encode($jsonmsg);
 		}
@@ -222,7 +222,7 @@ class C_role extends CI_Controller
 		if (empty($uuid)) {
 			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'UUID tidak boleh kosong'
+				'pesan' => 'UUID cannot be empty'
 			]);
 			return;
 		}
@@ -232,7 +232,7 @@ class C_role extends CI_Controller
 			$this->db->trans_rollback();
 			echo json_encode([
 				'hasil' => 'false',
-				'pesan' => 'Data tidak ditemukan'
+				'pesan' => 'Data not found'
 			]);
 			return;
 		}
@@ -306,7 +306,7 @@ class C_role extends CI_Controller
 				$this->db->insert('role_menu_access', $datainsert);
 				$jsonmsg = [
 					'hasil' => 'true',
-					'pesan' => 'data berhasil di simpan',
+					'pesan' => 'Data saved successfully',
 				];
 				echo json_encode($jsonmsg);
 			}else{
@@ -325,7 +325,7 @@ class C_role extends CI_Controller
 				$this->db->where($param)->delete('role_menu_access');
 				$jsonmsg = [
 					'hasil' => 'true',
-					'pesan' => 'data berhasil di non aktifkan',
+					'pesan' => 'Data has been successfully deactivated',
 				];
 				echo json_encode($jsonmsg);
 			}

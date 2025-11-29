@@ -126,6 +126,7 @@ class C_journal_entry extends CI_Controller
 		// BUILD JOURNAL ITEMS (DETAIL)
 		// =================================
 		$journal_items = [];
+		$detail_audit = [];
 		$total_debit   = 0;
 		$total_credit  = 0;
 
@@ -158,6 +159,28 @@ class C_journal_entry extends CI_Controller
 				'transaction_date' => $batch_date,
 				'created_at'       => date('Y-m-d H:i:s'),
 				'updated_at'       => date('Y-m-d H:i:s'),
+			];
+			$detail_audit[] = [
+				'uuid'            => $this->uuid->v4(),
+				'voucher_number'  => $counter,
+				'batch_number'    => $counter,
+				
+				'coa_new'         => $item['accountNo'],
+				'debit_new'       => $debit,
+				'credit_new'      => $credit,
+				'description_new' => $item['description'],
+				'status_new'      => 'entry',
+				'cost_center_new' => $item['cost_center'],
+				'period_new'      => $month_year,
+				
+				// 'date_old'        => '',
+				// 'coa_old'         => '',
+				// 'debit_old'       => '',
+				// 'credit_old'      => '',
+				// 'description_old' => '',
+				// 'status_old'      => '',
+				// 'cost_center_old' => '',
+				// 'period_old'      => '',
 			];
 		}
 
@@ -207,7 +230,29 @@ class C_journal_entry extends CI_Controller
 			]);
 			return;
 		}
+		// =============================================
+		// ===============Begin:: Insert Audit list ===========
+		// =============================================
+		$header_audit = [
+			'uuid'           => $this->uuid->v4(),
+			'code_depo'      => $branch,
+			'code_company'   => $this->company,
+			'detail'         => $des_header,
+			'action'         => 'CREATED',
+			'batch_number'   => $counter,
+			'voucher_number' => $counter,
+			'user_create'    => $this->name,
+			'date_new'       => date('Y-m-d'),
+			'created_at'     => date('Y-m-d H:i:s'),
+			'ip_address'     => $this->input->ip_address(),
+			'user_agent'     => get_device_info(),
+		];
+		$this->db->insert('audit_lists', $header_audit);
+		$this->db->insert_batch('audit_list_details', $detail_audit);
 
+		// =============================================
+		// ===============End: Insert Audit list ===========
+		// =============================================
 		$this->db->trans_commit();
 		echo json_encode([
 			'hasil' => 'true',

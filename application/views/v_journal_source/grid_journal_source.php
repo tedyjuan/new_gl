@@ -22,7 +22,7 @@
 				<tr class="table-primary">
 					<th style="width: 15%;">Company</th>
 					<th>Name Branch</th>
-					<th>Code Journal Source</th>
+					<th title="Code Journal Source">Code</th>
 					<th>Description</th>
 					<th style="width: 5%">Action</th>
 				</tr>
