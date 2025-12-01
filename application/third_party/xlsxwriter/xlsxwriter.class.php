@@ -1,14 +1,7 @@
 <?php
-/*
- * @license MIT License
- * */
 
 class XLSXWriter
 {
-	//http://www.ecma-international.org/publications/standards/Ecma-376.htm
-	//http://officeopenxml.com/SSstyles.php
-	//------------------------------------------------------------------
-	//http://office.microsoft.com/en-us/excel-help/excel-specifications-and-limits-HP010073849.aspx
 	const EXCEL_2007_MAX_ROW=1048576;
 	const EXCEL_2007_MAX_COL=16384;
 	//------------------------------------------------------------------

@@ -1,6 +1,15 @@
 <?php
-set_include_path( get_include_path().PATH_SEPARATOR."..");
-include_once("xlsxwriter.class.php");
+// set_include_path( get_include_path().PATH_SEPARATOR."..");
+require APPPATH . 'third_party/xlsxwriter/xlsxwriter.class.php';
+// include_once("xlsxwriter.class.php");
+$filename = 'laporan.xlsx';
+
+header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+header('Content-Disposition: attachment;filename="' . $filename . '"');
+header('Cache-Control: max-age=0');
+
+$writer->writeToStdOut();
+exit;
 
 $header = array(
   'c1-text'=>'string',//text
